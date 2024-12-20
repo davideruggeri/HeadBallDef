@@ -63,7 +63,6 @@ public class Background extends JPanel implements KeyListener {
                 float imgX = giocatore.getX();
                 float imgY = giocatore.getY();
 
-
                 AffineTransform at = new AffineTransform();
                 if (giocatore == campo.getG1()) {
                     at.translate(imgX - (296) / s, imgY + (133) / s);
@@ -78,10 +77,17 @@ public class Background extends JPanel implements KeyListener {
 
                 g2d.draw(giocatore.getShape());
 
-            } else {
-                g2d.fill(o.getShape());
+            } else if (o instanceof Ball) {
+                g2d.setColor(Color.YELLOW);
+
+                AffineTransform at = new AffineTransform();
+                at.translate(o.getX() - o.getShape().getBounds2D().getWidth() / 2,
+                        o.getY() - o.getShape().getBounds2D().getHeight() / 2);
+
+                g2d.fill(at.createTransformedShape(o.getShape()));
             }
 
+            g2d.setColor(Color.BLACK);
             g2d.drawRect(-getWidth(), 0, getWidth() * 2, 0);
         }
     }
@@ -90,6 +96,7 @@ public class Background extends JPanel implements KeyListener {
 
     public void applyControls() {
         Giocatore g1 = campo.getG1();
+//        Giocatore g2 = campo.getG2();
         if (g1 == null) return;
 
         g1.setVelocita(0, g1.getVelocitaY());

@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.image.AffineTransformOp;
 import java.util.ArrayList;
 
 public class Background extends JPanel implements KeyListener {
@@ -42,7 +44,6 @@ public class Background extends JPanel implements KeyListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-
         double s = (double) Math.min(getWidth(), getHeight()) / 1000.;
 
         g2d.scale(s, -s);
@@ -54,36 +55,36 @@ public class Background extends JPanel implements KeyListener {
 
         for (Oggetto o : campo.listaOggetti) {
             if (o instanceof Giocatore) {
+
                 Giocatore giocatore = (Giocatore) o;
 
                 Image img = (giocatore == campo.getG1()) ? giocatore1 : giocatore2;
-/*
-                int cx = giocatore.getCx();
-                int cy = giocatore.getCy();
 
-                int imgX = cx - img.getWidth(null) / 2;
-                int imgY = cy - img.getHeight(null) / 2;
+                float imgX = giocatore.getX();
+                float imgY = giocatore.getY();
+
 
                 AffineTransform at = new AffineTransform();
-                at.scale(1.5, 1.5);  // Aumentiamo le dimensioni dell'immagine di 1.5 volte
-                at.translate(imgX + 150, imgY + 78);
-                at.scale(1, -1);  // Capovolgiamo l'immagine lungo l'asse X
+                if (giocatore == campo.getG1()) {
+                    at.translate(imgX - (296) / s, imgY + (133) / s);
+                } else if (giocatore == campo.getG2()) {
+                    at.translate(imgX + (212) / s, imgY + (133) / s);
+                }
+                at.scale(1.5, 1.5);
+                at.scale(1, -1);
 
-                // Applicare la trasformazione affine
                 g2d.drawImage(img, at, this);
-*/
-                g2d.fill(giocatore.getShape());
 
+
+                g2d.draw(giocatore.getShape());
 
             } else {
                 g2d.fill(o.getShape());
             }
 
             g2d.drawRect(-getWidth(), 0, getWidth() * 2, 0);
-
         }
     }
-
 
     private ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
@@ -91,7 +92,7 @@ public class Background extends JPanel implements KeyListener {
         Giocatore g1 = campo.getG1();
         if (g1 == null) return;
 
-        g1.setVelocita(0, g1.getVelocitaY()); // Resetta la velocità orizzontale a ogni chiamata
+        g1.setVelocita(0, g1.getVelocitaY());
 
         for (Integer key : currentActiveKeys) {
             switch (key) {
@@ -107,9 +108,6 @@ public class Background extends JPanel implements KeyListener {
             }
         }
     }
-
-
-
 
     @Override
     public void keyTyped(KeyEvent e) {}

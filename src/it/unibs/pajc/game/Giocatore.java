@@ -70,7 +70,6 @@ public class Giocatore extends Oggetto {
             }
 
             Path2D path = new Path2D.Double();
-
             double fMolt = 1.5;
 
             for (int y = 0; y < image.getHeight(); y++) {

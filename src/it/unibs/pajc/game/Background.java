@@ -5,8 +5,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.image.AffineTransformOp;
 import java.util.ArrayList;
 
 public class Background extends JPanel implements KeyListener {

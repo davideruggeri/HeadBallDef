@@ -1,11 +1,9 @@
 package it.unibs.pajc.game;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class Giocatore extends Oggetto {
@@ -15,20 +13,17 @@ public class Giocatore extends Oggetto {
     private final float FORZASALTO = 60;
     private final double GROUNDLEVEL = 0.563;
 
-
     public Giocatore(CampoDiGioco campo, int cx, int cy, int numGiocatore) {
         super(campo);
 
         this.shape = creaArea(cx, cy, numGiocatore);
     }
 
-
     @Override
     public void stepNext() {
         if (isJumping || getY() < GROUNDLEVEL) {
             velocita[1] += GRAVITA;
         }
-
 
         if (getY() >= GROUNDLEVEL - getY()) {
             isJumping = false; // Resetta lo stato del salto
@@ -46,7 +41,6 @@ public class Giocatore extends Oggetto {
         }
         setVelocita(getVelocitaX(), FORZASALTO);
     }
-
 
     public Area creaArea(int cx, int cy, int numG) {
         try {

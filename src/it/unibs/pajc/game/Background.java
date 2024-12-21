@@ -96,7 +96,6 @@ public class Background extends JPanel implements KeyListener {
 
     public void applyControls() {
         Giocatore g1 = campo.getG1();
-//        Giocatore g2 = campo.getG2();
         if (g1 == null) return;
 
         g1.setVelocita(0, g1.getVelocitaY());
@@ -104,13 +103,13 @@ public class Background extends JPanel implements KeyListener {
         for (Integer key : currentActiveKeys) {
             switch (key) {
                 case KeyEvent.VK_RIGHT:
-                    g1.setVelocita(2, g1.getVelocitaY());
+                    g1.setVelocita(2f, g1.getVelocitaY());
                     break;
                 case KeyEvent.VK_LEFT:
-                    g1.setVelocita(-2, g1.getVelocitaY());
+                    g1.setVelocita(-2f, g1.getVelocitaY());
                     break;
                 case KeyEvent.VK_SPACE:
-                    g1.jump(); // Salto
+                    g1.jump();
                     break;
             }
         }

@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public class Giocatore extends Oggetto {
 
-    private int cx, cy;
     private boolean isJumping = false;
     private final float GRAVITA = 0.5f;
     private final float FORZASALTO = 60;
@@ -19,8 +18,6 @@ public class Giocatore extends Oggetto {
 
     public Giocatore(CampoDiGioco campo, int cx, int cy, int numGiocatore) {
         super(campo);
-        this.cx = cx;
-        this.cy = cy;
 
         this.shape = creaArea(cx, cy, numGiocatore);
     }
@@ -28,13 +25,12 @@ public class Giocatore extends Oggetto {
 
     @Override
     public void stepNext() {
-        // Applica la gravità se il giocatore è in aria
         if (isJumping || getY() < GROUNDLEVEL) {
-            velocita[1] += GRAVITA; // Aumenta la velocità verso il basso
+            velocita[1] += GRAVITA;
         }
 
-        // Controlla se il giocatore è atterrato
-        if (getY() >= GROUNDLEVEL) {
+
+        if (getY() >= GROUNDLEVEL - getY()) {
             isJumping = false; // Resetta lo stato del salto
             setPosizione(getX(), (float) GROUNDLEVEL); // Blocca il giocatore al terreno
             velocita[1] = 0; // Ferma la velocità verticale
@@ -44,21 +40,13 @@ public class Giocatore extends Oggetto {
     }
 
     public void jump() {
-        /*if (!isJumping) {
+        if (!isJumping) {
             isJumping = true; // Imposta lo stato di salto
             setVelocita(getVelocitaX(), FORZASALTO); // Imposta una velocità verso l'alto (negativa)
-        }*/
+        }
         setVelocita(getVelocitaX(), FORZASALTO);
     }
 
-
-    public int getCx(){
-        return cx;
-    }
-
-    public int getCy(){
-        return cy;
-    }
 
     public Area creaArea(int cx, int cy, int numG) {
         try {

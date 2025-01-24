@@ -34,7 +34,6 @@ public class Oggetto {
     public void moveUp() {
         velocita[1] = +1;
     }
-
     public void moveDown() {
         velocita[1] = -1;
     }

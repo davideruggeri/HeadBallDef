@@ -101,13 +101,13 @@ public class Background extends JPanel implements KeyListener {
         for (Integer key : currentActiveKeys) {
             switch (key) {
                 case KeyEvent.VK_RIGHT:
-                    g1.setVelocita(2f, g1.getVelocitaY());
+                    g1.setVelocita(6f, g1.getVelocitaY());
                     break;
                 case KeyEvent.VK_LEFT:
-                    g1.setVelocita(-2f, g1.getVelocitaY());
+                    g1.setVelocita(-6f, g1.getVelocitaY());
                     break;
                 case KeyEvent.VK_SPACE:
-                    g1.jump();
+                    g1.moveUp();
                     break;
             }
         }

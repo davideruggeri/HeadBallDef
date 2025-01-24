@@ -12,12 +12,12 @@ public class CampoDiGioco{
     public CampoDiGioco() {
         ball = new Ball(this, 0, 0);
         ball.setPosizione(0, 300);
+        addOggetto(ball);
 
         g1 = new Giocatore(this, -350, 158, 1);
         g2 = new Giocatore(this, 250, 158, 2);
         addOggetto(g1);
         addOggetto(g2);
-        addOggetto(ball);
     }
 
     public void addOggetto(Oggetto oggetto) {listaOggetti.add(oggetto);}

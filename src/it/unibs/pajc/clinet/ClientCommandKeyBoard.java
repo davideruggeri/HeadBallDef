@@ -15,9 +15,21 @@ public class ClientCommandKeyBoard implements KeyListener {
     }
 
     public void applyControls() {
-        if (localPlayer == null) return;
+        localPlayer.setVelocita(0, localPlayer.getVelocitaY());
 
-
+        for (Integer keyCode : currentActiveKeys) {
+            switch (keyCode) {
+                case KeyEvent.VK_RIGHT:
+                    localPlayer.setVelocita(2, localPlayer.getVelocitaY());
+                    break;
+                case KeyEvent.VK_LEFT:
+                    localPlayer.setVelocita(-2, localPlayer.getVelocitaY());
+                    break;
+                case KeyEvent.VK_SPACE:
+                    localPlayer.jump();
+                    break;
+            }
+        }
     }
 
 

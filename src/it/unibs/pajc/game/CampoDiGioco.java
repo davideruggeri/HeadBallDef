@@ -36,12 +36,12 @@ public class CampoDiGioco{
     }
 
     private void applyLimit(Oggetto o) {
-        if (o.getX() < bounds.getMinX()) {
-            o.setPosizione((float) bounds.getMinX(), o.getY());
+        if (o.getX() < -400) {
+            o.setPosizione(-400, o.getY());
             o.setVelocita(0, o.getVelocitaY());
         }
-        if (o.getX() > bounds.getMaxX()) {
-            o.setPosizione((float) bounds.getMaxX(), o.getY());
+        if (o.getX() > 1250) {
+            o.setPosizione(1250, o.getY());
             o.setVelocita(0, o.getVelocitaY());
         }
 
@@ -54,9 +54,4 @@ public class CampoDiGioco{
             o.setVelocita(o.getVelocitaX(), 0);
         }
     }
-
-
-
-
-
 }

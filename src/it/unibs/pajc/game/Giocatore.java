@@ -49,35 +49,43 @@ public class Giocatore extends Oggetto {
     /**
      * Sistemare la direzione con cui la palla viene rimbalzata dopo il contatto
      * (controllare se è in questo metodo o nella classe ball)
+     * gestire correttamente la fisica del rimbalzo tra giocatore e palla
      */
-
+    
     public void handleCollision(Ball ball) {
-        // Usa il metodo checkCollision per verificare la collisione
+        // Verifica la collisione
         if (this.checkCollision(ball)) {
-            // Calcola il centro del giocatore
-            float centerXPlayer = getX() + (float) this.shape.getBounds2D().getWidth() / 2;
-            float centerYPlayer = getY() + (float) this.shape.getBounds2D().getHeight() / 2;
+            // Calcola l'area di intersezione tra il giocatore e la palla
+            Area intersezione = new Area(this.getShape());
+            intersezione.intersect(new Area(ball.getShape()));
 
-            // Calcola il centro della palla
-            float centerXBall = ball.getX() + (float) ball.getShape().getBounds2D().getWidth() / 2;
-            float centerYBall = ball.getY() + (float) ball.getShape().getBounds2D().getHeight() / 2;
+            // Ottieni il centro dell'area di intersezione come punto di contatto
+            double puntoContattoX = intersezione.getBounds2D().getCenterX();
+            double puntoContattoY = intersezione.getBounds2D().getCenterY();
 
-            // Calcola l'angolo dell'impatto usando atan2
-            float deltaX = centerXBall - centerXPlayer;
-            float deltaY = centerYBall - centerYPlayer;
-            float angle = (float) Math.atan2(deltaY, deltaX);
+            // Calcola il vettore dalla palla al punto di contatto
+            float deltaX = (float) (puntoContattoX - ball.getX());
+            float deltaY = (float) (puntoContattoY - ball.getY());
 
-            // Passa l'angolo calcolato alla palla
-            ball.setAngle((float) Math.toDegrees(angle));
+            // Trova la normale alla superficie d'impatto (direzione della forza di rimbalzo)
+            float normaleAngle = (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
 
-            // Applica un impulso alla palla (opzionale)
-            float speedMultiplier = 1.2f; // Fattore per incrementare la velocità
+            // Calcola l'angolo di riflessione
+            float incomingAngle = (float) Math.toDegrees(Math.atan2(ball.getVelocitaY(), ball.getVelocitaX()));
+            float reflectionAngle = 2 * normaleAngle - incomingAngle;
+
+            // Imposta il nuovo angolo della palla
+            ball.setAngle(reflectionAngle);
+
+            // (Opzionale) Aggiungi un incremento di velocità per simulare l'impatto
+            float speedMultiplier = 1.1f; // Fattore di velocità
             ball.setVelocita(
-                    ball.getVelocitaX() + (float) (Math.cos(angle) * speedMultiplier),
-                    ball.getVelocitaY() + (float) (Math.sin(angle) * speedMultiplier)
+                    ball.getVelocitaX() * speedMultiplier,
+                    ball.getVelocitaY() * speedMultiplier
             );
         }
     }
+
 
 
     /**

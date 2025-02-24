@@ -107,7 +107,7 @@ public class Background extends JPanel implements KeyListener {
                     g1.setVelocita(-6f, g1.getVelocitaY());
                     break;
                 case KeyEvent.VK_SPACE:
-                    g1.moveUp();
+                    g1.jump();
                     break;
             }
         }

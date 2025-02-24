@@ -23,14 +23,16 @@ public class Giocatore extends Oggetto {
 
     @Override
     public void stepNext() {
-        if (isJumping || getY() < GROUNDLEVEL) {
-            velocita[1] = velocita[1] + GRAVITA;
-        }
-        if (getY() >= GROUNDLEVEL - getY()) {
-            isJumping = false;
-            setPosizione(getX(), (float) GROUNDLEVEL);
-            velocita[1] = 0;
-        }
+       /* if (isJumping) {
+            setPosizione((getX() + getVelocitaX()), (getY() + getVelocitaY()));
+            setVelocita(getVelocitaX(), getVelocitaY() + GRAVITA);
+
+            if (getY() >= GROUNDLEVEL) {
+                setPosizione(getX(), (float) GROUNDLEVEL);
+                setVelocita(0, 0);
+                isJumping = false;
+            }
+        }*/
         this.handleCollision(campo.getBall());
         super.stepNext();
     }
@@ -38,13 +40,16 @@ public class Giocatore extends Oggetto {
     /**
      * Controllare il salto che non funziona
      */
+
+
     public void jump() {
         if (!isJumping) {
-            isJumping = true; // Imposta lo stato di salto
-            velocita[1] = velocita[1] + GRAVITA; // Imposta una velocità verso l'alto (negativa)
+            isJumping = true;
+            velocita[1] = velocita[1] + GRAVITA;
         }
-        setVelocita(getVelocitaX(), FORZASALTO);
+        //setVelocita(getVelocitaX(), FORZASALTO);
     }
+
 
     /**
      * Sistemare la direzione con cui la palla viene rimbalzata dopo il contatto
@@ -85,8 +90,6 @@ public class Giocatore extends Oggetto {
             );
         }
     }
-
-
 
     /**
      * Creare il metodo per il calcio usando quello sopra

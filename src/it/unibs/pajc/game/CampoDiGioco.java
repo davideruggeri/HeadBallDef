@@ -24,10 +24,12 @@ public class CampoDiGioco extends BaseModel{
     public void setMultiPlayer() {
         remotePlayer.setIsBot(true);
     }
+    public void setSinglePlayer() {remotePlayer.setIsBot(false);}
 
     public void setListaOggetti(ArrayList<Oggetto> listaOggetti) {this.listaOggetti = listaOggetti;}
     public ArrayList<Oggetto> getListaOggetti() {return listaOggetti;}
     public void addOggetto(Oggetto oggetto) {listaOggetti.add(oggetto);}
+    public void setLocalPlayer(Giocatore localPlayer) {this.localPlayer = localPlayer;}
 
 
     public Giocatore getLocalPlayer() {return localPlayer;}

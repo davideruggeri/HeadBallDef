@@ -1,4 +1,4 @@
-package it.unibs.pajc.clinet;
+package it.unibs.pajc.client;
 import it.unibs.pajc.game.BaseModel;
 import it.unibs.pajc.game.Giocatore;
 

@@ -1,4 +1,4 @@
-package it.unibs.pajc.clinet;
+package it.unibs.pajc.client;
 
 import it.unibs.pajc.game.Background;
 import it.unibs.pajc.game.CampoDiGioco;
@@ -21,12 +21,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Client {
-    String host = "10.277.219.170";
+    private static final String HOST = "10.227.219.170";
+    private static final int PORT = Server.PORT;
     Socket socket;
 
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private Background background;
+    private Background background = new Background();
     private Giocatore giocatoreLocale = new Giocatore(background.getCampo());
     private ExecutorService executor;
     private JFrame frame;
@@ -45,7 +46,6 @@ public class Client {
         frame.setVisible(true);
         frame.setResizable(false);
 
-        background = new Background();
         background.getCampo().setListaOggetti(oggetti);
 
         frame.getContentPane().add(background, BorderLayout.CENTER);
@@ -66,13 +66,14 @@ public class Client {
 
     }
 
-    public boolean connectToServer(String host, int port) {
+    public boolean connectToServer() {
         boolean connesso = false;
 
         try {
-            socket = new Socket(host, Server.PORT);
-            in = new ObjectInputStream(socket.getInputStream());
+            socket = new Socket(HOST, PORT);
             out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            in = new ObjectInputStream(socket.getInputStream());
 
             connesso = true;
             inizializzaGioco();
@@ -89,7 +90,7 @@ public class Client {
 
     private void ascoltaServer() {
         try {
-            while(socket.isConnected() == false) {
+            while(!socket.isClosed()) {
 
                 ArrayList<Oggetto> tmp = (ArrayList<Oggetto>) in.readObject();
                 oggetti.clear();

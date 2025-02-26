@@ -1,27 +1,25 @@
 package it.unibs.pajc.game;
 
-import it.unibs.pajc.clinet.Client;
+import it.unibs.pajc.client.Client;
 import it.unibs.pajc.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class HeadBallApp {
     private JFrame frame;
-
-    Server server;
-    Client client;
+    private Server server;
+    private Client client;
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    HeadBallApp window = new HeadBallApp();
-                    window.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        EventQueue.invokeLater(() -> {
+            try {
+                HeadBallApp window = new HeadBallApp();
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -29,7 +27,6 @@ public class HeadBallApp {
     public HeadBallApp() {
         startGame();
     }
-
     public void startGame() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,70 +66,63 @@ public class HeadBallApp {
         btnJoinGame.addActionListener(this::joinGame);
 
     }
-
     private void hostGame(ActionEvent e) {
         server = new Server(frame);
         boolean success = server.startServer();
 
         if (!success) {
-            JOptionPane.showMessageDialog(null, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        JOptionPane.showMessageDialog(null, "I tasti disponibili per la partita sono:\n" +
-                "- (<- e ->) per muoversi di lato.\n" +
-                "- (space) per saltare.\n" +
-                "- (z) calcio.", "Mosse disponibili", JOptionPane.PLAIN_MESSAGE);
-
-        frame.getContentPane().removeAll();
-        frame.revalidate();
-        frame.repaint();
+        showControls();
     }
 
-
-
     private void startLocalGame(ActionEvent e) {
-        JOptionPane.showMessageDialog(null, "I tasti disponibili per la partita sono:\n" +
-                "- (<- e ->) per muoversi di lato.\n" +
-                "- (space) per saltare.\n" +
-                "- (z) calcio.", "Mosse disponibili", JOptionPane.PLAIN_MESSAGE);
+        showControls();
 
         frame.getContentPane().removeAll();
         Background sv = new Background();
+        sv.getCampo().setSinglePlayer(); // Imposta la modalità single-player
         frame.getContentPane().add(sv, BorderLayout.CENTER);
         frame.revalidate();
         frame.repaint();
-
     }
+
     private void joinGame(ActionEvent e) {
         String port;
-        do {
-            port = JOptionPane.showInputDialog(null, "Inserire il numero della porta: ", null, JOptionPane.PLAIN_MESSAGE);
-            if (port == null) {
-                return;
+        while (true) {
+            port = JOptionPane.showInputDialog(frame, "Inserire il numero della porta:", "Connessione", JOptionPane.PLAIN_MESSAGE);
+            if (port == null) return; // Se l'utente annulla, interrompiamo il processo
+
+            try {
+                int portNumber = Integer.parseInt(port);
+                if (portNumber > 1024 && portNumber < 65535) {
+                    break; // Porta valida, esce dal loop
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Porta non valida! Inserire un numero tra 1025 e 65534.", "Errore", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Inserire un numero valido!", "Errore", JOptionPane.ERROR_MESSAGE);
             }
-            if (!port.equals("1234")) {
-                JOptionPane.showMessageDialog(null, "Porta errata, Riprovare", null, JOptionPane.ERROR_MESSAGE);
-            }
-        } while (!port.equals("1234"));
+        }
 
         client = new Client(frame);
-        boolean connected = client.connectToServer("localhost", Integer.parseInt(port));
+        boolean connected = client.connectToServer();
 
         if (!connected) {
-            JOptionPane.showMessageDialog(null, "Connessione al server fallita.", "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Connessione al server fallita.", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        JOptionPane.showMessageDialog(null, "Connessione avvenuta con successo", null, JOptionPane.PLAIN_MESSAGE);
-        JOptionPane.showMessageDialog(null, "I tasti disponibili per la partita sono:\n" +
-                "- (<- e ->) per muoversi di lato.\n" +
-                "- (space) per saltare.\n" +
-                "- (z) calcio.", "Mosse disponibili", JOptionPane.PLAIN_MESSAGE);
-
-        frame.getContentPane().removeAll();
-        frame.revalidate();
-        frame.repaint();
+        JOptionPane.showMessageDialog(frame, "Connessione avvenuta con successo", "Successo", JOptionPane.PLAIN_MESSAGE);
+        showControls();
     }
 
+    private void showControls() {
+        JOptionPane.showMessageDialog(frame, "I tasti disponibili per la partita sono:\n" +
+                "- (<- e ->) per muoversi di lato.\n" +
+                "- (SPACE) per saltare.\n" +
+                "- (Z) calcio.", "Mosse disponibili", JOptionPane.PLAIN_MESSAGE);
+    }
 }

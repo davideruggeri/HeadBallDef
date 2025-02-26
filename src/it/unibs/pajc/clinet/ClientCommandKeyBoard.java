@@ -1,17 +1,19 @@
 package it.unibs.pajc.clinet;
+import it.unibs.pajc.game.BaseModel;
 import it.unibs.pajc.game.Giocatore;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-public class ClientCommandKeyBoard implements KeyListener {
+public class ClientCommandKeyBoard extends BaseModel implements KeyListener {
     private Giocatore localPlayer;
     private ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
 
     public ClientCommandKeyBoard(Giocatore p) {
         localPlayer = p;
+        applyControls();
     }
 
     public void applyControls() {

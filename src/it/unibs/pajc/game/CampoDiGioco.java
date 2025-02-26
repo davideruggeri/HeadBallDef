@@ -3,27 +3,35 @@ package it.unibs.pajc.game;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-public class CampoDiGioco{
-    protected Rectangle2D.Float bounds = new Rectangle2D.Float(-500, -300, 1000, 600);
+public class CampoDiGioco extends BaseModel{
+    public static final int CAMPO_WIDTH = 1000;
+    public static final int CAMPO_HEIGHT = 600;
+    protected Rectangle2D.Float bounds = new Rectangle2D.Float(-500, -300, CAMPO_WIDTH, CAMPO_HEIGHT);
     protected ArrayList<Oggetto> listaOggetti = new ArrayList<>();
     protected Ball ball;
-    protected Giocatore g1, g2;
+    protected Giocatore localPlayer, remotePlayer;
 
     public CampoDiGioco() {
         ball = new Ball(this, 0, 0);
         ball.setPosizione(0, 300);
         addOggetto(ball);
 
-        g1 = new Giocatore(this, -350, 158, 1);
-        g2 = new Giocatore(this, 250, 158, 2);
-        addOggetto(g1);
-        addOggetto(g2);
+        localPlayer = new Giocatore(this, -350, 158, 1, false);
+        remotePlayer = new Giocatore(this, 250, 158, 2, true);
+        addOggetto(localPlayer);
+        addOggetto(remotePlayer);
+    }
+    public void setMultiPlayer() {
+        remotePlayer.setIsBot(true);
     }
 
+    public void setListaOggetti(ArrayList<Oggetto> listaOggetti) {this.listaOggetti = listaOggetti;}
+    public ArrayList<Oggetto> getListaOggetti() {return listaOggetti;}
     public void addOggetto(Oggetto oggetto) {listaOggetti.add(oggetto);}
 
-    public Giocatore getG1() {return g1;}
-    public Giocatore getG2() {return g2;}
+
+    public Giocatore getLocalPlayer() {return localPlayer;}
+    public Giocatore getRemotePlayer() {return remotePlayer;}
     public Ball getBall() {return ball;}
 
 

@@ -37,6 +37,10 @@ public class Background extends JPanel implements KeyListener {
 
     }
 
+    public CampoDiGioco getCampo() {
+        return campo;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -56,15 +60,15 @@ public class Background extends JPanel implements KeyListener {
 
                 Giocatore giocatore = (Giocatore) o;
 
-                Image img = (giocatore == campo.getG1()) ? giocatore1 : giocatore2;
+                Image img = (giocatore == campo.getLocalPlayer()) ? giocatore1 : giocatore2;
 
                 float imgX = giocatore.getX();
                 float imgY = giocatore.getY();
 
                 AffineTransform at = new AffineTransform();
-                if (giocatore == campo.getG1()) {
+                if (giocatore == campo.getLocalPlayer()) {
                     at.translate(imgX - (296) / s, imgY + (133) / s);
-                } else if (giocatore == campo.getG2()) {
+                } else if (giocatore == campo.getRemotePlayer()) {
                     at.translate(imgX + (212) / s, imgY + (133) / s);
                 }
                 at.scale(1.5, 1.5);
@@ -93,7 +97,7 @@ public class Background extends JPanel implements KeyListener {
     private ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
     public void applyControls() {
-        Giocatore g1 = campo.getG1();
+        Giocatore g1 = campo.getLocalPlayer();
         if (g1 == null) return;
 
         g1.setVelocita(0, g1.getVelocitaY());

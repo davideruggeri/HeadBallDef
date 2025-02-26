@@ -13,12 +13,22 @@ public class Giocatore extends Oggetto {
     private final float FORZASALTO = 60;
     private final double GROUNDLEVEL = 0.563;
     CampoDiGioco campo;
+    private boolean isBot = true;
+    private boolean isShooting = false;
 
-    public Giocatore(CampoDiGioco campo, int cx, int cy, int numGiocatore) {
+    public Giocatore(CampoDiGioco campo, int cx, int cy, int numGiocatore, boolean isBot) {
         super(campo);
         this.campo = campo;
+        this.isBot = isBot;
 
         this.shape = creaArea(cx, cy, numGiocatore);
+    }
+    public Giocatore(CampoDiGioco campo) {
+        super(campo);
+    }
+
+    public void setIsBot(boolean isBot) {
+        this.isBot = isBot;
     }
 
     @Override
@@ -90,6 +100,11 @@ public class Giocatore extends Oggetto {
             );
         }
     }
+    public void shoot(){
+        this.isBot = true;
+    }
+
+    public boolean isShooting(){return isShooting;}
 
     /**
      * Creare il metodo per il calcio usando quello sopra

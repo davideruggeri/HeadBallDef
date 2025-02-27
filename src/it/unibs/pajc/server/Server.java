@@ -1,109 +1,100 @@
 package it.unibs.pajc.server;
 
-import it.unibs.pajc.game.Background;
-import it.unibs.pajc.game.CampoDiGioco;
 import it.unibs.pajc.game.Giocatore;
-import it.unibs.pajc.client.ClientCommandKeyBoard;
+import it.unibs.pajc.game.Oggetto;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-
     public final static int PORT = 1234;
-    private Socket client;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private CampoDiGioco campoDiGioco;
-    private Background background;
-    private JFrame frame;
-    private ExecutorService executor;
-    private Giocatore giocatoreServer;
-
-    public Server(JFrame frame) {
-        this.frame = frame;
-    }
-
-    public void start() {
-        frame.getContentPane().removeAll();
-        background = new Background();
-        campoDiGioco = background.getCampo();
-        campoDiGioco.setMultiPlayer();
-        campoDiGioco.addChangeListener(this::modelUpdate);
-
-        giocatoreServer = new Giocatore(campoDiGioco);
-        campoDiGioco.setLocalPlayer(giocatoreServer);
-
-        int x = background.getX(), y = background.getY();
-        frame.dispose();
-        frame = new JFrame("Server");
-        frame.setBounds(x, y, CampoDiGioco.CAMPO_WIDTH, CampoDiGioco.CAMPO_HEIGHT);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.setResizable(false);
-
-        frame.getContentPane().add(background, BorderLayout.CENTER);
-
-        // Aggiungere listener per la tastiera del server
-        ClientCommandKeyBoard keyBoard = new ClientCommandKeyBoard(giocatoreServer);
-        keyBoard.addChangeListener(this::inviaAlClient);
-        background.addKeyListener(keyBoard);
-
-        executor = Executors.newFixedThreadPool(2);
-        executor.execute(this::ascoltaClient);
-    }
+    private ServerSocket serverSocket;
+    private boolean running = false;
+    private ExecutorService executor = Executors.newFixedThreadPool(4);
+    private ArrayList<ClientHandler> clients = new ArrayList<>();
 
     public boolean startServer() {
-        boolean connesso = false;
-        try (ServerSocket server = new ServerSocket(PORT)) {
-            client = server.accept();
-            out = new ObjectOutputStream(client.getOutputStream());
-            in = new ObjectInputStream(client.getInputStream());
-            connesso = true;
-            start();
+        try {
+            serverSocket = new ServerSocket(PORT);
+            running = true;
+            System.out.println("Server avviato sulla porta " + PORT);
+
+            executor.execute(() -> {
+                while (running) {
+                    try {
+                        Socket clientSocket = serverSocket.accept();
+                        System.out.println("Nuovo client connesso: " + clientSocket.getInetAddress());
+                        ClientHandler handler = new ClientHandler(clientSocket);
+                        clients.add(handler);
+                        executor.execute(handler);
+                    } catch (IOException e) {
+                        if (running) e.printStackTrace();
+                    }
+                }
+            });
+
+            return true;
         } catch (IOException e) {
-            System.err.println("Errore di comunicazione" + e);
+            e.printStackTrace();
+            return false;
         }
-        return connesso;
     }
 
-    private void ascoltaClient() {
+    public void stopServer() {
+        running = false;
         try {
-            while (!client.isClosed()) {
-                Giocatore tmpGiocatore = (Giocatore) in.readObject();
-                Giocatore remoteGiocatore = campoDiGioco.getRemotePlayer();
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
+            System.out.println("Server chiuso.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-                remoteGiocatore.setVelocita(tmpGiocatore.getVelocitaX(), tmpGiocatore.getVelocitaY());
-                if (tmpGiocatore.isShooting()) {
-                    remoteGiocatore.shoot();
+    public boolean isRunning() {
+        return running && serverSocket != null && !serverSocket.isClosed();
+    }
+
+    private class ClientHandler implements Runnable {
+        private Socket socket;
+        private ObjectInputStream in;
+        private ObjectOutputStream out;
+
+        public ClientHandler(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                out = new ObjectOutputStream(socket.getOutputStream());
+                in = new ObjectInputStream(socket.getInputStream());
+
+                while (!socket.isClosed()) {
+                    Giocatore playerData = (Giocatore) in.readObject();
+                    broadcast(playerData);
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Errore di comunicazione con il client: " + e);
+            }
+        }
+
+        private void broadcast(Giocatore playerData) {
+            for (ClientHandler client : clients) {
+                try {
+                    client.out.writeObject(playerData);
+                    client.out.reset();
+                } catch (IOException e) {
+                    System.err.println("Errore nell'invio dei dati: " + e);
                 }
             }
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Errore di comunicazione" + e);
         }
-    }
-
-    private void inviaAlClient(ChangeEvent e) {
-        try {
-            out.writeObject(campoDiGioco.getListaOggetti());
-            out.reset();
-        } catch (IOException e1) {
-            System.err.println("Errore di comunicazione" + e1);
-        }
-    }
-
-    private void modelUpdate(ChangeEvent e) {
-        inviaAlClient(e);
-        background.repaint();
     }
 }

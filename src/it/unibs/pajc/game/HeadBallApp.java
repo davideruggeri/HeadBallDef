@@ -66,17 +66,29 @@ public class HeadBallApp {
         btnJoinGame.addActionListener(this::joinGame);
 
     }
-    private void hostGame(ActionEvent e) {
-        server = new Server(frame);
-        boolean success = server.startServer();
 
-        if (!success) {
-            JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+   private void hostGame(ActionEvent e) {
+       if (server == null) {
+           server = new Server();
+           boolean success = server.startServer();
 
-        showControls();
-    }
+           if (!success) {
+               JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
+               return;
+           }
+
+           JOptionPane.showMessageDialog(frame, "Server avviato! Ora puoi connetterti.", "Successo", JOptionPane.PLAIN_MESSAGE);
+       }
+
+       if (client == null) {
+           client = new Client(frame);
+           boolean connected = client.connectToServer("localhost", Server.PORT);
+
+           if (!connected) {
+               JOptionPane.showMessageDialog(frame, "Errore nella connessione al server.", "Errore", JOptionPane.ERROR_MESSAGE);
+           }
+       }
+   }
 
     private void startLocalGame(ActionEvent e) {
         showControls();
@@ -93,12 +105,12 @@ public class HeadBallApp {
         String port;
         while (true) {
             port = JOptionPane.showInputDialog(frame, "Inserire il numero della porta:", "Connessione", JOptionPane.PLAIN_MESSAGE);
-            if (port == null) return; // Se l'utente annulla, interrompiamo il processo
+            if (port == null) return;
 
             try {
                 int portNumber = Integer.parseInt(port);
                 if (portNumber > 1024 && portNumber < 65535) {
-                    break; // Porta valida, esce dal loop
+                    break;
                 } else {
                     JOptionPane.showMessageDialog(frame, "Porta non valida! Inserire un numero tra 1025 e 65534.", "Errore", JOptionPane.ERROR_MESSAGE);
                 }
@@ -108,7 +120,7 @@ public class HeadBallApp {
         }
 
         client = new Client(frame);
-        boolean connected = client.connectToServer();
+        boolean connected = client.connectToServer("localhost", Server.PORT);
 
         if (!connected) {
             JOptionPane.showMessageDialog(frame, "Connessione al server fallita.", "Errore", JOptionPane.ERROR_MESSAGE);

@@ -15,38 +15,48 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Client {
-    private static final String HOST = "10.227.219.170";
-    private static final int PORT = Server.PORT;
-    Socket socket;
-
+    private Socket socket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private Background background = new Background();
-    private Giocatore giocatoreLocale = new Giocatore(background.getCampo());
+    private Background background;
+    private Giocatore giocatoreLocale;
     private ExecutorService executor;
     private JFrame frame;
-    private ArrayList<Oggetto> oggetti = new ArrayList<>();
 
     public Client(JFrame frame) {
         this.frame = frame;
+        this.background = new Background();
+        this.giocatoreLocale = new Giocatore(background.getCampo());
     }
 
-    public void inizializzaGioco() {
-        int x = frame.getX(), y = frame.getY();
-        frame.dispose();
-        frame = new JFrame("Clinet");
-        frame.setBounds(x, y, CampoDiGioco.CAMPO_WIDTH, CampoDiGioco.CAMPO_HEIGHT);
+    public boolean connectToServer(String host, int port) {
+        boolean connesso = false;
+        try {
+            socket = new Socket(host, port);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            in = new ObjectInputStream(socket.getInputStream());
+
+            connesso = true;
+            inizializzaGioco();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Errore nella connessione al server.");
+        }
+        return connesso;
+    }
+
+    private void inizializzaGioco() {
+        frame.getContentPane().removeAll();
+        frame.setTitle("Client");
+        frame.setSize(CampoDiGioco.CAMPO_WIDTH, CampoDiGioco.CAMPO_HEIGHT);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setResizable(false);
-
-        background.getCampo().setListaOggetti(oggetti);
 
         frame.getContentPane().add(background, BorderLayout.CENTER);
         frame.addWindowFocusListener(new WindowAdapter() {
@@ -61,58 +71,25 @@ public class Client {
         ClientCommandKeyBoard keyBoard = new ClientCommandKeyBoard(giocatoreLocale);
         keyBoard.addChangeListener(this::inviaServer);
         background.addKeyListener(keyBoard);
-
-
-
-    }
-
-    public boolean connectToServer() {
-        boolean connesso = false;
-
-        try {
-            socket = new Socket(HOST, PORT);
-            out = new ObjectOutputStream(socket.getOutputStream());
-            out.flush();
-            in = new ObjectInputStream(socket.getInputStream());
-
-            connesso = true;
-            inizializzaGioco();
-
-
-        } catch (UnknownHostException e){
-            JOptionPane.showMessageDialog(null, "Errore nella connessione al server");
-        } catch (IOException e ){
-            JOptionPane.showMessageDialog(null, "Errore nella connessione al server");
-        }
-
-        return connesso;
     }
 
     private void ascoltaServer() {
         try {
-            while(!socket.isClosed()) {
-
-                ArrayList<Oggetto> tmp = (ArrayList<Oggetto>) in.readObject();
-                oggetti.clear();
-                oggetti.addAll(tmp);
-
-                background.revalidate();
-                background.repaint();
+            while (!socket.isClosed()) {
+                Giocatore remoteData = (Giocatore) in.readObject();
+                background.getCampo().getRemotePlayer().setVelocita(remoteData.getVelocitaX(), remoteData.getVelocitaY());
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Errore nella ricezione dei dati dal server.");
         }
     }
 
-    private void inviaServer(ChangeEvent c) {
+    private void inviaServer(ChangeEvent e) {
         try {
             out.writeUnshared(giocatoreLocale);
             out.flush();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            System.err.println("Errore nell'invio dei dati al server.");
         }
     }
 }

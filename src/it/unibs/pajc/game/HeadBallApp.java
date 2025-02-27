@@ -82,7 +82,7 @@ public class HeadBallApp {
 
        if (client == null) {
            client = new Client(frame);
-           boolean connected = client.connectToServer("localhost", Server.PORT);
+           boolean connected = client.connectToServer("10.243.3.116", Server.PORT);
 
            if (!connected) {
                JOptionPane.showMessageDialog(frame, "Errore nella connessione al server.", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -120,7 +120,7 @@ public class HeadBallApp {
         }
 
         client = new Client(frame);
-        boolean connected = client.connectToServer("localhost", Server.PORT);
+        boolean connected = client.connectToServer("10.243.3.116", Server.PORT);
 
         if (!connected) {
             JOptionPane.showMessageDialog(frame, "Connessione al server fallita.", "Errore", JOptionPane.ERROR_MESSAGE);

@@ -1,9 +1,6 @@
 package it.unibs.pajc.client;
 
-import it.unibs.pajc.game.Background;
-import it.unibs.pajc.game.CampoDiGioco;
-import it.unibs.pajc.game.Giocatore;
-import it.unibs.pajc.game.Oggetto;
+import it.unibs.pajc.game.*;
 import it.unibs.pajc.server.Server;
 
 import javax.swing.*;
@@ -27,6 +24,7 @@ public class Client {
     private Giocatore giocatoreLocale;
     private ExecutorService executor;
     private JFrame frame;
+    private CampoDiGioco campo;
 
     public Client(JFrame frame) {
         this.frame = frame;
@@ -92,4 +90,13 @@ public class Client {
             System.err.println("Errore nell'invio dei dati al server.");
         }
     }
+    public void receiveGameState(GameState gameState) {
+        campo.updateFromGameState(gameState);
+    }
+    public void sendCommand(ClientCommand command) throws IOException {
+        out.writeObject(command);
+        out.flush();
+    }
+
+
 }

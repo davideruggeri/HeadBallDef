@@ -64,4 +64,8 @@ public class CampoDiGioco extends BaseModel{
             o.setVelocita(o.getVelocitaX(), 0);
         }
     }
+    public void updateFromGameState(GameState gameState) {
+        gameState.applyToCampo(this);
+    }
+
 }

@@ -1,5 +1,8 @@
 package it.unibs.pajc.server;
 
+import it.unibs.pajc.client.ClientCommand;
+import it.unibs.pajc.game.CampoDiGioco;
+import it.unibs.pajc.game.GameState;
 import it.unibs.pajc.game.Giocatore;
 import it.unibs.pajc.game.Oggetto;
 
@@ -18,6 +21,7 @@ public class Server {
     private boolean running = false;
     private ExecutorService executor = Executors.newFixedThreadPool(4);
     private ArrayList<ClientHandler> clients = new ArrayList<>();
+    private CampoDiGioco campo;
 
     public boolean startServer() {
         try {
@@ -86,14 +90,45 @@ public class Server {
             }
         }
 
-        private void broadcast(Giocatore playerData) {
+        private void broadcast(Object data) {
             for (ClientHandler client : clients) {
                 try {
-                    client.out.writeObject(playerData);
-                    client.out.reset();
+                    client.out.writeObject(data);
+                    client.out.reset(); // Resetta lo stream per evitare problemi di caching
                 } catch (IOException e) {
                     System.err.println("Errore nell'invio dei dati: " + e);
                 }
+            }
+        }
+
+        public void gameLoop() {
+            while (true) {
+                campo.stepNext(); // Aggiorna la fisica
+                GameState state = new GameState(campo);
+                broadcast(state); // Invia lo stato ai client
+                try {
+                    Thread.sleep(16); // ~60 FPS
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public void handleCommand(ClientCommand command) {
+            Giocatore player = (command.getPlayerId() == 1) ? campo.getLocalPlayer() : campo.getRemotePlayer();
+            switch (command.getCommand()) {
+                case MOVE_LEFT:
+                    player.setVelocita(-5, player.getVelocitaY());
+                    break;
+                case MOVE_RIGHT:
+                    player.setVelocita(5, player.getVelocitaY());
+                    break;
+                case JUMP:
+                    player.jump();
+                    break;
+                case SHOOT:
+                    player.shoot();
+                    break;
             }
         }
     }

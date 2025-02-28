@@ -34,7 +34,9 @@ public class Background extends JPanel implements KeyListener {
 
         Timer animator = new Timer(16, e -> {
             applyControls();
-            campo.stepNext();
+            if (client == null) {
+                campo.stepNext();
+            }
             repaint();
         });
 

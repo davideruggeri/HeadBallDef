@@ -18,6 +18,7 @@ public class Oggetto {
     public void setPosizione(float x, float y){posizione[0] = x; posizione[1] = y;}
     public void setVelocita(float x, float y){velocita[0] = x; velocita[1] = y;}
     public void setPosizioneY(float y){posizione[1] = y;}
+    public void setVelocitaY(float y){velocita[1] = y;}
 
 
     public void stepNext() {

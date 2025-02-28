@@ -1,7 +1,5 @@
 package it.unibs.pajc.game;
 
-import it.unibs.pajc.server.Server;
-
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
@@ -63,7 +61,7 @@ public class CampoDiGioco extends BaseModel{
 
     }
 
-    /*private void applyLimit(Oggetto o) {
+    private void applyLimit(Oggetto o) {
         if (o.getX() < -400) {
             o.setPosizione(-400, o.getY());
             o.setVelocita(0, o.getVelocitaY());
@@ -82,11 +80,11 @@ public class CampoDiGioco extends BaseModel{
             o.setVelocita(o.getVelocitaX(), 0);
         }
     }
-*/
+/*
     private void applyLimit(Oggetto o) {
         if (o.getX() < -400) o.setPosizione(-400, o.getY());
         if (o.getX() > 1250) o.setPosizione(1250, o.getY());
-    }
+    }*/
 
     public void movePlayer(int playerId, int direction) {
         if (playerId == localPlayer.getId()) {
@@ -110,14 +108,31 @@ public class CampoDiGioco extends BaseModel{
 
     public void updatePhysics() {
         for (Oggetto o : listaOggetti) {
-            o.applyGravity();
-            o.applyFriction();
-            o.stepNext();
+            if (!(o instanceof Giocatore)) {
+                o.applyGravity();    // Applica la gravità
+                o.applyFriction();   // Applica la frizione
+                o.stepNext();
+            }
+
+            if (o instanceof Giocatore giocatore) {
+                giocatore.stepNext();
+                giocatore.applyFriction();
+                float newY = giocatore.getY() + giocatore.getVelocitaY();
+
+                if (newY >= groundY) {
+                    giocatore.setPosizioneY(groundY);
+                    giocatore.setVelocitaY(0);
+                } else {
+                    giocatore.setPosizioneY(newY);
+                }
+            } else {
+                o.setPosizioneY(o.getY() + o.getVelocitaY());
+            }
             applyLimit(o);
         }
-
         checkCollisions();
     }
+
 
     private void checkCollisions() {
         if (localPlayer != null && localPlayer.checkCollision(ball)) {
@@ -130,4 +145,7 @@ public class CampoDiGioco extends BaseModel{
         // Aggiungi eventuali altre collisioni qui (es. giocatore vs muro o rete)
     }
 
+    public void setGroundY(float groundY) {
+        this.groundY = groundY;
+    }
 }

@@ -30,6 +30,7 @@ public class Server {
             System.out.println("Server avviato sulla porta " + PORT);
             running = true;
 
+            campoDiGioco.setGroundY(158);
             startGameLoop();
 
             new Thread(this::acceptClients).start();
@@ -131,10 +132,6 @@ public class Server {
         }
     }
 
-    public CampoDiGioco getCampo() {
-        return campoDiGioco;
-    }
-
     private class ClientHandler implements Runnable {
         private final Socket clientSocket;
         private ObjectOutputStream out;
@@ -159,8 +156,8 @@ public class Server {
                 System.out.println("Client connesso! PlayerID: " + playerId);
 
                 synchronized (Server.this) {
-                    sendGameState(new GameState(campoDiGioco)); // Stato iniziale
-                    broadcastGameState(); // Forza sincronizzazione iniziale per tutti
+                    sendGameState(new GameState(campoDiGioco));
+                    broadcastGameState();
                 }
 
                 while (true) {

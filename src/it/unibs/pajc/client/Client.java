@@ -54,14 +54,6 @@ public class Client {
         sendCommand(new ClientCommand(ClientCommand.CommandType.REQUEST_INITIAL_STATE, 1));
     }
 
-    public ObjectInputStream getInputStream() {
-        return in;
-    }
-
-    public ObjectOutputStream getOutputStream() {
-        return out;
-    }
-
     public void disconnect() {
         try {
             if (socket != null) socket.close();
@@ -103,10 +95,5 @@ public class Client {
             JOptionPane.showMessageDialog(frame, "Errore nella lettura del messaggio dal server:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-    }
-
-
-    public Socket getSocket() {
-        return socket;
     }
 }

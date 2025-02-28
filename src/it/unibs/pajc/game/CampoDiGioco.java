@@ -62,13 +62,26 @@ public class CampoDiGioco extends BaseModel{
     }
 
     private void applyLimit(Oggetto o) {
-        if (o.getX() < -400) {
-            o.setPosizione(-400, o.getY());
-            o.setVelocita(0, o.getVelocitaY());
-        }
-        if (o.getX() > 1250) {
-            o.setPosizione(1250, o.getY());
-            o.setVelocita(0, o.getVelocitaY());
+        if(o instanceof Giocatore giocatore) {
+            if (giocatore.getId() == 1) {
+                if (o.getX() < -400) {
+                    o.setPosizione(-400, o.getY());
+                    o.setVelocita(0, o.getVelocitaY());
+                }
+                if (o.getX() > 1250) {
+                    o.setPosizione(1250, o.getY());
+                    o.setVelocita(0, o.getVelocitaY());
+                }
+            } else if (giocatore.getId() == 2) {
+                if (o.getX() < -1250) {
+                    o.setPosizione(-1250, o.getY());
+                    o.setVelocita(0, o.getVelocitaY());
+                }
+                if (o.getX() > 400) {
+                    o.setPosizione(400, o.getY());
+                    o.setVelocita(0, o.getVelocitaY());
+                }
+            }
         }
 
         if (o.getY() < bounds.getMinY()) {

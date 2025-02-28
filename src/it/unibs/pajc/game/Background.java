@@ -154,6 +154,19 @@ public class Background extends JPanel implements KeyListener {
             }
         }
     }
+    public void updateGameState(GameState state) {
+        if (state == null) {
+            System.err.println("Ricevuto GameState nullo");
+            return;
+        }
+
+        // Applica lo stato ricevuto al campo locale
+        state.applyToCampo(campo);
+
+        // Richiede il repaint per aggiornare la grafica (opzionale, ma utile se vuoi aggiornare la view)
+        repaint();
+    }
+
 
     public void setClient(Client client) {
         this.client = client;

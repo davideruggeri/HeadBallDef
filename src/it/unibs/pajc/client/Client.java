@@ -41,13 +41,15 @@ public class Client {
 
     public void sendCommand(ClientCommand command) {
         try {
-            out.writeObject(command);
+            NetworkMessage message = new NetworkMessage(NetworkMessage.MessageType.PLAYER_COMMAND, command);
+            out.writeObject(message);
             out.reset();
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(frame, "Errore nell'invio del comando:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     public void requestInitialState() {
         sendCommand(new ClientCommand(ClientCommand.CommandType.REQUEST_INITIAL_STATE, 1));

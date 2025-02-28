@@ -3,8 +3,12 @@ package it.unibs.pajc.game;
 import java.io.Serializable;
 
 public class GameState implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private float ballX, ballY, ballVelX, ballVelY;
     private float player1X, player1Y, player2X, player2Y;
+
+    public GameState() {}  // Costruttore vuoto
 
     public GameState(CampoDiGioco campo) {
         this.ballX = campo.getBall().getX();
@@ -16,6 +20,10 @@ public class GameState implements Serializable {
         this.player1Y = campo.getLocalPlayer().getY();
         this.player2X = campo.getRemotePlayer().getX();
         this.player2Y = campo.getRemotePlayer().getY();
+    }
+
+    public static GameState fromCampoDiGioco(CampoDiGioco campo) {
+        return new GameState(campo);
     }
 
     public float getBallX() { return ballX; }

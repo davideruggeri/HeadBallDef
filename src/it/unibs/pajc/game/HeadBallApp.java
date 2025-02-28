@@ -5,8 +5,6 @@ import it.unibs.pajc.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class HeadBallApp {
     private JFrame frame;
@@ -27,6 +25,7 @@ public class HeadBallApp {
     public HeadBallApp() {
         startGame();
     }
+
     public void startGame() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,57 +50,52 @@ public class HeadBallApp {
         btnSinglePlayer.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnSinglePlayer.setBounds(150, 244, 728, 96);
         menuPanel.add(btnSinglePlayer);
-        btnSinglePlayer.addActionListener(this::startLocalGame);
+        btnSinglePlayer.addActionListener(e -> startLocalGame());
 
         JButton btnHostGame = new JButton("HOST GAME");
         btnHostGame.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnHostGame.setBounds(150, 340, 364, 96);
         menuPanel.add(btnHostGame);
-        btnHostGame.addActionListener(this::hostGame);
+        btnHostGame.addActionListener(e -> hostGame());
 
         JButton btnJoinGame = new JButton("JOIN GAME");
         btnJoinGame.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnJoinGame.setBounds(514, 340, 364, 96);
         menuPanel.add(btnJoinGame);
-        btnJoinGame.addActionListener(this::joinGame);
-
+        btnJoinGame.addActionListener(e -> joinGame());
     }
 
-   private void hostGame(ActionEvent e) {
-       if (server == null) {
-           server = new Server();
-           boolean success = server.startServer();
+    private void hostGame() {
+        if (server == null) {
+            server = new Server();
+            boolean success = server.startServer();
 
-           if (!success) {
-               JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
-               return;
-           }
+            if (!success) {
+                JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-           JOptionPane.showMessageDialog(frame, "Server avviato! Ora puoi connetterti.", "Successo", JOptionPane.PLAIN_MESSAGE);
-       }
+            JOptionPane.showMessageDialog(frame, "Server avviato! Ora puoi connetterti.", "Successo", JOptionPane.PLAIN_MESSAGE);
+        }
 
-       if (client == null) {
-           client = new Client(frame);
-           boolean connected = client.connectToServer("10.243.3.116", Server.PORT);
+        if (client == null) {
+            client = new Client(frame);
+            boolean connected = client.connectToServer("localhost", Server.PORT);
 
-           if (!connected) {
-               JOptionPane.showMessageDialog(frame, "Errore nella connessione al server.", "Errore", JOptionPane.ERROR_MESSAGE);
-           }
-       }
-   }
+            if (!connected) {
+                JOptionPane.showMessageDialog(frame, "Errore nella connessione al server.", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
 
-    private void startLocalGame(ActionEvent e) {
         showControls();
-
-        frame.getContentPane().removeAll();
-        Background sv = new Background();
-        sv.getCampo().setSinglePlayer(); // Imposta la modalità single-player
-        frame.getContentPane().add(sv, BorderLayout.CENTER);
-        frame.revalidate();
-        frame.repaint();
+        startMultiplayerGame();
     }
 
-    private void joinGame(ActionEvent e) {
+    private void joinGame() {
+        String address = JOptionPane.showInputDialog(frame, "Inserisci l'indirizzo IP del server:", "Connessione", JOptionPane.PLAIN_MESSAGE);
+        if (address == null || address.isEmpty()) return;
+
         String port;
         while (true) {
             port = JOptionPane.showInputDialog(frame, "Inserire il numero della porta:", "Connessione", JOptionPane.PLAIN_MESSAGE);
@@ -112,7 +106,7 @@ public class HeadBallApp {
                 if (portNumber > 1024 && portNumber < 65535) {
                     break;
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Porta non valida! Inserire un numero tra 1025 e 65534.", "Errore", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Porta non valida! Inserire una porta valida (es: 1234).", "Errore", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame, "Inserire un numero valido!", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -120,7 +114,7 @@ public class HeadBallApp {
         }
 
         client = new Client(frame);
-        boolean connected = client.connectToServer("10.243.3.116", Server.PORT);
+        boolean connected = client.connectToServer(address, Integer.parseInt(port));
 
         if (!connected) {
             JOptionPane.showMessageDialog(frame, "Connessione al server fallita.", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -128,7 +122,35 @@ public class HeadBallApp {
         }
 
         JOptionPane.showMessageDialog(frame, "Connessione avvenuta con successo", "Successo", JOptionPane.PLAIN_MESSAGE);
+
+        // Richiesta stato iniziale al server
+        client.requestInitialState();
+
         showControls();
+        startMultiplayerGame();
+    }
+
+    private void startLocalGame() {
+        showControls();
+
+        frame.getContentPane().removeAll();
+        Background gamePanel = new Background(null);  // Nessun client in single player
+        gamePanel.getCampo().setSinglePlayer(); // Modalità single-player
+        frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    private void startMultiplayerGame() {
+        frame.getContentPane().removeAll();
+        Background gamePanel = new Background(client);  // Multiplayer con client
+        frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
+        frame.revalidate();
+        frame.repaint();
+
+        // Inizia il ricevitore di stato del client (già visto nella classe Client)
+        client.setBackground(gamePanel);
+        client.startStateReceiver();
     }
 
     private void showControls() {

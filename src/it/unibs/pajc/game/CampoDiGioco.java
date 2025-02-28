@@ -10,6 +10,7 @@ public class CampoDiGioco extends BaseModel{
     protected ArrayList<Oggetto> listaOggetti = new ArrayList<>();
     protected Ball ball;
     protected Giocatore localPlayer, remotePlayer;
+    private boolean isMultiplayer = false;
 
     public CampoDiGioco() {
         ball = new Ball(this, 0, 0);
@@ -23,8 +24,11 @@ public class CampoDiGioco extends BaseModel{
     }
     public void setMultiPlayer() {
         remotePlayer.setIsBot(true);
+        isMultiplayer = true;
     }
-    public void setSinglePlayer() {remotePlayer.setIsBot(false);}
+    public void setSinglePlayer() {
+        remotePlayer.setIsBot(false);
+        isMultiplayer = false;}
 
     public void setListaOggetti(ArrayList<Oggetto> listaOggetti) {this.listaOggetti = listaOggetti;}
     public ArrayList<Oggetto> getListaOggetti() {return listaOggetti;}
@@ -35,7 +39,18 @@ public class CampoDiGioco extends BaseModel{
     public Giocatore getLocalPlayer() {return localPlayer;}
     public Giocatore getRemotePlayer() {return remotePlayer;}
     public Ball getBall() {return ball;}
+    public boolean getIsMultiplayer() {return isMultiplayer;}
 
+    public GameState getCurrentGameState() {
+        return new GameState(this);
+    }
+
+    /*
+        TO-DO
+     */
+    public void updateGameState(GameState gameState) {
+
+    }
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {

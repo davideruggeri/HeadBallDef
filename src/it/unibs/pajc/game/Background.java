@@ -1,24 +1,40 @@
 package it.unibs.pajc.game;
 
+import it.unibs.pajc.client.Client;
+import it.unibs.pajc.client.ClientCommand;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Background extends JPanel implements KeyListener {
 
-    CampoDiGioco campo = new CampoDiGioco();
+    private final CampoDiGioco campo = new CampoDiGioco();
 
     private Image backgroundImage;
     private Image giocatore1;
     private Image giocatore2;
 
-    public Background() {
+    private Client client;
+    private Socket socket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+
+    public Background(Client client) {
+        this.client = client;
+
         this.setFocusable(true);
         this.requestFocusInWindow();
         this.addKeyListener(this);
+
+        loadImages();
 
         Timer animator = new Timer(16, e -> {
             applyControls();
@@ -28,13 +44,15 @@ public class Background extends JPanel implements KeyListener {
 
         animator.start();
 
-        String sfondo = "/images/sfondo1.png";
-        backgroundImage = new ImageIcon(getClass().getResource(sfondo)).getImage();
-        String g1 = "/images/testa1.png";
-        giocatore1 = new ImageIcon(getClass().getResource(g1)).getImage();
-        String g2 = "/images/testa2.png";
-        giocatore2 = new ImageIcon(getClass().getResource(g2)).getImage();
+        if (client != null) {
+            new Thread(this::listenToServer).start();
+        }
+    }
 
+    private void loadImages() {
+        backgroundImage = new ImageIcon(getClass().getResource("/images/sfondo1.png")).getImage();
+        giocatore1 = new ImageIcon(getClass().getResource("/images/testa1.png")).getImage();
+        giocatore2 = new ImageIcon(getClass().getResource("/images/testa2.png")).getImage();
     }
 
     public CampoDiGioco getCampo() {
@@ -54,11 +72,8 @@ public class Background extends JPanel implements KeyListener {
             g.drawImage(backgroundImage, (int) (-493 / s), (int) (-40 / s), (int) (getWidth() / s), (int) (getHeight() / s), this);
         }
 
-
         for (Oggetto o : campo.listaOggetti) {
-            if (o instanceof Giocatore) {
-
-                Giocatore giocatore = (Giocatore) o;
+            if (o instanceof Giocatore giocatore) {
 
                 Image img = (giocatore == campo.getLocalPlayer()) ? giocatore1 : giocatore2;
 
@@ -75,7 +90,6 @@ public class Background extends JPanel implements KeyListener {
                 at.scale(1, -1);
 
                 g2d.drawImage(img, at, this);
-
 
                 g2d.draw(giocatore.getShape());
 
@@ -94,7 +108,22 @@ public class Background extends JPanel implements KeyListener {
         }
     }
 
-    private ArrayList<Integer> currentActiveKeys = new ArrayList<>();
+    private void listenToServer() {
+        try {
+            ObjectInputStream in = client.getInputStream();
+            while (true) {
+                Object data = in.readObject();
+                if (data instanceof GameState gameState) {
+                    campo.updateFromGameState(gameState);
+                    repaint();
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
     public void applyControls() {
         Giocatore g1 = campo.getLocalPlayer();
@@ -102,27 +131,43 @@ public class Background extends JPanel implements KeyListener {
 
         g1.setVelocita(0, g1.getVelocitaY());
 
-        for (Integer key : currentActiveKeys) {
-            switch (key) {
-                case KeyEvent.VK_RIGHT:
-                    g1.setVelocita(6f, g1.getVelocitaY());
-                    break;
-                case KeyEvent.VK_LEFT:
-                    g1.setVelocita(-6f, g1.getVelocitaY());
-                    break;
-                case KeyEvent.VK_SPACE:
-                    g1.jump();
-                    break;
+        if (client != null) { // multiplayer
+            for (Integer key : currentActiveKeys) {
+                ClientCommand command = switch (key) {
+                    case KeyEvent.VK_RIGHT -> new ClientCommand(ClientCommand.CommandType.MOVE_RIGHT, 1);
+                    case KeyEvent.VK_LEFT -> new ClientCommand(ClientCommand.CommandType.MOVE_LEFT, 1);
+                    case KeyEvent.VK_SPACE, KeyEvent.VK_Z -> new ClientCommand(ClientCommand.CommandType.JUMP, 1);
+                    default -> null;
+                };
+                if (command != null) {
+                    client.sendCommand(command);
+                }
+            }
+        } else { // single player
+            for (Integer key : currentActiveKeys) {
+                switch (key) {
+                    case KeyEvent.VK_RIGHT -> g1.setVelocita(6f, g1.getVelocitaY());
+                    case KeyEvent.VK_LEFT -> g1.setVelocita(-6f, g1.getVelocitaY());
+                    case KeyEvent.VK_SPACE -> g1.jump();
+                }
             }
         }
     }
+
+    public void setClient(Client client) {
+        this.client = client;
+        this.socket = client.getSocket();
+        this.out = client.getOutputStream();
+        this.in = client.getInputStream();
+    }
+
 
     @Override
     public void keyTyped(KeyEvent e) {}
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(!currentActiveKeys.contains(e.getKeyCode())) {
+        if (!currentActiveKeys.contains(e.getKeyCode())) {
             currentActiveKeys.add(e.getKeyCode());
         }
     }
@@ -131,5 +176,4 @@ public class Background extends JPanel implements KeyListener {
     public void keyReleased(KeyEvent e) {
         currentActiveKeys.remove((Integer) e.getKeyCode());
     }
-
 }

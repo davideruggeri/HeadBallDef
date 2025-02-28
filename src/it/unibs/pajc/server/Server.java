@@ -21,7 +21,7 @@ public class Server {
     private boolean running = false;
     private ExecutorService executor = Executors.newFixedThreadPool(4);
     private ArrayList<ClientHandler> clients = new ArrayList<>();
-    private CampoDiGioco campo;
+    private CampoDiGioco campo = new CampoDiGioco();
 
     public boolean startServer() {
         try {
@@ -49,6 +49,13 @@ public class Server {
             return false;
         }
     }
+    private void broadcastGameState() {
+        GameState state = new GameState(campo);
+        for (ClientHandler client : clients) {
+            client.sendData(state);
+        }
+    }
+
 
     public void stopServer() {
         running = false;
@@ -74,6 +81,15 @@ public class Server {
         public ClientHandler(Socket socket) {
             this.socket = socket;
         }
+        public void sendData(Object data) {
+            try {
+                out.writeObject(data);
+                out.reset();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         @Override
         public void run() {
@@ -81,25 +97,39 @@ public class Server {
                 out = new ObjectOutputStream(socket.getOutputStream());
                 in = new ObjectInputStream(socket.getInputStream());
 
+                // Appena il client è collegato, gli invio lo stato iniziale
+                sendData(new GameState(campo));
+
                 while (!socket.isClosed()) {
-                    Giocatore playerData = (Giocatore) in.readObject();
-                    broadcast(playerData);
+                    Object received = in.readObject();
+
+                    if (received instanceof Giocatore) {
+                        Giocatore playerData = (Giocatore) received;
+                        broadcast(playerData);
+                    }
+                    else if (received instanceof ClientCommand) {
+                        ClientCommand command = (ClientCommand) received;
+                        handleCommand(command);
+                    }
                 }
+
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println("Errore di comunicazione con il client: " + e);
             }
         }
-
         private void broadcast(Object data) {
             for (ClientHandler client : clients) {
-                try {
-                    client.out.writeObject(data);
-                    client.out.reset(); // Resetta lo stream per evitare problemi di caching
-                } catch (IOException e) {
-                    System.err.println("Errore nell'invio dei dati: " + e);
+                if (!client.socket.isClosed()) { // Verifica che il client sia ancora connesso
+                    try {
+                        client.out.writeObject(data);
+                        client.out.reset(); // Resetta lo stream per evitare problemi di caching
+                    } catch (IOException e) {
+                        System.err.println("Errore nell'invio dei dati al client: " + e);
+                    }
                 }
             }
         }
+
 
         public void gameLoop() {
             while (true) {
@@ -129,7 +159,11 @@ public class Server {
                 case SHOOT:
                     player.shoot();
                     break;
+                default:
+                    System.out.println("Comando sconosciuto: " + command.getCommand());
+                    break;
             }
+            broadcastGameState();
         }
     }
 }

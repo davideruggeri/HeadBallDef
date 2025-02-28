@@ -3,45 +3,32 @@ package it.unibs.pajc.server;
 import it.unibs.pajc.client.ClientCommand;
 import it.unibs.pajc.game.CampoDiGioco;
 import it.unibs.pajc.game.GameState;
-import it.unibs.pajc.game.Giocatore;
-import it.unibs.pajc.game.Oggetto;
+import it.unibs.pajc.network.NetworkMessage;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class Server {
-    public final static int PORT = 1234;
+
+    public static final int PORT = 1234;
     private ServerSocket serverSocket;
     private boolean running = false;
-    private ExecutorService executor = Executors.newFixedThreadPool(4);
-    private ArrayList<ClientHandler> clients = new ArrayList<>();
-    private CampoDiGioco campo = new CampoDiGioco();
+
+    private final CampoDiGioco campoDiGioco;
+    private final List<ClientHandler> clients = new ArrayList<>(); // Lista dei client connessi
+
+    public Server() {
+        campoDiGioco = new CampoDiGioco();
+    }
 
     public boolean startServer() {
         try {
             serverSocket = new ServerSocket(PORT);
-            running = true;
             System.out.println("Server avviato sulla porta " + PORT);
+            running = true;
 
-            executor.execute(() -> {
-                while (running) {
-                    try {
-                        Socket clientSocket = serverSocket.accept();
-                        System.out.println("Nuovo client connesso: " + clientSocket.getInetAddress());
-                        ClientHandler handler = new ClientHandler(clientSocket);
-                        clients.add(handler);
-                        executor.execute(handler);
-                    } catch (IOException e) {
-                        if (running) e.printStackTrace();
-                    }
-                }
-            });
+            new Thread(this::acceptClients).start();
 
             return true;
         } catch (IOException e) {
@@ -49,121 +36,147 @@ public class Server {
             return false;
         }
     }
-    private void broadcastGameState() {
-        GameState state = new GameState(campo);
-        for (ClientHandler client : clients) {
-            client.sendData(state);
+
+    private void acceptClients() {
+        int playerId = 1;  // Assegnamo un ID univoco a ogni client che si connette
+
+        while (running) {
+            try {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Nuovo client connesso: " + clientSocket.getInetAddress());
+
+                ClientHandler handler = new ClientHandler(clientSocket, playerId++);
+                clients.add(handler);
+
+                new Thread(handler).start();
+            } catch (IOException e) {
+                if (running) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
 
     public void stopServer() {
         running = false;
         try {
-            if (serverSocket != null) {
+            if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
-            System.out.println("Server chiuso.");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean isRunning() {
-        return running && serverSocket != null && !serverSocket.isClosed();
+    public synchronized void broadcastGameState() {
+        GameState state = new GameState(campoDiGioco);
+
+        for (ClientHandler handler : clients) {
+            handler.sendGameState(state);
+        }
+    }
+
+    public synchronized void movePlayer(int playerId, int direction) {
+        campoDiGioco.movePlayer(playerId, direction);
+    }
+
+    public synchronized void jumpPlayer(int playerId) {
+        campoDiGioco.jump(playerId);
+    }
+
+    public synchronized void kickBall(int playerId) {
+        campoDiGioco.kickBall(playerId);
+    }
+
+    public CampoDiGioco getCampo() {
+        return campoDiGioco;
     }
 
     private class ClientHandler implements Runnable {
-        private Socket socket;
-        private ObjectInputStream in;
+        private final Socket clientSocket;
         private ObjectOutputStream out;
+        private ObjectInputStream in;
+        private final int playerId;
 
-        public ClientHandler(Socket socket) {
-            this.socket = socket;
+        public ClientHandler(Socket socket, int playerId) {
+            this.clientSocket = socket;
+            this.playerId = playerId;
         }
-        public void sendData(Object data) {
+
+        @Override
+        public void run() {
             try {
-                out.writeObject(data);
+                out = new ObjectOutputStream(clientSocket.getOutputStream());
+                in = new ObjectInputStream(clientSocket.getInputStream());
+
+                System.out.println("Client connesso! PlayerID: " + playerId);
+
+                // Invia subito lo stato iniziale
+                sendGameState(new GameState(campoDiGioco));
+
+                while (true) {
+                    NetworkMessage message = (NetworkMessage) in.readObject();
+                    handleMessage(message);
+                }
+
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Client disconnesso. PlayerID: " + playerId);
+            } finally {
+                disconnect();
+            }
+        }
+
+        private void handleMessage(NetworkMessage message) {
+            if (message.getType() == NetworkMessage.MessageType.PLAYER_COMMAND) {
+                ClientCommand command = (ClientCommand) message.getPayload();
+                processCommand(command);
+            } else {
+                System.err.println("Messaggio sconosciuto: " + message.getType());
+            }
+        }
+
+        private void processCommand(ClientCommand command) {
+            switch (command.getCommand()) {
+                case REQUEST_INITIAL_STATE:
+                    sendGameState(new GameState(campoDiGioco));
+                    break;
+                case MOVE_LEFT:
+                    movePlayer(playerId, -1);
+                    broadcastGameState();
+                    break;
+                case MOVE_RIGHT:
+                    movePlayer(playerId, 1);
+                    broadcastGameState();
+                    break;
+                case JUMP:
+                    jumpPlayer(playerId);
+                    broadcastGameState();
+                    break;
+                case SHOOT:
+                    kickBall(playerId);
+                    broadcastGameState();
+                    break;
+                default:
+                    System.err.println("Comando sconosciuto: " + command.getCommand());
+            }
+        }
+
+        public void sendGameState(GameState state) {
+            try {
+                out.writeObject(new NetworkMessage(NetworkMessage.MessageType.GAME_STATE, state));
                 out.reset();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-
-        @Override
-        public void run() {
+        private void disconnect() {
             try {
-                out = new ObjectOutputStream(socket.getOutputStream());
-                in = new ObjectInputStream(socket.getInputStream());
-
-                // Appena il client è collegato, gli invio lo stato iniziale
-                sendData(new GameState(campo));
-
-                while (!socket.isClosed()) {
-                    Object received = in.readObject();
-
-                    if (received instanceof Giocatore) {
-                        Giocatore playerData = (Giocatore) received;
-                        broadcast(playerData);
-                    }
-                    else if (received instanceof ClientCommand) {
-                        ClientCommand command = (ClientCommand) received;
-                        handleCommand(command);
-                    }
-                }
-
-            } catch (IOException | ClassNotFoundException e) {
-                System.err.println("Errore di comunicazione con il client: " + e);
+                clientSocket.close();
+                clients.remove(this); // Rimuoviamo il client dalla lista
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
-        private void broadcast(Object data) {
-            for (ClientHandler client : clients) {
-                if (!client.socket.isClosed()) { // Verifica che il client sia ancora connesso
-                    try {
-                        client.out.writeObject(data);
-                        client.out.reset(); // Resetta lo stream per evitare problemi di caching
-                    } catch (IOException e) {
-                        System.err.println("Errore nell'invio dei dati al client: " + e);
-                    }
-                }
-            }
-        }
-
-
-        public void gameLoop() {
-            while (true) {
-                campo.stepNext(); // Aggiorna la fisica
-                GameState state = new GameState(campo);
-                broadcast(state); // Invia lo stato ai client
-                try {
-                    Thread.sleep(16); // ~60 FPS
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public void handleCommand(ClientCommand command) {
-            Giocatore player = (command.getPlayerId() == 1) ? campo.getLocalPlayer() : campo.getRemotePlayer();
-            switch (command.getCommand()) {
-                case MOVE_LEFT:
-                    player.setVelocita(-5, player.getVelocitaY());
-                    break;
-                case MOVE_RIGHT:
-                    player.setVelocita(5, player.getVelocitaY());
-                    break;
-                case JUMP:
-                    player.jump();
-                    break;
-                case SHOOT:
-                    player.shoot();
-                    break;
-                default:
-                    System.out.println("Comando sconosciuto: " + command.getCommand());
-                    break;
-            }
-            broadcastGameState();
         }
     }
 }

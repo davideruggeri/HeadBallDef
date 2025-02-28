@@ -1,6 +1,7 @@
 package it.unibs.pajc.game;
 
 import it.unibs.pajc.client.Client;
+import it.unibs.pajc.game.Background;
 import it.unibs.pajc.server.Server;
 
 import javax.swing.*;
@@ -12,36 +13,20 @@ public class HeadBallApp {
     private Client client;
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            try {
-                HeadBallApp window = new HeadBallApp();
-                window.frame.setVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        EventQueue.invokeLater(() -> new HeadBallApp().showMenu());
     }
 
-    public HeadBallApp() {
-        startGame();
-    }
-
-    public void startGame() {
-        frame = new JFrame();
+    public void showMenu() {
+        frame = new JFrame("Menu");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Menu");
         frame.setSize(1000, 600);
         frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
         frame.setResizable(false);
 
-        JPanel menuPanel = new JPanel();
-        frame.getContentPane().add(menuPanel, BorderLayout.CENTER);
+        JPanel menuPanel = new JPanel(null);
         menuPanel.setBackground(Color.GRAY);
-        menuPanel.setLayout(null);
 
-        JLabel titleLabel = new JLabel("HEAD BALL");
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("HEAD BALL", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Showcard Gothic", Font.BOLD, 80));
         titleLabel.setBounds(175, 47, 673, 173);
         menuPanel.add(titleLabel);
@@ -49,114 +34,98 @@ public class HeadBallApp {
         JButton btnSinglePlayer = new JButton("SINGLE PLAYER");
         btnSinglePlayer.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnSinglePlayer.setBounds(150, 244, 728, 96);
-        menuPanel.add(btnSinglePlayer);
         btnSinglePlayer.addActionListener(e -> startLocalGame());
+        menuPanel.add(btnSinglePlayer);
 
         JButton btnHostGame = new JButton("HOST GAME");
         btnHostGame.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnHostGame.setBounds(150, 340, 364, 96);
-        menuPanel.add(btnHostGame);
         btnHostGame.addActionListener(e -> hostGame());
+        menuPanel.add(btnHostGame);
 
         JButton btnJoinGame = new JButton("JOIN GAME");
         btnJoinGame.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnJoinGame.setBounds(514, 340, 364, 96);
-        menuPanel.add(btnJoinGame);
         btnJoinGame.addActionListener(e -> joinGame());
+        menuPanel.add(btnJoinGame);
+
+        frame.getContentPane().add(menuPanel, BorderLayout.CENTER);
+        frame.setVisible(true);
+    }
+
+    private void startLocalGame() {
+        showControls();
+        loadGamePanel(null, true);  // Single player, nessun client
     }
 
     private void hostGame() {
         if (server == null) {
             server = new Server();
-            boolean success = server.startServer();
-
-            if (!success) {
+            if (!server.startServer()) {
                 JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
-            JOptionPane.showMessageDialog(frame, "Server avviato! Ora puoi connetterti.", "Successo", JOptionPane.PLAIN_MESSAGE);
         }
 
-        if (client == null) {
-            client = new Client(frame);
-            boolean connected = client.connectToServer("localhost", Server.PORT);
-
-            if (!connected) {
-                JOptionPane.showMessageDialog(frame, "Errore nella connessione al server.", "Errore", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (connectClient("localhost", Server.PORT)) {
+            showControls();
+            loadGamePanel(client, false);
         }
-
-        showControls();
-        startMultiplayerGame();
     }
 
     private void joinGame() {
-        String address = JOptionPane.showInputDialog(frame, "Inserisci l'indirizzo IP del server:", "Connessione", JOptionPane.PLAIN_MESSAGE);
-        if (address == null || address.isEmpty()) return;
+        String address = JOptionPane.showInputDialog(frame, "Inserisci IP server:");
+        if (address == null || address.isBlank()) return;
 
-        String port;
+        int port = getPortFromUser();
+        if (port == -1) return;
+
+        if (connectClient(address, port)) {
+            showControls();
+            loadGamePanel(client, false);
+        }
+    }
+
+    private boolean connectClient(String address, int port) {
+        client = new Client(frame);
+        if (!client.connectToServer(address, port)) {
+            JOptionPane.showMessageDialog(frame, "Connessione fallita.", "Errore", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void loadGamePanel(Client client, boolean singlePlayer) {
+        frame.getContentPane().removeAll();
+        Background gamePanel = new Background(client);
+        if (singlePlayer) {
+            gamePanel.getCampo().setSinglePlayer();
+        }
+        frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
+        frame.revalidate();
+        frame.repaint();
+
+        if (client != null) {
+            client.setBackground(gamePanel);
+            client.startStateReceiver();  // Questo è un metodo che devi creare in Client
+        }
+    }
+
+    private int getPortFromUser() {
         while (true) {
-            port = JOptionPane.showInputDialog(frame, "Inserire il numero della porta:", "Connessione", JOptionPane.PLAIN_MESSAGE);
-            if (port == null) return;
-
+            String portStr = JOptionPane.showInputDialog(frame, "Porta:");
+            if (portStr == null) return -1;
             try {
-                int portNumber = Integer.parseInt(port);
-                if (portNumber > 1024 && portNumber < 65535) {
-                    break;
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Porta non valida! Inserire una porta valida (es: 1234).", "Errore", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(frame, "Inserire un numero valido!", "Errore", JOptionPane.ERROR_MESSAGE);
+                int port = Integer.parseInt(portStr);
+                if (port > 1024 && port < 65535) return port;
+                JOptionPane.showMessageDialog(frame, "Porta non valida!");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(frame, "Inserisci un numero valido!");
             }
         }
-
-        client = new Client(frame);
-        boolean connected = client.connectToServer(address, Integer.parseInt(port));
-
-        if (!connected) {
-            JOptionPane.showMessageDialog(frame, "Connessione al server fallita.", "Errore", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        JOptionPane.showMessageDialog(frame, "Connessione avvenuta con successo", "Successo", JOptionPane.PLAIN_MESSAGE);
-
-        // Richiesta stato iniziale al server
-        client.requestInitialState();
-
-        showControls();
-        startMultiplayerGame();
-    }
-
-    private void startLocalGame() {
-        showControls();
-
-        frame.getContentPane().removeAll();
-        Background gamePanel = new Background(null);  // Nessun client in single player
-        gamePanel.getCampo().setSinglePlayer(); // Modalità single-player
-        frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    private void startMultiplayerGame() {
-        frame.getContentPane().removeAll();
-        Background gamePanel = new Background(client);  // Multiplayer con client
-        frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
-        frame.revalidate();
-        frame.repaint();
-
-        // Inizia il ricevitore di stato del client (già visto nella classe Client)
-        client.setBackground(gamePanel);
-        client.startStateReceiver();
     }
 
     private void showControls() {
-        JOptionPane.showMessageDialog(frame, "I tasti disponibili per la partita sono:\n" +
-                "- (<- e ->) per muoversi di lato.\n" +
-                "- (SPACE) per saltare.\n" +
-                "- (Z) calcio.", "Mosse disponibili", JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(frame, "Comandi:\n- Frecce: Muovi\n- SPACE: Salta\n- Z: Calcia");
     }
 }

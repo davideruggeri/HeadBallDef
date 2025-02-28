@@ -2,6 +2,7 @@ package it.unibs.pajc.game;
 
 import it.unibs.pajc.client.Client;
 import it.unibs.pajc.client.ClientCommand;
+import it.unibs.pajc.network.NetworkMessage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,20 +109,20 @@ public class Background extends JPanel implements KeyListener {
         }
     }
 
+    // Modifica il loop di ascolto nel thread di Background
     private void listenToServer() {
-        try {
-            ObjectInputStream in = client.getInputStream();
-            while (true) {
-                Object data = in.readObject();
-                if (data instanceof GameState gameState) {
-                    campo.updateFromGameState(gameState);
-                    repaint();
-                }
+        while (true) {
+            NetworkMessage message = client.readMessage();
+            if (message.getType() == NetworkMessage.MessageType.GAME_STATE) {
+                GameState gameState = (GameState) message.getPayload();
+                gameState.applyToCampo(campo);
+                repaint();
+            } else {
+                System.err.println("Messaggio non previsto: " + message.getType());
             }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
+
 
     private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 

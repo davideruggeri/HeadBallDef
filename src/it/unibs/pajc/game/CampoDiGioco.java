@@ -45,12 +45,6 @@ public class CampoDiGioco extends BaseModel{
         return new GameState(this);
     }
 
-    /*
-        TO-DO
-     */
-    public void updateGameState(GameState gameState) {
-
-    }
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
@@ -83,4 +77,32 @@ public class CampoDiGioco extends BaseModel{
         gameState.applyToCampo(this);
     }
 
+    public void movePlayer(int playerId, int direction) {
+        if (playerId == -1) {
+            if (direction == 0) {
+                remotePlayer.setVelocita(1, 0);
+            } else {
+                remotePlayer.setVelocita(-1, 0);
+            }
+        } else {
+            if (direction == 0) {
+                localPlayer.setVelocita(1, 0);
+            } else {
+                localPlayer.setVelocita(-1, 0);
+            }
+        }
+
+    }
+
+    public void jump(int playerId) {
+        if (playerId == -1) {
+            remotePlayer.jump();
+        } else {
+            localPlayer.jump();
+        }
+
+    }
+
+    public void kickBall(int playerId) {
+    }
 }

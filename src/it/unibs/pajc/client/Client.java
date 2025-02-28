@@ -29,7 +29,6 @@ public class Client {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            // Richiede subito lo stato iniziale (può essere anche chiamato dall'esterno se serve)
             requestInitialState();
 
             return true;
@@ -70,6 +69,7 @@ public class Client {
             e.printStackTrace();
         }
     }
+
     public void setBackground(Background background) {
         this.background = background;
     }

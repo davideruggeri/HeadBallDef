@@ -17,10 +17,20 @@ public class Oggetto {
     public float getVelocitaY(){return velocita[1];}
     public void setPosizione(float x, float y){posizione[0] = x; posizione[1] = y;}
     public void setVelocita(float x, float y){velocita[0] = x; velocita[1] = y;}
+    public void setPosizioneY(float y){posizione[1] = y;}
+
 
     public void stepNext() {
         posizione[0] += velocita[0];
         posizione[1] += velocita[1];
+    }
+
+    public void applyGravity() {
+        velocita[1] -= 0.5f; // gravità verso il basso
+    }
+
+    public void applyFriction() {
+        velocita[0] *= 0.9f;
     }
 
     public void moveRight() {

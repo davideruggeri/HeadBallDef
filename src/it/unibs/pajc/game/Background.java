@@ -3,6 +3,8 @@ package it.unibs.pajc.game;
 import it.unibs.pajc.client.Client;
 import it.unibs.pajc.client.ClientCommand;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 
 public class Background extends JPanel implements KeyListener {
 
-    private final CampoDiGioco campo = new CampoDiGioco();
+    private final CampoDiGioco campo;
 
     private Image backgroundImage;
     private Image giocatore1;
@@ -20,7 +22,8 @@ public class Background extends JPanel implements KeyListener {
 
     private Client client;
 
-    public Background(Client client) {
+    public Background(Client client, boolean singlePlayer) {
+        campo = new CampoDiGioco(singlePlayer);
         this.client = client;
 
         this.setFocusable(true);
@@ -57,13 +60,16 @@ public class Background extends JPanel implements KeyListener {
 
         g2d.scale(s, -s);
         g2d.translate(getWidth() / (2 * s), (-getHeight() / s) + (132 * s));
+
+        float groundY = (float) ((-getHeight() / s) + (132 * s));
+        //campo.setGroundY(groundY);
+
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, (int) (-493 / s), (int) (-40 / s), (int) (getWidth() / s), (int) (getHeight() / s), this);
         }
 
         for (Oggetto o : campo.listaOggetti) {
             if (o instanceof Giocatore giocatore) {
-
                 Image img = (giocatore == campo.getLocalPlayer()) ? giocatore1 : giocatore2;
 
                 float imgX = giocatore.getX();
@@ -79,22 +85,20 @@ public class Background extends JPanel implements KeyListener {
                 at.scale(1, -1);
 
                 g2d.drawImage(img, at, this);
-
                 g2d.draw(giocatore.getShape());
 
             } else if (o instanceof Ball) {
                 g2d.setColor(Color.YELLOW);
-
                 AffineTransform at = new AffineTransform();
                 at.translate(o.getX() - o.getShape().getBounds2D().getWidth() / 2,
                         o.getY() - o.getShape().getBounds2D().getHeight() / 2);
 
                 g2d.fill(at.createTransformedShape(o.getShape()));
             }
-
-            g2d.setColor(Color.BLACK);
-            g2d.drawRect(-getWidth(), 0, getWidth() * 2, 0);
         }
+
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(-getWidth(), 0, getWidth() * 2, 0);
     }
 
     private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
@@ -105,19 +109,17 @@ public class Background extends JPanel implements KeyListener {
 
         g1.setVelocita(0, g1.getVelocitaY());
 
-        if (client != null) { // multiplayer
+        if (client != null) {
             for (Integer key : currentActiveKeys) {
                 ClientCommand command = switch (key) {
                     case KeyEvent.VK_RIGHT -> new ClientCommand(ClientCommand.CommandType.MOVE_RIGHT, 1);
                     case KeyEvent.VK_LEFT -> new ClientCommand(ClientCommand.CommandType.MOVE_LEFT, 1);
-                    case KeyEvent.VK_SPACE, KeyEvent.VK_Z -> new ClientCommand(ClientCommand.CommandType.JUMP, 1);
+                    case KeyEvent.VK_SPACE -> new ClientCommand(ClientCommand.CommandType.JUMP, 1);
                     default -> null;
                 };
-                if (command != null) {
-                    client.sendCommand(command);
-                }
+                if (command != null) client.sendCommand(command);
             }
-        } else { // single player
+        } else {
             for (Integer key : currentActiveKeys) {
                 switch (key) {
                     case KeyEvent.VK_RIGHT -> g1.setVelocita(6f, g1.getVelocitaY());
@@ -129,16 +131,12 @@ public class Background extends JPanel implements KeyListener {
     }
 
     public void updateGameState(GameState state) {
-        if (state == null) {
+        if (state != null) {
+            state.applyToCampo(campo);
+            repaint();
+        } else {
             System.err.println("Ricevuto GameState nullo");
-            return;
         }
-
-        // Applica lo stato ricevuto al campo locale
-        state.applyToCampo(campo);
-
-        // Richiede il repaint per aggiornare la grafica
-        repaint();
     }
 
     public void setClient(Client client) {

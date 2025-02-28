@@ -8,7 +8,7 @@ public class GameState implements Serializable {
     private float ballX, ballY, ballVelX, ballVelY;
     private float player1X, player1Y, player2X, player2Y;
 
-    public GameState() {}  // Costruttore vuoto
+    public GameState() {}
 
     public GameState(CampoDiGioco campo) {
         this.ballX = campo.getBall().getX();

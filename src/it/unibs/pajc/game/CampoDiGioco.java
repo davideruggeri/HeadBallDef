@@ -1,5 +1,7 @@
 package it.unibs.pajc.game;
 
+import it.unibs.pajc.server.Server;
+
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
@@ -10,40 +12,47 @@ public class CampoDiGioco extends BaseModel{
     protected ArrayList<Oggetto> listaOggetti = new ArrayList<>();
     protected Ball ball;
     protected Giocatore localPlayer, remotePlayer;
-    private boolean isMultiplayer = false;
+    private boolean singlePlayer;
+    private float groundY = 158;
 
-    public CampoDiGioco() {
+    public CampoDiGioco(boolean singlePlayer) {
+        this.singlePlayer = singlePlayer;
         ball = new Ball(this, 0, 0);
         ball.setPosizione(0, 300);
         addOggetto(ball);
 
-        localPlayer = new Giocatore(this, -350, 158, 1, false);
-        remotePlayer = new Giocatore(this, 250, 158, 2, true);
+        // Assegna il primo giocatore sempre
+        localPlayer = new Giocatore(this, -350, (int) groundY, 1, false);
         addOggetto(localPlayer);
+
+        if (singlePlayer) {
+            // Il secondo giocatore sarà un bot
+            remotePlayer = new Giocatore(this, 250, (int) groundY, 2, true);
+        } else {
+            // Il secondo giocatore sarà aggiunto successivamente (ma lo prepariamo)
+            remotePlayer = new Giocatore(this, 250, (int) groundY, 2, false);
+        }
         addOggetto(remotePlayer);
     }
-    public void setMultiPlayer() {
-        remotePlayer.setIsBot(true);
-        isMultiplayer = true;
+
+    public void addPlayer(int playerId) {
+        if (playerId == 1 && localPlayer == null) {
+            localPlayer = new Giocatore(this, -350, (int) groundY, playerId, false);
+            addOggetto(localPlayer);
+            System.out.println("Assegnato Player " + playerId + " come localPlayer.");
+        } else if (playerId == 2 && remotePlayer == null) {
+            remotePlayer = new Giocatore(this, 250, (int) groundY, playerId, false);
+            addOggetto(remotePlayer);
+            System.out.println("Assegnato Player " + playerId + " come remotePlayer.");
+        }
     }
-    public void setSinglePlayer() {
-        remotePlayer.setIsBot(false);
-        isMultiplayer = false;}
 
-    public void setListaOggetti(ArrayList<Oggetto> listaOggetti) {this.listaOggetti = listaOggetti;}
-    public ArrayList<Oggetto> getListaOggetti() {return listaOggetti;}
     public void addOggetto(Oggetto oggetto) {listaOggetti.add(oggetto);}
-    public void setLocalPlayer(Giocatore localPlayer) {this.localPlayer = localPlayer;}
-
-
     public Giocatore getLocalPlayer() {return localPlayer;}
     public Giocatore getRemotePlayer() {return remotePlayer;}
     public Ball getBall() {return ball;}
-    public boolean getIsMultiplayer() {return isMultiplayer;}
+    public Float getGroundY() {return groundY;}
 
-    public GameState getCurrentGameState() {
-        return new GameState(this);
-    }
 
 
     public void stepNext() {
@@ -54,7 +63,7 @@ public class CampoDiGioco extends BaseModel{
 
     }
 
-    private void applyLimit(Oggetto o) {
+    /*private void applyLimit(Oggetto o) {
         if (o.getX() < -400) {
             o.setPosizione(-400, o.getY());
             o.setVelocita(0, o.getVelocitaY());
@@ -73,36 +82,52 @@ public class CampoDiGioco extends BaseModel{
             o.setVelocita(o.getVelocitaX(), 0);
         }
     }
-    public void updateFromGameState(GameState gameState) {
-        gameState.applyToCampo(this);
+*/
+    private void applyLimit(Oggetto o) {
+        if (o.getX() < -400) o.setPosizione(-400, o.getY());
+        if (o.getX() > 1250) o.setPosizione(1250, o.getY());
     }
 
     public void movePlayer(int playerId, int direction) {
-        if (playerId == -1) {
-            if (direction == 0) {
-                remotePlayer.setVelocita(1, 0);
-            } else {
-                remotePlayer.setVelocita(-1, 0);
-            }
-        } else {
-            if (direction == 0) {
-                localPlayer.setVelocita(1, 0);
-            } else {
-                localPlayer.setVelocita(-1, 0);
-            }
+        if (playerId == localPlayer.getId()) {
+            localPlayer.setVelocita(direction == 1 ? 4 : -4, 0);
+        } else if (playerId == remotePlayer.getId()) {
+            remotePlayer.setVelocita(direction == 1 ? 4 : -4, 0);
         }
-
     }
 
+
     public void jump(int playerId) {
-        if (playerId == -1) {
+        if (playerId == 2) {
             remotePlayer.jump();
         } else {
             localPlayer.jump();
         }
-
     }
 
     public void kickBall(int playerId) {
     }
+
+    public void updatePhysics() {
+        for (Oggetto o : listaOggetti) {
+            o.applyGravity();
+            o.applyFriction();
+            o.stepNext();
+            applyLimit(o);
+        }
+
+        checkCollisions();
+    }
+
+    private void checkCollisions() {
+        if (localPlayer != null && localPlayer.checkCollision(ball)) {
+            ball.bounceOffPlayer(localPlayer);
+        }
+        if (remotePlayer != null && remotePlayer.checkCollision(ball)) {
+            ball.bounceOffPlayer(remotePlayer);
+        }
+
+        // Aggiungi eventuali altre collisioni qui (es. giocatore vs muro o rete)
+    }
+
 }

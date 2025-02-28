@@ -18,6 +18,12 @@ public class Ball extends Oggetto {
                 40
         ));
     }
+
+    public void bounceOffPlayer(Giocatore player) {
+        float bounceDirection = (this.getX() < player.getX()) ? 1 : -1;
+        this.setVelocita(bounceDirection * 5, -5); // spinge la palla lontano e verso l'alto
+    }
+
     @Override
     public void stepNext() {
         super.stepNext();

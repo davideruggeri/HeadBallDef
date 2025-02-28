@@ -11,6 +11,11 @@ public class HeadBallApp {
     private JFrame frame;
     private Server server;
     private Client client;
+    //private String host = "10.243.3.116"; //ip studenti
+    //private String host = "192.168.1.7"; //ip casa Fritz
+    private String host = "192.168.1.101"; //ip casa P
+    //private String host = "localhost";
+
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> new HeadBallApp().showMenu());
@@ -67,7 +72,7 @@ public class HeadBallApp {
             }
         }
 
-        if (connectClient("10.243.3.116", Server.PORT)) {
+        if (connectClient(host, Server.PORT)) {
             showControls();
             loadGamePanel(client, false);
         }
@@ -97,13 +102,12 @@ public class HeadBallApp {
 
     private void loadGamePanel(Client client, boolean singlePlayer) {
         frame.getContentPane().removeAll();
-        Background gamePanel = new Background(client);
-        if (singlePlayer) {
-            gamePanel.getCampo().setSinglePlayer();
-        }
+        Background gamePanel = new Background(client, singlePlayer);
+
         frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
         frame.revalidate();
         frame.repaint();
+
 
         if (client != null) {
             gamePanel.setClient(client);

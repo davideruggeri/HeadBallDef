@@ -15,20 +15,18 @@ public class Giocatore extends Oggetto {
     CampoDiGioco campo;
     private boolean isBot = true;
     private boolean isShooting = false;
+    private int id;
 
-    public Giocatore(CampoDiGioco campo, int cx, int cy, int numGiocatore, boolean isBot) {
+    public Giocatore(CampoDiGioco campo, int cx, int cy, int id, boolean isBot) {
         super(campo);
+        this.id = id;
         this.campo = campo;
         this.isBot = isBot;
 
-        this.shape = creaArea(cx, cy, numGiocatore);
+        this.shape = creaArea(cx, cy, id);
     }
     public Giocatore(CampoDiGioco campo) {
         super(campo);
-    }
-
-    public void setIsBot(boolean isBot) {
-        this.isBot = isBot;
     }
 
     @Override
@@ -148,4 +146,6 @@ public class Giocatore extends Oggetto {
         }
         return null;
     }
+
+    public int getId() {return id;}
 }

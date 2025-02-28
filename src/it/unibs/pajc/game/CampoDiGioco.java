@@ -73,12 +73,12 @@ public class CampoDiGioco extends BaseModel{
                     o.setVelocita(0, o.getVelocitaY());
                 }
             } else if (giocatore.getId() == 2) {
-                if (o.getX() < -1250) {
-                    o.setPosizione(-1250, o.getY());
+                if (o.getX() < -1350) {
+                    o.setPosizione(-1350, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
-                if (o.getX() > 400) {
-                    o.setPosizione(400, o.getY());
+                if (o.getX() > 320) {
+                    o.setPosizione(320, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
             }
@@ -93,11 +93,6 @@ public class CampoDiGioco extends BaseModel{
             o.setVelocita(o.getVelocitaX(), 0);
         }
     }
-/*
-    private void applyLimit(Oggetto o) {
-        if (o.getX() < -400) o.setPosizione(-400, o.getY());
-        if (o.getX() > 1250) o.setPosizione(1250, o.getY());
-    }*/
 
     public void movePlayer(int playerId, int direction) {
         if (playerId == localPlayer.getId()) {
@@ -109,9 +104,9 @@ public class CampoDiGioco extends BaseModel{
 
 
     public void jump(int playerId) {
-        if (playerId == 2) {
+        if (playerId == remotePlayer.getId()) {
             remotePlayer.jump();
-        } else {
+        } else if (playerId == localPlayer.getId()) {
             localPlayer.jump();
         }
     }

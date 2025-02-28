@@ -14,7 +14,6 @@ public class Giocatore extends Oggetto {
     private final double GROUNDLEVEL = 0.563;
     CampoDiGioco campo;
     private boolean isBot = true;
-    private boolean isShooting = false;
     private int id;
 
     public Giocatore(CampoDiGioco campo, int cx, int cy, int id, boolean isBot) {
@@ -98,19 +97,7 @@ public class Giocatore extends Oggetto {
             );
         }
     }
-    public void shoot(){
-        this.isBot = true;
-    }
-
-    public boolean isShooting(){return isShooting;}
-
-    /**
-     * Creare il metodo per il calcio usando quello sopra
-     */
-
-    public void normalShot(Ball ball) {
-        ball = campo.getBall();
-    }
+    public int getId() {return id;}
 
     /* -----------------------------------
      * Creazione dell'area del giocatore
@@ -146,6 +133,4 @@ public class Giocatore extends Oggetto {
         }
         return null;
     }
-
-    public int getId() {return id;}
 }

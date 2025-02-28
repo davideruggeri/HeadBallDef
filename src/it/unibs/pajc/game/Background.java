@@ -2,17 +2,12 @@ package it.unibs.pajc.game;
 
 import it.unibs.pajc.client.Client;
 import it.unibs.pajc.client.ClientCommand;
-import it.unibs.pajc.network.NetworkMessage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class Background extends JPanel implements KeyListener {
@@ -24,9 +19,6 @@ public class Background extends JPanel implements KeyListener {
     private Image giocatore2;
 
     private Client client;
-    private Socket socket;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
 
     public Background(Client client) {
         this.client = client;
@@ -44,10 +36,6 @@ public class Background extends JPanel implements KeyListener {
         });
 
         animator.start();
-
-        if (client != null) {
-            new Thread(this::listenToServer).start();
-        }
     }
 
     private void loadImages() {
@@ -109,21 +97,6 @@ public class Background extends JPanel implements KeyListener {
         }
     }
 
-    // Modifica il loop di ascolto nel thread di Background
-    private void listenToServer() {
-        while (true) {
-            NetworkMessage message = client.readMessage();
-            if (message.getType() == NetworkMessage.MessageType.GAME_STATE) {
-                GameState gameState = (GameState) message.getPayload();
-                gameState.applyToCampo(campo);
-                repaint();
-            } else {
-                System.err.println("Messaggio non previsto: " + message.getType());
-            }
-        }
-    }
-
-
     private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
     public void applyControls() {
@@ -154,6 +127,7 @@ public class Background extends JPanel implements KeyListener {
             }
         }
     }
+
     public void updateGameState(GameState state) {
         if (state == null) {
             System.err.println("Ricevuto GameState nullo");
@@ -163,18 +137,13 @@ public class Background extends JPanel implements KeyListener {
         // Applica lo stato ricevuto al campo locale
         state.applyToCampo(campo);
 
-        // Richiede il repaint per aggiornare la grafica (opzionale, ma utile se vuoi aggiornare la view)
+        // Richiede il repaint per aggiornare la grafica
         repaint();
     }
 
-
     public void setClient(Client client) {
         this.client = client;
-        this.socket = client.getSocket();
-        this.out = client.getOutputStream();
-        this.in = client.getInputStream();
     }
-
 
     @Override
     public void keyTyped(KeyEvent e) {}

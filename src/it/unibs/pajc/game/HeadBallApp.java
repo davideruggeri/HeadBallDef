@@ -67,7 +67,7 @@ public class HeadBallApp {
             }
         }
 
-        if (connectClient("localhost", Server.PORT)) {
+        if (connectClient("10.243.3.116", Server.PORT)) {
             showControls();
             loadGamePanel(client, false);
         }
@@ -106,8 +106,10 @@ public class HeadBallApp {
         frame.repaint();
 
         if (client != null) {
+            gamePanel.setClient(client);
             client.setBackground(gamePanel);
-            client.startStateReceiver();  // Questo è un metodo che devi creare in Client
+            client.startStateReceiver();
+
         }
     }
 

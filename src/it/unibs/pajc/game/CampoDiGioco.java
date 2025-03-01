@@ -114,6 +114,8 @@ public class CampoDiGioco extends BaseModel{
     public void kickBall(int playerId) {
     }
 
+
+
     public void updatePhysics() {
         for (Oggetto o : listaOggetti) {
             if (!(o instanceof Giocatore)) {

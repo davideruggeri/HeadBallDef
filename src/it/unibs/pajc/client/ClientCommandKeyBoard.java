@@ -1,4 +1,4 @@
-package it.unibs.pajc.client;
+/*package it.unibs.pajc.client;
 
 import it.unibs.pajc.game.BaseModel;
 import it.unibs.pajc.game.Giocatore;
@@ -86,4 +86,4 @@ public class ClientCommandKeyBoard extends BaseModel implements KeyListener {
     public void keyReleased(KeyEvent e) {
         currentActiveKeys.remove(Integer.valueOf(e.getKeyCode()));
     }
-}
+}*/

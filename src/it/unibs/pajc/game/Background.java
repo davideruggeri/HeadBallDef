@@ -3,8 +3,6 @@ package it.unibs.pajc.game;
 import it.unibs.pajc.client.Client;
 import it.unibs.pajc.client.ClientCommand;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -49,10 +47,6 @@ public class Background extends JPanel implements KeyListener {
         giocatore2 = new ImageIcon(getClass().getResource("/images/testa2.png")).getImage();
     }
 
-    public CampoDiGioco getCampo() {
-        return campo;
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -63,8 +57,6 @@ public class Background extends JPanel implements KeyListener {
         g2d.scale(s, -s);
         g2d.translate(getWidth() / (2 * s), (-getHeight() / s) + (132 * s));
 
-        float groundY = (float) ((-getHeight() / s) + (132 * s));
-        //campo.setGroundY(groundY);
 
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, (int) (-493 / s), (int) (-40 / s), (int) (getWidth() / s), (int) (getHeight() / s), this);

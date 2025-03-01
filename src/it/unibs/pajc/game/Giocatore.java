@@ -11,7 +11,6 @@ public class Giocatore extends Oggetto {
     private boolean isJumping = false;
     private final float GRAVITA = 0.5f;
     private final float FORZASALTO = 60;
-    private final double GROUNDLEVEL = 0.563;
     CampoDiGioco campo;
     private boolean isBot = true;
     private int id;

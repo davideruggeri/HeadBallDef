@@ -6,7 +6,7 @@ import java.awt.geom.Ellipse2D;
 public class Ball extends Oggetto {
     private float gravita = 0.5f;
     private float fattoreRimbalzo = 0.8f;
-    private final double GROUNDLEVEL = 0.563;
+    private final double GROUNDLEVEL = 0;
 
     public Ball(CampoDiGioco campo, int xc, int yc) {
         super(campo);

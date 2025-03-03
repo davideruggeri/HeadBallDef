@@ -118,8 +118,8 @@ public class CampoDiGioco extends BaseModel{
         for (Oggetto o : listaOggetti) {
             if (o instanceof Ball palla) {
                 palla.applyGravity();    // Applica la gravità
-                if (palla.getY() <= 0.563 + 20) {
-                    palla.applyGravity();
+                if (palla.getY() <= 0) {
+                    palla.applyFriction();
                 }
                 palla.stepNext();
             }

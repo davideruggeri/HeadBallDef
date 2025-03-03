@@ -31,7 +31,7 @@ public class Ball extends Oggetto {
 
         if (getY() <= GROUNDLEVEL + 20) {
             setPosizione(getX(), (float) GROUNDLEVEL + 20);
-            setVelocita(getVelocitaX(), - getVelocitaY() * fattoreRimbalzo);
+            setVelocita(getVelocitaX(), - getVelocitaY() /* * fattoreRimbalzo*/);
         }
     }
     public void setAngle(float angle) {

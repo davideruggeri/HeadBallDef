@@ -59,7 +59,6 @@ public class Giocatore extends Oggetto {
 
     /**
      * Sistemare la direzione con cui la palla viene rimbalzata dopo il contatto
-     * (controllare se è in questo metodo o nella classe ball)
      * gestire correttamente la fisica del rimbalzo tra giocatore e palla
      */
     

@@ -5,6 +5,8 @@ import it.unibs.pajc.client.ClientCommand;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
@@ -20,13 +22,30 @@ public class Background extends JPanel implements KeyListener {
 
     private Client client;
 
+    private JLabel gameTimer;
+    private Timer t;
+    private int seconds;
+
     public Background(Client client, boolean singlePlayer) {
+        setLayout(null);
         campo = new CampoDiGioco(singlePlayer);
         this.client = client;
 
         this.setFocusable(true);
         this.requestFocusInWindow();
         this.addKeyListener(this);
+
+        gameTimer = new JLabel("01:30", SwingConstants.CENTER);
+        gameTimer.setFont(new Font("Courier New", Font.BOLD, 40));
+
+        add(gameTimer);
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                gameTimer.setBounds(-95, 800, 200, 50);
+            }
+        });
+
 
         loadImages();
 
@@ -39,7 +58,27 @@ public class Background extends JPanel implements KeyListener {
         });
 
         animator.start();
+        aggiornaTimer();
     }
+
+    private void aggiornaTimer() {
+        seconds = 90;
+        gameTimer.setText("01:30");
+
+        t = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                seconds--;
+                int minutes = seconds / 60;
+                int sec = seconds % 60;
+
+                gameTimer.setText(String.format("%02d:%02d", minutes, sec));
+            }
+        });
+
+        t.start();
+    }
+
 
     private void loadImages() {
         backgroundImage = new ImageIcon(getClass().getResource("/images/sfondo1.png")).getImage();
@@ -92,7 +131,11 @@ public class Background extends JPanel implements KeyListener {
         }
 
         g2d.setColor(Color.BLACK);
-        g2d.drawRect(-getWidth(), 0, getWidth() * 2, 0);
+        g2d.drawRect(-getWidth(), 0, getWidth()*2, 0);
+        g2d.drawRect(-getWidth() + 245, 0, 0, 300);
+        g2d.drawRect(getWidth() - 245, 0, 0, 300);
+        g2d.drawRect(-getWidth(), 300, 245, 0);
+        g2d.drawRect(getWidth() -245, 300, 245, 0);
     }
 
     private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();

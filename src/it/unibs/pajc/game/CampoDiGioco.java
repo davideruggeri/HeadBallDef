@@ -51,8 +51,6 @@ public class CampoDiGioco extends BaseModel{
     public Ball getBall() {return ball;}
     public Float getGroundY() {return groundY;}
 
-
-
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
             o.stepNext();
@@ -84,13 +82,15 @@ public class CampoDiGioco extends BaseModel{
             }
         }
 
-        if (o.getY() < bounds.getMinY()) {
-            o.setPosizione(o.getX(), (float) bounds.getMinY());
-            o.setVelocita(o.getVelocitaX(), 0);
-        }
-        if (o.getY() > bounds.getMaxY()) {
-            o.setPosizione(o.getX(), (float) bounds.getMaxY());
-            o.setVelocita(o.getVelocitaX(), 0);
+        if (o instanceof Ball) {
+            if (o.getX() < bounds.getMinX()) {
+                o.setPosizione((float) bounds.getMinX(), o.getY());
+                o.setVelocita(-o.getVelocitaX(), o.getVelocitaY()); // Rimbalzo sulla parete sinistra
+            }
+            if (o.getX() > bounds.getMaxX()) {
+                o.setPosizione((float) bounds.getMaxX(), o.getY());
+                o.setVelocita(-o.getVelocitaX(), o.getVelocitaY()); // Rimbalzo sulla parete destra
+            }
         }
     }
 
@@ -113,8 +113,6 @@ public class CampoDiGioco extends BaseModel{
 
     public void kickBall(int playerId) {
     }
-
-
 
     public void updatePhysics() {
         for (Oggetto o : listaOggetti) {
@@ -142,7 +140,6 @@ public class CampoDiGioco extends BaseModel{
         }
         checkCollisions();
     }
-
 
     private void checkCollisions() {
         if (localPlayer != null && localPlayer.checkCollision(ball)) {

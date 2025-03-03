@@ -30,25 +30,13 @@ public class Oggetto {
         velocita[1] -= 0.5f; // gravità verso il basso
     }
 
+    public void applyBounce() {
+        velocita[1] -= velocita[1] * 0.8f;
+    }
+
     public void applyFriction() {
         velocita[0] *= 0.9f;
     }
-
-    public void moveRight() {
-        velocita[0] = 1;
-    }
-
-    public void moveLeft() {
-        velocita[0] = -1;
-    }
-
-    public void moveUp() {
-        velocita[1] = +1;
-    }
-    public void moveDown() {
-        velocita[1] = -1;
-    }
-
 
     /*----------------------------------------------------------
      * Creazione della Shape

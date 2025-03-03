@@ -83,12 +83,12 @@ public class CampoDiGioco extends BaseModel{
         }
 
         if (o instanceof Ball) {
-            if (o.getX() < bounds.getMinX()) {
-                o.setPosizione((float) bounds.getMinX(), o.getY());
+            if (o.getX() < bounds.getMinX() + 45) {
+                o.setPosizione((float) bounds.getMinX() + 55, o.getY());
                 o.setVelocita(-o.getVelocitaX(), o.getVelocitaY()); // Rimbalzo sulla parete sinistra
             }
-            if (o.getX() > bounds.getMaxX()) {
-                o.setPosizione((float) bounds.getMaxX(), o.getY());
+            if (o.getX() > bounds.getMaxX() - 30) {
+                o.setPosizione((float) bounds.getMaxX() - 30, o.getY());
                 o.setVelocita(-o.getVelocitaX(), o.getVelocitaY()); // Rimbalzo sulla parete destra
             }
         }
@@ -116,10 +116,12 @@ public class CampoDiGioco extends BaseModel{
 
     public void updatePhysics() {
         for (Oggetto o : listaOggetti) {
-            if (!(o instanceof Giocatore)) {
-                o.applyGravity();    // Applica la gravità
-                o.applyFriction();   // Applica la frizione
-                o.stepNext();
+            if (o instanceof Ball palla) {
+                palla.applyGravity();    // Applica la gravità
+                if (palla.getY() <= 0.563 + 20) {
+                    palla.applyGravity();
+                }
+                palla.stepNext();
             }
 
             if (o instanceof Giocatore giocatore) {

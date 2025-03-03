@@ -10,7 +10,7 @@ public class Giocatore extends Oggetto {
 
     private boolean isJumping = false;
     private final float GRAVITA = 0.5f;
-    private final float FORZASALTO = 60;
+    private final float FORZASALTO = 10;
     CampoDiGioco campo;
     private boolean isBot = true;
     private int id;
@@ -23,24 +23,12 @@ public class Giocatore extends Oggetto {
 
         this.shape = creaArea(cx, cy, id);
     }
-    public Giocatore(CampoDiGioco campo) {
-        super(campo);
-    }
 
     @Override
     public void stepNext() {
-       /* if (isJumping) {
-            setPosizione((getX() + getVelocitaX()), (getY() + getVelocitaY()));
-            setVelocita(getVelocitaX(), getVelocitaY() + GRAVITA);
-
-            if (getY() >= GROUNDLEVEL) {
-                setPosizione(getX(), (float) GROUNDLEVEL);
-                setVelocita(0, 0);
-                isJumping = false;
-            }
-        }*/
         this.handleCollision(campo.getBall());
         super.stepNext();
+        updateJump();
     }
 
     /**
@@ -51,11 +39,21 @@ public class Giocatore extends Oggetto {
     public void jump() {
         if (!isJumping) {
             isJumping = true;
-            velocita[1] = velocita[1] + GRAVITA;
+            velocita[1] += GRAVITA;
+            setVelocita(getVelocitaX(), FORZASALTO);
         }
-        //setVelocita(getVelocitaX(), FORZASALTO);
     }
 
+    public void updateJump() {
+        if (isJumping) {
+            velocita[1] -= GRAVITA;
+        }
+        if (getY() <= 0 ) {
+            setPosizione(getX(), 0);
+            isJumping = false;
+
+        }
+    }
 
     /**
      * Sistemare la direzione con cui la palla viene rimbalzata dopo il contatto

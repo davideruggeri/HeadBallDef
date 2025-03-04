@@ -49,7 +49,7 @@ public class Background extends JPanel implements KeyListener {
 
         loadImages();
 
-        Timer animator = new Timer(16, e -> {
+        Timer animator = new Timer(33, e -> {
             applyControls();
             if (client == null) {
                 campo.stepNext();

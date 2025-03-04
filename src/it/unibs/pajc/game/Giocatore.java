@@ -51,7 +51,6 @@ public class Giocatore extends Oggetto {
         if (getY() <= 0 ) {
             setPosizione(getX(), 0);
             isJumping = false;
-
         }
     }
 

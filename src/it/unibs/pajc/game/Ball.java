@@ -29,7 +29,7 @@ public class Ball extends Oggetto {
         super.stepNext();
         this.velocita[1] -= gravita;
 
-        if (getY() <= GROUNDLEVEL + 20) {
+        if (getY() < GROUNDLEVEL + 20) {
             setPosizione(getX(), (float) GROUNDLEVEL + 20);
             setVelocita(getVelocitaX(), - getVelocitaY() * fattoreRimbalzo);
         }

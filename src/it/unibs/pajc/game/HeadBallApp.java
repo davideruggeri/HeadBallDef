@@ -12,9 +12,9 @@ public class HeadBallApp {
     private Server server;
     private Client client;
     //private String host = "10.243.3.116"; //ip studenti
-    private String host = "192.168.1.14"; //ip casa Fritz
+    //private String host = "192.168.1.14"; //ip casa Fritz
     //private String host = "192.168.1.101"; //ip casa P
-    //private String host = "localhost";
+    private String host = "localhost";
 
 
     public static void main(String[] args) {

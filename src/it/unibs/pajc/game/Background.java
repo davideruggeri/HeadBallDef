@@ -112,13 +112,13 @@ public class Background extends JPanel implements KeyListener {
                 g2d.fill(at.createTransformedShape(o.getShape()));
             }
         }
-
+/*
         g2d.setColor(Color.BLACK);
         g2d.drawRect(-getWidth(), 0, getWidth()*2, 0);
         g2d.drawRect(-getWidth() + 245, 0, 0, 300);
         g2d.drawRect(getWidth() - 245, 0, 0, 300);
         g2d.drawRect(-getWidth(), 300, 245, 0);
-        g2d.drawRect(getWidth() -245, 300, 245, 0);
+        g2d.drawRect(getWidth() -245, 300, 245, 0);*/
 
         g2d.setTransform(original);
         g2d.setColor(Color.BLACK);

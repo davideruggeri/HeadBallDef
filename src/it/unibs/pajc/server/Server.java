@@ -114,10 +114,11 @@ public class Server {
                     for (ClientHandler client : clients) {
                         client.sendGameStart();
                     }
-
+/*
                     for (ClientHandler handler : clients) {
                         handler.sendGameState(new GameState(campoDiGioco));
-                    }
+                    }*/
+                    broadcastGameState();
                 }
             }, 3000); // 5 secondi di attesa
         }
@@ -222,7 +223,8 @@ public class Server {
         public void sendGameStart() {
             try {
                 out.writeObject(new NetworkMessage(NetworkMessage.MessageType.GAME_START, null));
-                out.reset();
+                //out.reset();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

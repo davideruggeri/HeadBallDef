@@ -105,11 +105,8 @@ public class Server {
             startGameLoop();
             startGameTimer();
 
-           for (int i = 0 ; i < clients.size() ; i++) {
-               ClientHandler handler = clients.get(i);
-               if (i == 1) {
-                   handler.sendGameStart();
-               }
+           for (ClientHandler client : clients) {
+               client.sendGameStart();
            }
 
             for (ClientHandler handler : clients) {

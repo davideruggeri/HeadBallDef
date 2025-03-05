@@ -83,10 +83,10 @@ public class Client {
                             background.updateGameState(state);
                         }
                     });
-                } else if (message.getType() == NetworkMessage.MessageType.GAME_START) {
+                } /*else if (message.getType() == NetworkMessage.MessageType.GAME_START) {
                     SwingUtilities.invokeLater(this::closeWaitingPopup);
                     break;
-                }
+                }*/
             }
         });
         stateReceiver.setDaemon(true);

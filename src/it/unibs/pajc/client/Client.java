@@ -31,7 +31,7 @@ public class Client {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            SwingUtilities.invokeLater(this::showWaitingPopUp);
+            //SwingUtilities.invokeLater(this::showWaitingPopUp);
 
             requestInitialState();
 

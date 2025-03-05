@@ -19,6 +19,9 @@ public class Server {
     private final List<ClientHandler> clients = new ArrayList<>();
 
     private Timer gameLoopTimer;
+    private int seconds = 90;
+    private Timer gameTimer;
+
 
     public Server() {
         campoDiGioco = new CampoDiGioco(false);
@@ -32,6 +35,7 @@ public class Server {
 
             campoDiGioco.setGroundY(158);
             startGameLoop();
+            startGameTimer();
 
             new Thread(this::acceptClients).start();
             return true;
@@ -96,6 +100,7 @@ public class Server {
 
     public synchronized void broadcastGameState() {
         GameState state = new GameState(campoDiGioco);
+        state.setTimeRemaining(seconds);
         for (ClientHandler handler : clients) {
             handler.sendGameState(state);
         }
@@ -130,6 +135,22 @@ public class Server {
                 break;
             }
         }
+    }
+
+    private void startGameTimer() {
+        gameTimer = new Timer();
+        gameTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (seconds > 0) {
+                    seconds--;
+                    broadcastGameState();
+                } else {
+                    gameTimer.cancel();
+                    System.out.println("Tempo scaduto!");
+                }
+            }
+        }, 0, 1000);
     }
 
     private class ClientHandler implements Runnable {

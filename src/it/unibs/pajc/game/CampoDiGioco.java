@@ -12,9 +12,11 @@ public class CampoDiGioco extends BaseModel{
     protected Giocatore localPlayer, remotePlayer;
     private boolean singlePlayer;
     private float groundY = 158;
+    private int gameTime;
 
     public CampoDiGioco(boolean singlePlayer) {
         this.singlePlayer = singlePlayer;
+        this.gameTime = 90;
         ball = new Ball(this, 0, 0);
         ball.setPosizione(0, 300);
         addOggetto(ball);
@@ -50,6 +52,8 @@ public class CampoDiGioco extends BaseModel{
     public Giocatore getRemotePlayer() {return remotePlayer;}
     public Ball getBall() {return ball;}
     public Float getGroundY() {return groundY;}
+    public int getGameTime() {return gameTime;}
+    public void setGameTime(int gameTime) {this.gameTime = gameTime;}
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {

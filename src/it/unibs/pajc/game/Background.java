@@ -22,7 +22,6 @@ public class Background extends JPanel implements KeyListener {
 
     private Client client;
     private Timer t;
-    private int seconds;
 
     public Background(Client client, boolean singlePlayer) {
         setLayout(null);
@@ -44,16 +43,16 @@ public class Background extends JPanel implements KeyListener {
         });
 
         animator.start();
-        aggiornaTimer();
+        if (client == null) {
+            aggiornaTimer();
+        }
     }
 
     private void aggiornaTimer() {
-        seconds = 90;
-
         t = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                seconds--;
+                campo.setGameTime(campo.getGameTime() - 1);
                 repaint();
             }
         });
@@ -124,7 +123,7 @@ public class Background extends JPanel implements KeyListener {
         g2d.setTransform(original);
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Courier New", Font.BOLD, 50));
-        String timerTxt = String.format("%02d:%02d", seconds / 60, seconds % 60);
+        String timerTxt = String.format("%02d:%02d", campo.getGameTime() / 60, campo.getGameTime() % 60);
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = fm.stringWidth(timerTxt);
         g2d.drawString(timerTxt, getWidth() / 2 - textWidth / 2, 50);

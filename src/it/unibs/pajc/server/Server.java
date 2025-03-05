@@ -101,19 +101,28 @@ public class Server {
 
     private synchronized void checkAndStartGame() {
         if (clients.size() == 2) {
-            System.out.println("Entrambi i giocatori sono connessi, il gioco inizia!");
-            startGameLoop();
-            startGameTimer();
+            System.out.println("Entrambi i giocatori sono connessi, il gioco inizierà tra 5 secondi...");
 
-           for (ClientHandler client : clients) {
-               client.sendGameStart();
-           }
+            Timer delayTimer = new Timer();
+            delayTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println("Il gioco sta iniziando ora!");
+                    startGameLoop();
+                    startGameTimer();
 
-            for (ClientHandler handler : clients) {
-                handler.sendGameState(new GameState(campoDiGioco));
-            }
+                    for (ClientHandler client : clients) {
+                        client.sendGameStart();
+                    }
+
+                    for (ClientHandler handler : clients) {
+                        handler.sendGameState(new GameState(campoDiGioco));
+                    }
+                }
+            }, 5000); // 5 secondi di attesa
         }
     }
+
 
     public synchronized void broadcastGameState() {
         GameState state = new GameState(campoDiGioco);

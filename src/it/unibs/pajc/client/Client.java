@@ -29,7 +29,14 @@ public class Client {
         try {
             socket = new Socket(serverAddress, port);
             out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+
             in = new ObjectInputStream(socket.getInputStream());
+
+            NetworkMessage startMessage = readMessage();
+            if (startMessage.getType() == NetworkMessage.MessageType.GAME_START) {
+                throw new IOException("Messaggio iniziale inatteso dal server");
+            }
 
             requestInitialState();
 

@@ -100,9 +100,9 @@ public class CampoDiGioco extends BaseModel{
 
     public void movePlayer(int playerId, int direction) {
         if (playerId == localPlayer.getId()) {
-            localPlayer.setVelocita(direction == 1 ? 6f : -6f, localPlayer.getVelocitaY());
+            localPlayer.setVelocita(direction == 1 ? 8f : -8f, localPlayer.getVelocitaY());
         } else if (playerId == remotePlayer.getId()) {
-            remotePlayer.setVelocita(direction == 1 ? 6f : -6f, remotePlayer.getVelocitaY());
+            remotePlayer.setVelocita(direction == 1 ? 8f : -8f, remotePlayer.getVelocitaY());
         }
     }
 

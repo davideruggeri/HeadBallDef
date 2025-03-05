@@ -129,7 +129,7 @@ public class Server {
                         secondsLeft[0]--;
                     }
                 }
-            }, 0, 1000); // ogni secondo
+            }, 1000, 1000); // ogni secondo
         }
     }
 
@@ -219,10 +219,6 @@ public class Server {
 
                 System.out.println("Client connesso! PlayerID: " + playerId);
 
-                synchronized (Server.this) {
-                    //sendGameState(new GameState(campoDiGioco));
-                    //broadcastGameState();
-                }
 
                 while (true) {
                     NetworkMessage message = (NetworkMessage) in.readObject();

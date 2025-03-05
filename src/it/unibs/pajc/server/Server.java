@@ -105,9 +105,12 @@ public class Server {
             startGameLoop();
             startGameTimer();
 
-            for (ClientHandler handler : clients) {
-                handler.sendGameStart();
-            }
+           for (int i = 0 ; i < clients.size() ; i++) {
+               ClientHandler handler = clients.get(i);
+               if (i == 1) {
+                   handler.sendGameStart();
+               }
+           }
 
             for (ClientHandler handler : clients) {
                 handler.sendGameState(new GameState(campoDiGioco));

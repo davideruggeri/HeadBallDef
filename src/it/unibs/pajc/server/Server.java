@@ -34,8 +34,6 @@ public class Server {
             running = true;
 
             campoDiGioco.setGroundY(158);
-            startGameLoop();
-            startGameTimer();
 
             new Thread(this::acceptClients).start();
             return true;
@@ -58,12 +56,16 @@ public class Server {
                 }else if (playerId == 2) {
                     campoDiGioco.addPlayer(playerId);
                 }
-                ClientHandler handler = new ClientHandler(clientSocket, playerId++);
                 synchronized (this) {
+                    ClientHandler handler = new ClientHandler(clientSocket, playerId++);
                     clients.add(handler);
+                    new Thread(handler).start();
+
+                    if (clients.size() == 2) {
+                        checkAndStartGame();
+                    }
                 }
 
-                new Thread(handler).start();
             } catch (IOException e) {
                 if (running) {
                     e.printStackTrace();
@@ -97,6 +99,18 @@ public class Server {
         }, 0, 33); // circa 30 FPS
     }
 
+    private synchronized void checkAndStartGame() {
+        if (clients.size() == 2) { // Avvia solo se ci sono due giocatori
+            System.out.println("Entrambi i giocatori sono connessi, il gioco inizia!");
+            startGameLoop();
+            startGameTimer();
+
+            // Notifica ai client che il gioco è iniziato
+            for (ClientHandler handler : clients) {
+                handler.sendGameState(new GameState(campoDiGioco));
+            }
+        }
+    }
 
     public synchronized void broadcastGameState() {
         GameState state = new GameState(campoDiGioco);

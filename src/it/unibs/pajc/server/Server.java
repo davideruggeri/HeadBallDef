@@ -105,7 +105,10 @@ public class Server {
             startGameLoop();
             startGameTimer();
 
-            // Notifica ai client che il gioco è iniziato
+            for (ClientHandler handler : clients) {
+                handler.sendGameStart();
+            }
+
             for (ClientHandler handler : clients) {
                 handler.sendGameState(new GameState(campoDiGioco));
             }
@@ -204,6 +207,15 @@ public class Server {
                 System.out.println("Client disconnesso. PlayerID: " + playerId);
             } finally {
                 disconnect();
+            }
+        }
+
+        public void sendGameStart() {
+            try {
+                out.writeObject(new NetworkMessage(NetworkMessage.MessageType.GAME_START, null));
+                out.reset();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 

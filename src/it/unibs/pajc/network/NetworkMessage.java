@@ -7,7 +7,8 @@ public class NetworkMessage implements Serializable {
     public enum MessageType {
         GAME_STATE,
         PLAYER_COMMAND,
-        ERROR
+        ERROR,
+        GAME_START
     }
 
     private final MessageType type;

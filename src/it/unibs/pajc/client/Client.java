@@ -81,13 +81,23 @@ public class Client {
                 NetworkMessage message = readMessage();
                 if (message == null) break;
 
-                if (message.getType() == NetworkMessage.MessageType.GAME_STATE) {
-                    GameState state = (GameState) message.getPayload();
-                    SwingUtilities.invokeLater(() -> {
-                        if (background != null) {
-                            background.updateGameState(state);
-                        }
-                    });
+                switch (message.getType()) {
+                    case GAME_STATE -> {
+                        GameState state = (GameState) message.getPayload();
+                        SwingUtilities.invokeLater(() -> {
+                            if (background != null) {
+                                background.updateGameState(state);
+                            }
+                        });
+                    }
+                    case COUNTDOWN_UPDATE -> {
+                        int secondsLeft = (Integer) message.getPayload();
+                        SwingUtilities.invokeLater(() -> showCountdown(secondsLeft));
+                    }
+                    case GAME_START -> {
+                            SwingUtilities.invokeLater(this::hideWaitingDialog);
+                        System.out.println("Il gioco è iniziato!");
+                    }
                 }
             }
         });
@@ -103,6 +113,33 @@ public class Client {
             e.printStackTrace();
             JOptionPane.showMessageDialog(frame, "Errore nella lettura del messaggio dal server:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
             return null;
+        }
+    }
+    private void showCountdown(int secondsLeft) {
+        if (waitingDialog == null) {
+            waitingDialog = new JDialog(frame, "Attesa inizio partita", true);
+            waitingDialog.setSize(200, 100);
+            waitingDialog.setLocationRelativeTo(frame);
+            waitingDialog.setLayout(new BoxLayout(waitingDialog.getContentPane(), BoxLayout.Y_AXIS));
+        }
+
+        waitingDialog.getContentPane().removeAll();
+        JLabel countdownLabel = new JLabel("Partita inizia in: " + secondsLeft + " secondi", JLabel.CENTER);
+        waitingDialog.getContentPane().add(countdownLabel);
+        waitingDialog.revalidate();
+        waitingDialog.repaint();
+
+        if (!waitingDialog.isVisible()) {
+            SwingUtilities.invokeLater(() -> waitingDialog.setVisible(true));
+        }
+
+        if (secondsLeft == 0) {
+            hideWaitingDialog();
+        }
+    }
+    private void hideWaitingDialog() {
+        if (waitingDialog != null && waitingDialog.isVisible()) {
+            waitingDialog.setVisible(false);
         }
     }
 }

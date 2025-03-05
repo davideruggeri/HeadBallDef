@@ -8,7 +8,8 @@ public class NetworkMessage implements Serializable {
         GAME_STATE,
         PLAYER_COMMAND,
         ERROR,
-        GAME_START
+        GAME_START,
+        COUNTDOWN_UPDATE
     }
 
     private final MessageType type;

@@ -103,24 +103,40 @@ public class Server {
         if (clients.size() == 2) {
             System.out.println("Entrambi i giocatori sono connessi, il gioco inizierà tra 5 secondi...");
 
-            Timer delayTimer = new Timer();
-            delayTimer.schedule(new TimerTask() {
+            Timer countdownTimer = new Timer();
+            int[] secondsLeft = {3};
+
+            countdownTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println("Il gioco sta iniziando ora!");
-                    startGameLoop();
-                    startGameTimer();
+                    broadcastCountdownUpdate(secondsLeft[0]);  // manda il countdown ai client
 
-                    for (ClientHandler client : clients) {
-                        client.sendGameStart();
+                    if (secondsLeft[0] == 0) {
+                        countdownTimer.cancel();
+
+                        // Ora invia lo stato iniziale completo a tutti i client
+                        broadcastGameState();
+
+                        // Manda segnale di inizio gioco
+                        for (ClientHandler client : clients) {
+                            client.sendGameStart();
+                        }
+
+                        // Avvia il game loop e il timer principale
+                        startGameLoop();
+                        startGameTimer();
+                    } else {
+                        secondsLeft[0]--;
                     }
-/*
-                    for (ClientHandler handler : clients) {
-                        handler.sendGameState(new GameState(campoDiGioco));
-                    }*/
-                    broadcastGameState();
                 }
-            }, 3000); // 5 secondi di attesa
+            }, 0, 1000); // ogni secondo
+        }
+    }
+
+    private void broadcastCountdownUpdate(int secondsLeft) {
+        NetworkMessage countdownMessage = new NetworkMessage(NetworkMessage.MessageType.COUNTDOWN_UPDATE, secondsLeft);
+        for (ClientHandler client : clients) {
+            client.sendMessage(countdownMessage);
         }
     }
 
@@ -220,10 +236,19 @@ public class Server {
             }
         }
 
+        public void sendMessage(NetworkMessage message) {
+            try {
+                out.writeObject(message);
+                out.reset();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
         public void sendGameStart() {
             try {
                 out.writeObject(new NetworkMessage(NetworkMessage.MessageType.GAME_START, null));
-                //out.reset();
 
             } catch (IOException e) {
                 e.printStackTrace();

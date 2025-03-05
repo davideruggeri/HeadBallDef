@@ -31,8 +31,6 @@ public class Client {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            //SwingUtilities.invokeLater(this::showWaitingPopUp);
-
             requestInitialState();
 
             return true;
@@ -83,10 +81,7 @@ public class Client {
                             background.updateGameState(state);
                         }
                     });
-                } /*else if (message.getType() == NetworkMessage.MessageType.GAME_START) {
-                    SwingUtilities.invokeLater(this::closeWaitingPopup);
-                    break;
-                }*/
+                }
             }
         });
         stateReceiver.setDaemon(true);
@@ -101,21 +96,6 @@ public class Client {
             e.printStackTrace();
             JOptionPane.showMessageDialog(frame, "Errore nella lettura del messaggio dal server:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
             return null;
-        }
-    }
-
-    private void showWaitingPopUp() {
-        waitingDialog = new JDialog(frame, "Attesa Giocatore", true);
-        waitingDialog.setSize(300, 150);
-        waitingDialog.setLocationRelativeTo(frame);
-        waitingDialog.add(new JLabel("In attesa di un altro giocatore...", SwingConstants.CENTER));
-        waitingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        waitingDialog.setVisible(true);
-    }
-
-    public void closeWaitingPopup() {
-        if (waitingDialog != null) {
-            waitingDialog.dispose();
         }
     }
 }

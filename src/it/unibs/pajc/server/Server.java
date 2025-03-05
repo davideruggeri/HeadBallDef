@@ -100,7 +100,7 @@ public class Server {
     }
 
     private synchronized void checkAndStartGame() {
-        if (clients.size() == 2) { // Avvia solo se ci sono due giocatori
+        if (clients.size() == 2) {
             System.out.println("Entrambi i giocatori sono connessi, il gioco inizia!");
             startGameLoop();
             startGameTimer();

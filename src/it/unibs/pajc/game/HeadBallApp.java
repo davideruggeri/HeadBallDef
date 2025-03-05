@@ -103,11 +103,9 @@ public class HeadBallApp {
     private void loadGamePanel(Client client, boolean singlePlayer) {
         frame.getContentPane().removeAll();
         Background gamePanel = new Background(client, singlePlayer);
-
         frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
         frame.revalidate();
         frame.repaint();
-
 
         if (client != null) {
             gamePanel.setClient(client);

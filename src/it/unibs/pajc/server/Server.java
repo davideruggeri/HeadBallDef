@@ -119,7 +119,7 @@ public class Server {
                         handler.sendGameState(new GameState(campoDiGioco));
                     }
                 }
-            }, 5000); // 5 secondi di attesa
+            }, 3000); // 5 secondi di attesa
         }
     }
 

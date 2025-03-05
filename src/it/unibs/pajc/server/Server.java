@@ -140,7 +140,6 @@ public class Server {
         }
     }
 
-
     public synchronized void broadcastGameState() {
         GameState state = new GameState(campoDiGioco);
         state.setTimeRemaining(seconds);
@@ -197,6 +196,7 @@ public class Server {
     }
 
     private class ClientHandler implements Runnable {
+
         private final Socket clientSocket;
         private ObjectOutputStream out;
         private ObjectInputStream in;
@@ -218,7 +218,6 @@ public class Server {
                 in = new ObjectInputStream(clientSocket.getInputStream());
 
                 System.out.println("Client connesso! PlayerID: " + playerId);
-
 
                 while (true) {
                     NetworkMessage message = (NetworkMessage) in.readObject();

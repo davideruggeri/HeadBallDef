@@ -5,8 +5,8 @@ import java.awt.geom.Ellipse2D;
 
 public class Ball extends Oggetto {
     private float gravita = 0.5f;
-    private float fattoreRimbalzo = 0.8f;
-    private final double GROUNDLEVEL = 0;
+    public final float FATTORE_RIMBALZO = 0.8f;
+    public final double GROUNDLEVEL = 0;
 
     public Ball(CampoDiGioco campo, int xc, int yc) {
         super(campo);
@@ -31,9 +31,12 @@ public class Ball extends Oggetto {
 
         if (getY() < GROUNDLEVEL + 20) {
             setPosizione(getX(), (float) GROUNDLEVEL + 20);
-            setVelocita(getVelocitaX(), - getVelocitaY() * fattoreRimbalzo);
+
+            velocita[0] *= FATTORE_RIMBALZO;
+            velocita[1] = -velocita[1] * FATTORE_RIMBALZO;
         }
     }
+
     public void setAngle(float angle) {
         float speed = (float) Math.hypot(velocita[0], velocita[1]); // Modulo della velocità
 

@@ -60,7 +60,6 @@ public class Background extends JPanel implements KeyListener {
         t.start();
     }
 
-
     private void loadImages() {
         backgroundImage = new ImageIcon(getClass().getResource("/images/sfondo1.png")).getImage();
         giocatore1 = new ImageIcon(getClass().getResource("/images/testa1.png")).getImage();
@@ -121,12 +120,31 @@ public class Background extends JPanel implements KeyListener {
         g2d.drawRect(getWidth() -245, 300, 245, 0);*/
 
         g2d.setTransform(original);
+
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Courier New", Font.BOLD, 50));
         String timerTxt = String.format("%02d:%02d", campo.getGameTime() / 60, campo.getGameTime() % 60);
+
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = fm.stringWidth(timerTxt);
-        g2d.drawString(timerTxt, getWidth() / 2 - textWidth / 2, 50);
+
+        int timerX = (getWidth() - textWidth) / 2;
+        int timerY = 50;
+        g2d.drawString(timerTxt, timerX, timerY);
+
+        String player1ScoreTxt = "" + campo.getPlayer1Score();
+        String player2ScoreTxt = "" + campo.getPlayer2Score();
+
+        FontMetrics scoreMetrics = g2d.getFontMetrics();
+
+        int player1x = 350;
+        int player1y = fm.getHeight();
+
+        int player2X = getWidth() - scoreMetrics.stringWidth(player2ScoreTxt) - 350;
+        int player2y = player1y;
+
+        g2d.drawString(player1ScoreTxt, player1x, player1y);
+        g2d.drawString(player2ScoreTxt, player2X, player2y);
 
     }
 
@@ -151,8 +169,8 @@ public class Background extends JPanel implements KeyListener {
         } else {
             for (Integer key : currentActiveKeys) {
                 switch (key) {
-                    case KeyEvent.VK_RIGHT -> g1.setVelocita(6f, g1.getVelocitaY());
-                    case KeyEvent.VK_LEFT -> g1.setVelocita(-6f, g1.getVelocitaY());
+                    case KeyEvent.VK_RIGHT -> g1.setVelocita(8f, g1.getVelocitaY());
+                    case KeyEvent.VK_LEFT -> g1.setVelocita(-8f, g1.getVelocitaY());
                     case KeyEvent.VK_SPACE -> g1.jump();
                 }
             }

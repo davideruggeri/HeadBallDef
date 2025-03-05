@@ -24,6 +24,7 @@ public class Oggetto {
     public void stepNext() {
         posizione[0] += velocita[0];
         posizione[1] += velocita[1];
+        //updateShape();
     }
 
     public void applyGravity() {
@@ -44,18 +45,25 @@ public class Oggetto {
 
     protected Shape shape;
 
-        public Shape getShape() {
-            AffineTransform t = new AffineTransform();
-            t.translate(getX(), getY());
+    private void updateShape() {
+        shape = getShape();
+    }
 
-            return t.createTransformedShape(shape);
-        }
+    public Shape getShape() {
+        AffineTransform t = new AffineTransform();
+        t.translate(getX(), getY());
 
-    public boolean checkCollision(Oggetto o){
+        return t.createTransformedShape(shape);
+    }
+
+    public boolean checkCollision(Oggetto o) {
         Area o1 = new Area(this.getShape());
         Area o2 = new Area(o.getShape());
-        o1.intersect(o2);
 
+        System.out.println("Bounds 1: " + this.getShape().getBounds());
+        System.out.println("Bounds 2: " + o.getShape().getBounds());
+
+        o1.intersect(o2);
         return !o1.isEmpty();
     }
 }

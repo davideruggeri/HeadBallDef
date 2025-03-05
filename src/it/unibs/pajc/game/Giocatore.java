@@ -31,11 +31,6 @@ public class Giocatore extends Oggetto {
         updateJump();
     }
 
-    /**
-     * Controllare il salto che non funziona
-     */
-
-
     public void jump() {
         if (!isJumping) {
             isJumping = true;
@@ -58,40 +53,48 @@ public class Giocatore extends Oggetto {
      * Sistemare la direzione con cui la palla viene rimbalzata dopo il contatto
      * gestire correttamente la fisica del rimbalzo tra giocatore e palla
      */
-    
+
     public void handleCollision(Ball ball) {
-        // Verifica la collisione
-        if (this.checkCollision(ball)) {
-            // Calcola l'area di intersezione tra il giocatore e la palla
-            Area intersezione = new Area(this.getShape());
-            intersezione.intersect(new Area(ball.getShape()));
+        if (checkCollision(ball)) {
+            // 1. Calcola normale di collisione
+            float deltaX = ball.getX() - getX();
+            float deltaY = ball.getY() - getY();
+            float distanza = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            float normaleX = deltaX / distanza;
+            float normaleY = deltaY / distanza;
 
-            // Ottieni il centro dell'area di intersezione come punto di contatto
-            double puntoContattoX = intersezione.getBounds2D().getCenterX();
-            double puntoContattoY = intersezione.getBounds2D().getCenterY();
+            // 2. Calcola velocità relativa lungo la normale
+            float velRelX = ball.getVelocitaX() - getVelocitaX();
+            float velRelY = ball.getVelocitaY() - getVelocitaY();
+            float velLungoNormale = velRelX * normaleX + velRelY * normaleY;
 
-            // Calcola il vettore dalla palla al punto di contatto
-            float deltaX = (float) (puntoContattoX - ball.getX());
-            float deltaY = (float) (puntoContattoY - ball.getY());
+            if (velLungoNormale > 0) return; // Le due cose si allontanano, niente collisione da gestire.
 
-            // Trova la normale alla superficie d'impatto (direzione della forza di rimbalzo)
-            float normaleAngle = (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
+            // 3. Calcola impulso
+            float e = 0.8f; // coefficiente di restituzione
+            float impulso = -(1 + e) * velLungoNormale;
 
-            // Calcola l'angolo di riflessione
-            float incomingAngle = (float) Math.toDegrees(Math.atan2(ball.getVelocitaY(), ball.getVelocitaX()));
-            float reflectionAngle = 2 * normaleAngle - incomingAngle;
-
-            // Imposta il nuovo angolo della palla
-            ball.setAngle(reflectionAngle);
-
-            // (Opzionale) Aggiungi un incremento di velocità per simulare l'impatto
-            float speedMultiplier = 1.1f; // Fattore di velocità
+            // 4. Applica impulso alla palla
             ball.setVelocita(
-                    ball.getVelocitaX() * speedMultiplier,
-                    ball.getVelocitaY() * speedMultiplier
+                    ball.getVelocitaX() + impulso * normaleX,
+                    ball.getVelocitaY() + impulso * normaleY
             );
+
+            // 5. Spin: se il giocatore è in movimento, "spinna" la palla lateralmente
+            float spin = getVelocitaX() * 0.5f;
+            ball.setVelocita(ball.getVelocitaX() + spin, ball.getVelocitaY());
+
+            // 6. Separazione: evita che la palla resti incastrata
+            float overlap = 20 - distanza;
+            if (overlap > 0) {
+                ball.setPosizione(
+                        ball.getX() + normaleX * overlap,
+                        ball.getY() + normaleY * overlap
+                );
+            }
         }
     }
+
     public int getId() {return id;}
 
     /* -----------------------------------

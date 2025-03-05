@@ -13,6 +13,9 @@ public class CampoDiGioco extends BaseModel{
     private boolean singlePlayer;
     private float groundY = 158;
     private int gameTime;
+    private int player1Score, player2Score;
+    private long lastCollisionTime = 0;
+    private static final long COLLISION_COOLDOWN = 50; // ms
 
     public CampoDiGioco(boolean singlePlayer) {
         this.singlePlayer = singlePlayer;
@@ -54,6 +57,10 @@ public class CampoDiGioco extends BaseModel{
     public Float getGroundY() {return groundY;}
     public int getGameTime() {return gameTime;}
     public void setGameTime(int gameTime) {this.gameTime = gameTime;}
+    public int getPlayer1Score() {return player1Score;}
+    public void setPlayer1Score(int player1Score) {this.player1Score = player1Score;}
+    public int getPlayer2Score() {return player2Score;}
+    public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
@@ -85,15 +92,18 @@ public class CampoDiGioco extends BaseModel{
                 }
             }
         }
-
-        if (o instanceof Ball) {
-            if (o.getX() < bounds.getMinX() + 45) {
-                o.setPosizione((float) bounds.getMinX() + 55, o.getY());
-                o.setVelocita(-o.getVelocitaX(), o.getVelocitaY()); // Rimbalzo sulla parete sinistra
+        if (o instanceof Ball palla) {
+            if (o.getX() < -430) {
+                o.setPosizione(-430, o.getY());
+                o.setVelocita(-o.getVelocitaX() * 0.7f, o.getVelocitaY() * 0.9f); // Rimbalzo sulla parete sinistra
             }
-            if (o.getX() > bounds.getMaxX() - 30) {
-                o.setPosizione((float) bounds.getMaxX() - 30, o.getY());
-                o.setVelocita(-o.getVelocitaX(), o.getVelocitaY()); // Rimbalzo sulla parete destra
+            if (o.getX() > 430) {
+                o.setPosizione(430, o.getY());
+                o.setVelocita(-o.getVelocitaX() * 0.7f, o.getVelocitaY() * 0.9f); // Rimbalzo sulla parete destra
+            }
+            if (o.getY() > 500) {
+                o.setPosizione(o.getX(), 500); // Rimbalzo sul tetto
+                o.setVelocita(o.getVelocitaX() * 0.7f, -o.getVelocitaY() * 0.9f);
             }
         }
     }
@@ -148,11 +158,18 @@ public class CampoDiGioco extends BaseModel{
     }
 
     private void checkCollisions() {
+        long now = System.currentTimeMillis();
+
+        if (now - lastCollisionTime < COLLISION_COOLDOWN) {
+            return;
+        }
         if (localPlayer != null && localPlayer.checkCollision(ball)) {
             ball.bounceOffPlayer(localPlayer);
+            lastCollisionTime = now;
         }
         if (remotePlayer != null && remotePlayer.checkCollision(ball)) {
             ball.bounceOffPlayer(remotePlayer);
+            lastCollisionTime = now;
         }
 
         // Aggiungi eventuali altre collisioni qui (es. giocatore vs muro o rete)

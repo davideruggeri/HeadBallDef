@@ -75,6 +75,8 @@ public class HeadBallApp {
         if (connectClient(host, Server.PORT)) {
             showControls();
             loadGamePanel(client, false);
+            client.startStateReceiver();
+            client.requestInitialState();
         }
     }
 
@@ -88,6 +90,8 @@ public class HeadBallApp {
         if (connectClient(address, port)) {
             showControls();
             loadGamePanel(client, false);
+            client.startStateReceiver();
+            client.requestInitialState();
         }
     }
 
@@ -110,7 +114,6 @@ public class HeadBallApp {
         if (client != null) {
             gamePanel.setClient(client);
             client.setBackground(gamePanel);
-            client.startStateReceiver();
 
         }
     }

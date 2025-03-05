@@ -220,8 +220,8 @@ public class Server {
                 System.out.println("Client connesso! PlayerID: " + playerId);
 
                 synchronized (Server.this) {
-                    sendGameState(new GameState(campoDiGioco));
-                    broadcastGameState();
+                    //sendGameState(new GameState(campoDiGioco));
+                    //broadcastGameState();
                 }
 
                 while (true) {
@@ -244,7 +244,6 @@ public class Server {
                 e.printStackTrace();
             }
         }
-
 
         public void sendGameStart() {
             try {
@@ -269,7 +268,6 @@ public class Server {
         public void sendGameState(GameState state) {
             try {
                 out.writeObject(new NetworkMessage(NetworkMessage.MessageType.GAME_STATE, state));
-                out.reset();
             } catch (IOException e) {
                 e.printStackTrace();
             }

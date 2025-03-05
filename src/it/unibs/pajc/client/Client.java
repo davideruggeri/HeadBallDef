@@ -38,8 +38,6 @@ public class Client {
                 throw new IOException("Messaggio iniziale inatteso dal server");
             }
 
-            requestInitialState();
-
             return true;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Errore nella connessione al server:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);

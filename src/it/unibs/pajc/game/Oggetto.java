@@ -1,69 +1,66 @@
 package it.unibs.pajc.game;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
+import java.awt.Shape;
 import java.awt.geom.Area;
+import java.awt.geom.AffineTransform;
 
-public class Oggetto {
-    private float[] posizione = {0, 0}; // x, y
-    protected float[] velocita = {0, 0}; // vx, vy
+public abstract class Oggetto {
+    protected float x, y;   // Posizione nel mondo
+    protected float vx, vy; // Velocità
     protected CampoDiGioco campo;
 
-    public Oggetto (CampoDiGioco campo){this.campo = campo;}
+    public Oggetto(CampoDiGioco campo, float x, float y) {
+        this.campo = campo;
+        this.x = x;
+        this.y = y;
+    }
 
-    public float getX(){return posizione[0];}
-    public float getY(){return posizione[1];}
-    public float getVelocitaX(){return velocita[0];}
-    public float getVelocitaY(){return velocita[1];}
-    public void setPosizione(float x, float y){posizione[0] = x; posizione[1] = y;}
-    public void setVelocita(float x, float y){velocita[0] = x; velocita[1] = y;}
-    public void setPosizioneY(float y){posizione[1] = y;}
-    public void setVelocitaY(float y){velocita[1] = y;}
+    public float getX() { return x; }
+    public float getY() { return y; }
+    public float getVelocitaX() { return vx; }
+    public float getVelocitaY() { return vy; }
 
+    public void setPosizione(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    public void setVelocita(float vx, float vy) {
+        this.vx = vx;
+        this.vy = vy;
+    }
 
     public void stepNext() {
-        posizione[0] += velocita[0];
-        posizione[1] += velocita[1];
-        //updateShape();
+        x += vx;
+        y += vy;
     }
 
     public void applyGravity() {
-        velocita[1] -= 0.5f; // gravità verso il basso
+        vy -= 0.5f; // La gravità va applicata secondo le unità del tuo mondo
     }
 
     public void applyBounce() {
-        velocita[1] -= velocita[1] * 0.8f;
+        vy -= vy * 0.8f;
     }
 
     public void applyFriction() {
-        velocita[0] *= 0.9f;
+        vx *= 0.9f;
     }
 
-    /*----------------------------------------------------------
-     * Creazione della Shape
-     */
+    // Ogni sottoclasse deve definire la propria forma di base,
+    // già impostata in coordinate locali
+    public abstract Shape getFormaBase();
 
-    protected Shape shape;
-
-    private void updateShape() {
-        shape = getShape();
-    }
-
+    // Restituisce la shape traslata in base alla posizione corrente
     public Shape getShape() {
-        AffineTransform t = new AffineTransform();
-        t.translate(getX(), getY());
-
-        return t.createTransformedShape(shape);
+        AffineTransform at = new AffineTransform();
+        at.translate(x, y);
+        return at.createTransformedShape(getFormaBase());
     }
 
     public boolean checkCollision(Oggetto o) {
-        Area o1 = new Area(this.getShape());
-        Area o2 = new Area(o.getShape());
-
-        System.out.println("Bounds 1: " + this.getShape().getBounds());
-        System.out.println("Bounds 2: " + o.getShape().getBounds());
-
-        o1.intersect(o2);
-        return !o1.isEmpty();
+        Area area1 = new Area(this.getShape());
+        Area area2 = new Area(o.getShape());
+        area1.intersect(area2);
+        return !area1.isEmpty();
     }
 }

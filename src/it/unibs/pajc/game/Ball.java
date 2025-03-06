@@ -1,49 +1,52 @@
 package it.unibs.pajc.game;
 
-import java.awt.geom.Area;
+import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
 public class Ball extends Oggetto {
-    private float gravita = 0.5f;
+    private final float gravita = 0.5f;
     public final float FATTORE_RIMBALZO = 0.8f;
-    public final double GROUNDLEVEL = 0;
+    public final double GROUNDLEVEL = 80;
 
     public Ball(CampoDiGioco campo, int xc, int yc) {
-        super(campo);
-
-        this.shape = new Area(new Ellipse2D.Double(
-                xc,
-                yc,
-                40,
-                40
-        ));
+        super(campo, xc, yc);
     }
 
-    public void bounceOffPlayer(Giocatore player) {
-        float bounceDirection = (this.getX() < player.getX()) ? 1 : -1;
-        this.setVelocita(bounceDirection * 5, -5); // spinge la palla lontano e verso l'alto
+    @Override
+    public Shape getFormaBase() {
+        // Crea un'ellisse centrata in (0,0) (raggio 20 → diametro 40)
+        return new Ellipse2D.Double(-20, -20, 20, 20);
     }
 
     @Override
     public void stepNext() {
         super.stepNext();
-        this.velocita[1] -= gravita;
+        // Applica la gravità
+        vy -= gravita;
 
-        if (getY() < GROUNDLEVEL + 20) {
-            setPosizione(getX(), (float) GROUNDLEVEL + 20);
-
-            velocita[0] *= FATTORE_RIMBALZO;
-            velocita[1] = -velocita[1] * FATTORE_RIMBALZO;
+        // Se la palla scende sotto il livello di terra (con un offset di 20)
+        if (y < GROUNDLEVEL + 20) {
+            setPosizione(x, (float) (GROUNDLEVEL + 20));
+            vx *= FATTORE_RIMBALZO;
+            vy = -vy * FATTORE_RIMBALZO;
         }
     }
 
-    public void setAngle(float angle) {
-        float speed = (float) Math.hypot(velocita[0], velocita[1]); // Modulo della velocità
-
-        // Aggiorna le componenti di velocità in base all'angolo
-        velocita[0] = (float) (speed * Math.cos(Math.toRadians(angle)));
-        velocita[1] = (float) (speed * Math.sin(Math.toRadians(angle)));
+    /**
+     * Calcola il rimbalzo della palla rispetto al giocatore.
+     * La palla viene spinta lontano e verso l'alto.
+     */
+    public void bounceOffPlayer(Giocatore player) {
+        float bounceDirection = (this.getX() < player.getX()) ? 1 : -1;
+        setVelocita(bounceDirection * 5, -5);
     }
 
+    /**
+     * Imposta un nuovo angolo per la velocità mantenendo invariato lo speed.
+     */
+    public void setAngle(float angle) {
+        float speed = (float) Math.hypot(vx, vy);
+        vx = (float) (speed * Math.cos(Math.toRadians(angle)));
+        vy = (float) (speed * Math.sin(Math.toRadians(angle)));
+    }
 }
-

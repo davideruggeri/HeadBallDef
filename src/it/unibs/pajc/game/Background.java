@@ -5,23 +5,21 @@ import it.unibs.pajc.client.ClientCommand;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class Background extends JPanel implements KeyListener {
 
     private final CampoDiGioco campo;
-
     private Image backgroundImage;
     private Image giocatore1;
     private Image giocatore2;
-
     private Client client;
     private Timer t;
+
+    private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
     public Background(Client client, boolean singlePlayer) {
         setLayout(null);
@@ -34,29 +32,25 @@ public class Background extends JPanel implements KeyListener {
 
         loadImages();
 
-        Timer animator = new Timer(16, e -> {
+        Timer animator = new Timer(33, e -> {
             applyControls();
             if (client == null) {
                 campo.stepNext();
             }
             repaint();
         });
-
         animator.start();
+
         if (client == null) {
             aggiornaTimer();
         }
     }
 
     private void aggiornaTimer() {
-        t = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                campo.setGameTime(campo.getGameTime() - 1);
-                repaint();
-            }
+        t = new Timer(1000, e -> {
+            campo.setGameTime(campo.getGameTime() - 1);
+            repaint();
         });
-
         t.start();
     }
 
@@ -71,96 +65,99 @@ public class Background extends JPanel implements KeyListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        AffineTransform original = g2d.getTransform();
-
-        double s = (double) Math.min(getWidth(), getHeight()) / 1000.;
-
-        g2d.scale(s, -s);
-        g2d.translate(getWidth() / (2 * s), (-getHeight() / s) + (132 * s));
-
-
         if (backgroundImage != null) {
-            g.drawImage(backgroundImage, (int) (-493 / s), (int) (-40 / s), (int) (getWidth() / s), (int) (getHeight() / s), this);
+            int imgWidth = backgroundImage.getWidth(this);
+            int imgHeight = backgroundImage.getHeight(this);
+
+            double scaleX = (double) getWidth() / imgWidth;
+            double scaleY = (double) getHeight() / imgHeight;
+
+            AffineTransform t = new AffineTransform();
+            t.translate(0, getHeight());
+            t.scale(scaleX, -scaleY);
+
+            g2d.drawImage(backgroundImage, t, this);
         }
 
-        for (Oggetto o : campo.listaOggetti) {
+        double worldWidth = CampoDiGioco.CAMPO_WIDTH;   // 1000
+        double worldHeight = CampoDiGioco.CAMPO_HEIGHT;   // 600
+
+        double scale = getWidth() / worldWidth;
+        double extraY = (getHeight() / scale - worldHeight) / 2;
+
+        AffineTransform worldToScreen = new AffineTransform();
+        worldToScreen.translate(0, extraY + worldHeight);
+        worldToScreen.scale(scale, -scale);
+
+        AffineTransform original = g2d.getTransform();
+        g2d.transform(worldToScreen);
+
+        for (Oggetto o : campo.getOggetti()) {
             if (o instanceof Giocatore giocatore) {
+                // Seleziona l'immagine in base al giocatore
                 Image img = (giocatore == campo.getLocalPlayer()) ? giocatore1 : giocatore2;
 
-                float imgX = giocatore.getX();
-                float imgY = giocatore.getY();
+                // Recupera i bounds della forma base per calcolare la trasformazione
+                Rectangle2D bounds = giocatore.getFormaBase().getBounds2D();
 
+                /*
+                 * La trasformazione che vogliamo applicare è la stessa usata in getShape():
+                 * 1. Trasliamo al punto (x, y) del giocatore.
+                 * 2. Scala di 0.5 in x e -0.5 in y (il fattore negativo ribalta verticalmente).
+                 * 3. Trasliamo di (-bounds.getWidth()/2, -bounds.getHeight()) per centrare.
+                 */
                 AffineTransform at = new AffineTransform();
-                if (giocatore == campo.getLocalPlayer()) {
-                    at.translate(imgX - (296) / s, imgY + (133) / s);
-                } else if (giocatore == campo.getRemotePlayer()) {
-                    at.translate(imgX + (212) / s, imgY + (133) / s);
-                }
-                at.scale(1.5, 1.5);
-                at.scale(1, -1);
+                at.translate(giocatore.getX(), giocatore.getY());
+                at.scale(0.5, -0.5);
+                at.translate(-bounds.getWidth() / 2, -bounds.getHeight());
 
+                // Disegna l'immagine con la trasformazione
                 g2d.drawImage(img, at, this);
-                g2d.draw(giocatore.getShape());
 
+                // (Facoltativo) Disegna il contorno della shape per confronto
+                g2d.setColor(Color.BLACK);
+                g2d.draw(giocatore.getShape());
             } else if (o instanceof Ball) {
                 g2d.setColor(Color.YELLOW);
-                AffineTransform at = new AffineTransform();
-                at.translate(o.getX() - o.getShape().getBounds2D().getWidth() / 2,
-                        o.getY() - o.getShape().getBounds2D().getHeight() / 2);
-
-                g2d.fill(at.createTransformedShape(o.getShape()));
+                g2d.fill(o.getShape());
             }
         }
-/*
+
         g2d.setColor(Color.BLACK);
-        g2d.drawRect(-getWidth(), 0, getWidth()*2, 0);
-        g2d.drawRect(-getWidth() + 245, 0, 0, 300);
-        g2d.drawRect(getWidth() - 245, 0, 0, 300);
-        g2d.drawRect(-getWidth(), 300, 245, 0);
-        g2d.drawRect(getWidth() -245, 300, 245, 0);*/
+        g2d.drawRect(0, 0, (int) worldWidth, (int) worldHeight);
 
         g2d.setTransform(original);
 
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Courier New", Font.BOLD, 50));
         String timerTxt = String.format("%02d:%02d", campo.getGameTime() / 60, campo.getGameTime() % 60);
-
         FontMetrics fm = g2d.getFontMetrics();
-        int textWidth = fm.stringWidth(timerTxt);
-
-        int timerX = (getWidth() - textWidth) / 2;
+        int timerX = (getWidth() - fm.stringWidth(timerTxt)) / 2;
         int timerY = 50;
         g2d.drawString(timerTxt, timerX, timerY);
 
-        String player1ScoreTxt = "" + campo.getPlayer1Score();
-        String player2ScoreTxt = "" + campo.getPlayer2Score();
-
-        FontMetrics scoreMetrics = g2d.getFontMetrics();
-
-        int player1x = 350;
-        int player1y = fm.getHeight();
-
-        int player2X = getWidth() - scoreMetrics.stringWidth(player2ScoreTxt) - 350;
-        int player2y = player1y;
-
+        String player1ScoreTxt = String.valueOf(campo.getPlayer1Score());
+        String player2ScoreTxt = String.valueOf(campo.getPlayer2Score());
+        int player1x = getWidth() / 4;
+        int player1y = 50;
+        int player2x = (3 * getWidth() / 4) - fm.stringWidth(player2ScoreTxt);
+        int player2y = 50;
         g2d.drawString(player1ScoreTxt, player1x, player1y);
-        g2d.drawString(player2ScoreTxt, player2X, player2y);
-
+        g2d.drawString(player2ScoreTxt, player2x, player2y);
     }
-
-    private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
     public void applyControls() {
         Giocatore g1 = campo.getLocalPlayer();
         if (g1 == null) return;
 
+        // Reset della velocità orizzontale
         g1.setVelocita(0, g1.getVelocitaY());
 
         if (client != null) {
             for (Integer key : currentActiveKeys) {
                 ClientCommand command = switch (key) {
                     case KeyEvent.VK_RIGHT -> new ClientCommand(ClientCommand.CommandType.MOVE_RIGHT, 1);
-                    case KeyEvent.VK_LEFT -> new ClientCommand(ClientCommand.CommandType.MOVE_LEFT, 1);
+                    case KeyEvent.VK_LEFT  -> new ClientCommand(ClientCommand.CommandType.MOVE_LEFT, 1);
                     case KeyEvent.VK_SPACE -> new ClientCommand(ClientCommand.CommandType.JUMP, 1);
                     default -> null;
                 };
@@ -170,7 +167,7 @@ public class Background extends JPanel implements KeyListener {
             for (Integer key : currentActiveKeys) {
                 switch (key) {
                     case KeyEvent.VK_RIGHT -> g1.setVelocita(8f, g1.getVelocitaY());
-                    case KeyEvent.VK_LEFT -> g1.setVelocita(-8f, g1.getVelocitaY());
+                    case KeyEvent.VK_LEFT  -> g1.setVelocita(-8f, g1.getVelocitaY());
                     case KeyEvent.VK_SPACE -> g1.jump();
                 }
             }
@@ -191,7 +188,7 @@ public class Background extends JPanel implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) { }
 
     @Override
     public void keyPressed(KeyEvent e) {

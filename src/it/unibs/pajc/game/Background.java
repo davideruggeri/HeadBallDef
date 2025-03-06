@@ -32,7 +32,7 @@ public class Background extends JPanel implements KeyListener {
 
         loadImages();
 
-        Timer animator = new Timer(33, e -> {
+        Timer animator = new Timer(16, e -> {
             applyControls();
             if (client == null) {
                 campo.stepNext();
@@ -55,9 +55,17 @@ public class Background extends JPanel implements KeyListener {
     }
 
     private void loadImages() {
-        backgroundImage = new ImageIcon(getClass().getResource("/images/sfondo1.png")).getImage();
-        giocatore1 = new ImageIcon(getClass().getResource("/images/testa1.png")).getImage();
-        giocatore2 = new ImageIcon(getClass().getResource("/images/testa2.png")).getImage();
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/sfondo1.png"));
+        backgroundImage = bgIcon.getImage();
+        System.out.println("Sfondo: " + bgIcon.getIconWidth() + "x" + bgIcon.getIconHeight());
+
+        ImageIcon icon1 = new ImageIcon(getClass().getResource("/images/testa1.png"));
+        giocatore1 = icon1.getImage();
+        System.out.println("Giocatore1: " + icon1.getIconWidth() + "x" + icon1.getIconHeight());
+
+        ImageIcon icon2 = new ImageIcon(getClass().getResource("/images/testa2.png"));
+        giocatore2 = icon2.getImage();
+        System.out.println("Giocatore2: " + icon2.getIconWidth() + "x" + icon2.getIconHeight());
     }
 
     @Override
@@ -94,29 +102,31 @@ public class Background extends JPanel implements KeyListener {
 
         for (Oggetto o : campo.getOggetti()) {
             if (o instanceof Giocatore giocatore) {
-                // Seleziona l'immagine in base al giocatore
                 Image img = (giocatore == campo.getLocalPlayer()) ? giocatore1 : giocatore2;
 
-                // Recupera i bounds della forma base per calcolare la trasformazione
                 Rectangle2D bounds = giocatore.getFormaBase().getBounds2D();
 
-                /*
-                 * La trasformazione che vogliamo applicare è la stessa usata in getShape():
-                 * 1. Trasliamo al punto (x, y) del giocatore.
-                 * 2. Scala di 0.5 in x e -0.5 in y (il fattore negativo ribalta verticalmente).
-                 * 3. Trasliamo di (-bounds.getWidth()/2, -bounds.getHeight()) per centrare.
-                 */
                 AffineTransform at = new AffineTransform();
+
                 at.translate(giocatore.getX(), giocatore.getY());
-                at.scale(0.5, -0.5);
+
+                double scaleFactor = 0.75;
+
+                at.scale(scaleFactor, -scaleFactor);
+
                 at.translate(-bounds.getWidth() / 2, -bounds.getHeight());
+                if (giocatore.getId() == 1) {
+                    at.translate(bounds.getX() - 7, bounds.getY() - 13);
+                    g2d.drawImage(img, at, this);
+                } else {
+                    at.translate(bounds.getX() - 52, bounds.getY() - 13);
+                    g2d.drawImage(img, at, this);
 
-                // Disegna l'immagine con la trasformazione
-                g2d.drawImage(img, at, this);
+                }
 
-                // (Facoltativo) Disegna il contorno della shape per confronto
                 g2d.setColor(Color.BLACK);
                 g2d.draw(giocatore.getShape());
+
             } else if (o instanceof Ball) {
                 g2d.setColor(Color.YELLOW);
                 g2d.fill(o.getShape());

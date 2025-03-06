@@ -26,13 +26,9 @@ public class Giocatore extends Oggetto {
         this.isBot = isBot;
         // Crea la forma in coordinate locali (senza offset di posizione)
         this.formaBase = creaArea(id);
+        System.out.println("formaBase bounds = " + formaBase.getBounds2D());
 
-        // Stampa di debug per verificare i bounds della shape
-        Rectangle2D bounds = formaBase.getBounds2D();
-        System.out.println("Giocatore " + id + " -> Posizione: (" + cx + ", " + cy + ")");
-        System.out.println("Bounds shape -> X: " + bounds.getX() + " Y: " + bounds.getY() +
-                " Width: " + bounds.getWidth() + " Height: " + bounds.getHeight());
-    }
+   }
 
     @Override
     public void stepNext() {
@@ -124,7 +120,7 @@ public class Giocatore extends Oggetto {
             if (image == null) return null;
 
             Path2D path = new Path2D.Double();
-            double fScal = 1.5; // Fattore di scala
+            double fScal = 1.0; // Fattore di scala
 
             int imgWidth = image.getWidth();
             int imgHeight = image.getHeight();
@@ -162,7 +158,7 @@ public class Giocatore extends Oggetto {
         Rectangle2D bounds = formaBase.getBounds2D();
         AffineTransform at = new AffineTransform();
         at.translate(x, y);
-        at.scale(0.5, -0.5);
+        at.scale(0.75, -0.75);
         at.translate(-bounds.getWidth() / 2, -bounds.getHeight());
         return at.createTransformedShape(formaBase);
     }

@@ -33,7 +33,7 @@ public class Server {
             System.out.println("Server avviato sulla porta " + PORT);
             running = true;
 
-            campoDiGioco.setGroundY(158);
+            campoDiGioco.setGroundY(80);
 
             new Thread(this::acceptClients).start();
             return true;

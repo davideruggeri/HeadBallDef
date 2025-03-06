@@ -26,8 +26,6 @@ public class Giocatore extends Oggetto {
         this.isBot = isBot;
         // Crea la forma in coordinate locali (senza offset di posizione)
         this.formaBase = creaArea(id);
-        System.out.println("formaBase bounds = " + formaBase.getBounds2D());
-
    }
 
     @Override

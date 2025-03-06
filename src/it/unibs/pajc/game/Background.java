@@ -57,15 +57,10 @@ public class Background extends JPanel implements KeyListener {
     private void loadImages() {
         ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/sfondo1.png"));
         backgroundImage = bgIcon.getImage();
-        System.out.println("Sfondo: " + bgIcon.getIconWidth() + "x" + bgIcon.getIconHeight());
-
         ImageIcon icon1 = new ImageIcon(getClass().getResource("/images/testa1.png"));
         giocatore1 = icon1.getImage();
-        System.out.println("Giocatore1: " + icon1.getIconWidth() + "x" + icon1.getIconHeight());
-
         ImageIcon icon2 = new ImageIcon(getClass().getResource("/images/testa2.png"));
         giocatore2 = icon2.getImage();
-        System.out.println("Giocatore2: " + icon2.getIconWidth() + "x" + icon2.getIconHeight());
     }
 
     @Override

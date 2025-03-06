@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class CampoDiGioco extends BaseModel {
     public static final int CAMPO_WIDTH = 1000;
     public static final int CAMPO_HEIGHT = 600;
-    // Definizione dei bounds in coordinate mondo: (0,0) fino a (1000,600)
     protected Rectangle2D.Float bounds = new Rectangle2D.Float(0, 0, CAMPO_WIDTH, CAMPO_HEIGHT);
 
     protected ArrayList<Oggetto> listaOggetti = new ArrayList<>();
@@ -15,7 +14,7 @@ public class CampoDiGioco extends BaseModel {
     private boolean singlePlayer;
     private int groundY = 80;
     private int gameTime;
-    private int player1Score, player2Score;
+    private int player1Score = 0, player2Score = 0;
     private long lastCollisionTime = 0;
     private static final long COLLISION_COOLDOWN = 50; // ms
 
@@ -23,26 +22,21 @@ public class CampoDiGioco extends BaseModel {
         this.singlePlayer = singlePlayer;
         this.gameTime = 90;
 
-        // Crea la palla al centro del campo (500,300)
         ball = new Ball(this, 500, 300);
         addOggetto(ball);
 
-        // Crea il giocatore locale, posizionato sul lato sinistro (es. x = 150) e al ground
         localPlayer = new Giocatore(this, 0, 0, 1, false);
-        localPlayer.setPosizione(150, groundY);
+        localPlayer.setPosizione(250, groundY);
         addOggetto(localPlayer);
 
-
-        // Se necessario, aggiungi anche il giocatore remoto (es. posizionato sul lato destro)
         if (!singlePlayer) {
             remotePlayer = new Giocatore(this, 0, 0, 2, false);
-            remotePlayer.setPosizione(850, groundY);
+            remotePlayer.setPosizione(750, groundY);
         } else {
             remotePlayer = new Giocatore(this, 0, 0, 2, true);
-            remotePlayer.setPosizione(850, groundY);
+            remotePlayer.setPosizione(750, groundY);
         }
         addOggetto(remotePlayer);
-
     }
 
     public void addPlayer(int playerId) {
@@ -75,6 +69,7 @@ public class CampoDiGioco extends BaseModel {
         for (Oggetto o : listaOggetti) {
             o.stepNext();
             applyLimit(o);
+            goal();
         }
     }
 
@@ -102,6 +97,25 @@ public class CampoDiGioco extends BaseModel {
                 o.setPosizione(o.getX(), CAMPO_HEIGHT);
                 o.setVelocita(o.getVelocitaX() * 0.7f, -o.getVelocitaY() * 0.9f);
             }
+            if (o.getY() > 235 && o.getY() < 238 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
+                o.setPosizione(o.getX(), 238);
+                o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.7f);
+            }
+
+            if (o.getY() > 237 && o.getY() < 240 && o.getX() > 925) { // Rimbalzo sulla traversa destra
+                o.setPosizione(o.getX(), 240);
+                o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.7f);
+            }
+        }
+    }
+
+    public void goal() {
+        if (ball.getY() < 235 && ball.getX() < 75) {
+            ball.reset(remotePlayer.getId());
+            setPlayer2Score(++player2Score);
+        } else if (ball.getY() < 237 && ball.getX() > 925) {
+            ball.reset(localPlayer.getId());
+            setPlayer1Score(++player1Score);
         }
     }
 

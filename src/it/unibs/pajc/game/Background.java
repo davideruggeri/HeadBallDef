@@ -18,6 +18,7 @@ public class Background extends JPanel implements KeyListener {
     private Image giocatore2;
     private Client client;
     private Timer t;
+    private Timer animator;
 
     private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
@@ -32,7 +33,7 @@ public class Background extends JPanel implements KeyListener {
 
         loadImages();
 
-        Timer animator = new Timer(16, e -> {
+        animator = new Timer(16, e -> {
             applyControls();
             if (client == null) {
                 campo.stepNext();
@@ -48,10 +49,24 @@ public class Background extends JPanel implements KeyListener {
 
     private void aggiornaTimer() {
         t = new Timer(1000, e -> {
-            campo.setGameTime(campo.getGameTime() - 1);
-            repaint();
+            if (campo.getGameTime() > 0) {
+                campo.setGameTime(campo.getGameTime() - 1);
+                repaint();
+            } else {
+                t.stop();
+                animator.stop();
+                endGame();
+            }
         });
         t.start();
+    }
+
+    public void endGame() {
+        removeKeyListener(this);
+
+        String message = "Partita terminata!!!\n "
+                + campo.getPlayer1Score() + " - " + campo.getPlayer2Score();
+        JOptionPane.showMessageDialog(this, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void loadImages() {
@@ -129,18 +144,28 @@ public class Background extends JPanel implements KeyListener {
         }
 
         g2d.setColor(Color.BLACK);
-        g2d.drawRect(0, 0, (int) worldWidth, (int) worldHeight);
+        //g2d.drawRect(0, 80, (int) worldWidth, (int) worldHeight);
+
+        //porta dx
+        g2d.drawRect(925, 240, (int) worldWidth, 0);
+        g2d.drawRect(925, 60, 0,181);
+
+        //porta sx
+        g2d.drawRect(0, 238, 75, 0);
+        g2d.drawRect(75, 60,0,179);
 
         g2d.setTransform(original);
 
-        g2d.setColor(Color.BLACK);
-        g2d.setFont(new Font("Courier New", Font.BOLD, 50));
-        String timerTxt = String.format("%02d:%02d", campo.getGameTime() / 60, campo.getGameTime() % 60);
-        FontMetrics fm = g2d.getFontMetrics();
-        int timerX = (getWidth() - fm.stringWidth(timerTxt)) / 2;
-        int timerY = 50;
-        g2d.drawString(timerTxt, timerX, timerY);
+        if (campo.getGameTime() <= 15) {
+            g2d.setColor(Color.RED);
+            drawTimer(g2d);
+        } else {
+            g2d.setColor(Color.BLACK);
+            drawTimer(g2d);
+        }
 
+        g2d.setColor(Color.BLACK);
+        FontMetrics fm = g2d.getFontMetrics();
         String player1ScoreTxt = String.valueOf(campo.getPlayer1Score());
         String player2ScoreTxt = String.valueOf(campo.getPlayer2Score());
         int player1x = getWidth() / 4;
@@ -151,11 +176,19 @@ public class Background extends JPanel implements KeyListener {
         g2d.drawString(player2ScoreTxt, player2x, player2y);
     }
 
+    private void drawTimer(Graphics2D g2d) {
+        g2d.setFont(new Font("Courier New", Font.BOLD, 50));
+        String timerTxt = String.format("%02d:%02d", campo.getGameTime() / 60, campo.getGameTime() % 60);
+        FontMetrics fm = g2d.getFontMetrics();
+        int timerX = (getWidth() - fm.stringWidth(timerTxt)) / 2;
+        int timerY = 50;
+        g2d.drawString(timerTxt, timerX, timerY);
+    }
+
     public void applyControls() {
         Giocatore g1 = campo.getLocalPlayer();
         if (g1 == null) return;
 
-        // Reset della velocità orizzontale
         g1.setVelocita(0, g1.getVelocitaY());
 
         if (client != null) {

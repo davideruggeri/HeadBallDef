@@ -32,10 +32,16 @@ public class CampoDiGioco extends BaseModel {
         localPlayer.setPosizione(150, groundY);
         addOggetto(localPlayer);
 
-        // Se necessario, aggiungi anche il giocatore remoto (es. posizionato sul lato destro)
 
-        /*remotePlayer = new Giocatore(this, 850, groundY, 2, singlePlayer);
-        addOggetto(remotePlayer);*/
+        // Se necessario, aggiungi anche il giocatore remoto (es. posizionato sul lato destro)
+        if (!singlePlayer) {
+            remotePlayer = new Giocatore(this, 0, 0, 2, false);
+            remotePlayer.setPosizione(850, groundY);
+        } else {
+            remotePlayer = new Giocatore(this, 0, 0, 2, true);
+            remotePlayer.setPosizione(850, groundY);
+        }
+        addOggetto(remotePlayer);
 
     }
 

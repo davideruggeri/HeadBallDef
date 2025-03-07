@@ -144,6 +144,9 @@ public class Server {
     public synchronized void broadcastGameState() {
         GameState state = new GameState(campoDiGioco);
         state.setTimeRemaining(seconds);
+        state.setPlayer2Score(scorePlayer2);
+        state.setPlayer1Score(scorePlayer1);
+
         if (campoDiGioco.isGoal1()) {
             state.setPlayer1Score(++scorePlayer1);
         } else if (campoDiGioco.isGoal2()) {

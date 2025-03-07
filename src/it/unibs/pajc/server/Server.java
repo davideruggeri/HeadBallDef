@@ -34,6 +34,7 @@ public class Server {
     public boolean startServer() {
         try {
             serverSocket = new ServerSocket(PORT);
+            serverSocket.setReuseAddress(true);
             System.out.println("Server avviato sulla porta " + PORT);
             running = true;
 

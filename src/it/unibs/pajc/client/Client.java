@@ -172,8 +172,15 @@ public class Client {
         JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: " + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
         Timer timer = new Timer(5000, e -> {
-            sendCommand(new ClientCommand(ClientCommand.CommandType.DISCONNECT, 0));
-            closeConnection();
+            // Se il socket è aperto, invia il comando di disconnessione
+            if (socket != null && !socket.isClosed()) {
+                try {
+                    sendCommand(new ClientCommand(ClientCommand.CommandType.DISCONNECT, 0));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                closeConnection();
+            }
 
             SwingUtilities.invokeLater(() -> {
                 frame.getContentPane().removeAll();
@@ -185,6 +192,7 @@ public class Client {
         timer.setRepeats(false);
         timer.start();
     }
+
 
 
     public void closeConnection() {

@@ -22,6 +22,9 @@ public class Client {
 
     private JDialog waitingDialog;
 
+    private int playerId;
+    private boolean playerReadySent = false;
+
     public Client(JFrame frame) {
         this.frame = frame;
     }
@@ -59,7 +62,7 @@ public class Client {
 
 
     public void requestInitialState() {
-        sendCommand(new ClientCommand(ClientCommand.CommandType.REQUEST_INITIAL_STATE, 1));
+        sendCommand(new ClientCommand(ClientCommand.CommandType.REQUEST_INITIAL_STATE, playerId));
     }
 
     public void disconnect() {
@@ -87,6 +90,12 @@ public class Client {
                             if (background != null) {
                                 background.updateGameState(state);
                             }
+
+                            if (!playerReadySent) {
+                                sendCommand(new ClientCommand(ClientCommand.CommandType.PLAYER_READY, playerId));
+                                playerReadySent = true;
+                                System.out.println("Inviato PLAYER_READY per player " + playerId);
+                            }
                         });
                     }
                     case COUNTDOWN_UPDATE -> {
@@ -100,6 +109,11 @@ public class Client {
                     case GAME_OVER -> {
                         String result = (String) message.getPayload();
                         SwingUtilities.invokeLater(() -> showEndMessage(result));
+                    }
+                    case PLAYER_ID_ASSIGNED -> {
+                        playerId = (Integer) message.getPayload();
+                        System.out.println("PlayerID ricevuto: " + playerId);
+                        requestInitialState();
                     }
                 }
             }

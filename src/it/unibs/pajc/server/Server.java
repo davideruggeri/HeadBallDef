@@ -24,7 +24,7 @@ public class Server {
     private int seconds = 90;
     private Timer gameTimer;
     private Timer loopTimer;
-    private int scorePlayer1 = 0, scorePlayer2 = 0;
+    private int readyPlayers = 0;
 
 
     public Server() {
@@ -64,10 +64,6 @@ public class Server {
                     ClientHandler handler = new ClientHandler(clientSocket, playerId++);
                     clients.add(handler);
                     new Thread(handler).start();
-
-                    if (clients.size() == 2) {
-                        checkAndStartGame();
-                    }
                 }
 
             } catch (IOException e) {
@@ -104,7 +100,6 @@ public class Server {
     }
 
     private synchronized void checkAndStartGame() {
-        if (clients.size() == 2) {
             System.out.println("Entrambi i giocatori sono connessi, il gioco inizierà tra 5 secondi...");
 
             Timer countdownTimer = new Timer();
@@ -118,15 +113,11 @@ public class Server {
                     if (secondsLeft[0] == 0) {
                         countdownTimer.cancel();
 
-                        // Ora invia lo stato iniziale completo a tutti i client
                         broadcastGameState();
 
-                        // Manda segnale di inizio gioco
                         for (ClientHandler client : clients) {
                             client.sendGameStart();
                         }
-
-                        // Avvia il game loop e il timer principale
                         startGameLoop();
                         startGameTimer();
                     } else {
@@ -134,7 +125,7 @@ public class Server {
                     }
                 }
             }, 1000, 1000); // ogni secondo
-        }
+
     }
 
     private void broadcastCountdownUpdate(int secondsLeft) {
@@ -174,7 +165,13 @@ public class Server {
                 break;
             case REQUEST_INITIAL_STATE:
                 sendStateToClient(playerId);
-                return;
+                break;
+            case PLAYER_READY:
+                readyPlayers++;
+                if (readyPlayers == 2) {
+                    checkAndStartGame();
+                }
+                break;
         }
         broadcastGameState();
     }
@@ -216,6 +213,7 @@ public class Server {
             handler.disconnect();
         }
         clients.clear();
+        readyPlayers = 0;
     }
 
     private class ClientHandler implements Runnable {
@@ -240,10 +238,20 @@ public class Server {
                 out = new ObjectOutputStream(clientSocket.getOutputStream());
                 in = new ObjectInputStream(clientSocket.getInputStream());
 
+                out.writeObject(new NetworkMessage(NetworkMessage.MessageType.PLAYER_ID_ASSIGNED, playerId));
+                out.reset();
                 System.out.println("Client connesso! PlayerID: " + playerId);
 
                 while (true) {
                     NetworkMessage message = (NetworkMessage) in.readObject();
+                    if (message.getType() == NetworkMessage.MessageType.PLAYER_COMMAND) {
+                        ClientCommand command = (ClientCommand) message.getPayload();
+                        if (command.getCommand() == ClientCommand.CommandType.REQUEST_INITIAL_STATE) {
+                            sendGameState(new GameState(campoDiGioco));
+                            return;
+                        }
+                    }
+
                     handleMessage(message);
                 }
 
@@ -301,6 +309,10 @@ public class Server {
                 clientSocket.close();
                 synchronized (Server.this) {
                     clients.remove(this);
+                    if (clients.size() < 2) {
+                        System.out.println("Un giocatore si è disconnesso. Fine partita!");
+                        endGame();
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

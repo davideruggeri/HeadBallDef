@@ -8,6 +8,7 @@ public class GameState implements Serializable {
     private float ballX, ballY, ballVelX, ballVelY;
     private float player1X, player1Y, player2X, player2Y;
     private int timeRemaining;
+    private int player1Score, player2Score;
 
     public GameState() {}
 
@@ -39,6 +40,10 @@ public class GameState implements Serializable {
 
     public int getTimeRemaining() { return timeRemaining; }
     public void setTimeRemaining(int timeRemaining) { this.timeRemaining = timeRemaining; }
+    public int getPlayer1Score() { return player1Score; }
+    public int getPlayer2Score() { return player2Score; }
+    public void setPlayer1Score(int player1Score) { this.player1Score = player1Score; }
+    public void setPlayer2Score(int player2Score) { this.player2Score = player2Score; }
 
     public void applyToCampo(CampoDiGioco campo) {
         campo.getBall().setPosizione(ballX, ballY);
@@ -46,5 +51,7 @@ public class GameState implements Serializable {
         campo.getLocalPlayer().setPosizione(player1X, player1Y);
         campo.getRemotePlayer().setPosizione(player2X, player2Y);
         campo.setGameTime(timeRemaining);
+        campo.setPlayer1Score(player1Score);
+        campo.setPlayer2Score(player2Score);
     }
 }

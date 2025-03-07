@@ -22,6 +22,9 @@ public class GameState implements Serializable {
         this.player1Y = campo.getLocalPlayer().getY();
         this.player2X = campo.getRemotePlayer().getX();
         this.player2Y = campo.getRemotePlayer().getY();
+
+        this.player1Score = campo.getPlayer1Score();
+        this.player2Score = campo.getPlayer2Score();
     }
 
     public static GameState fromCampoDiGioco(CampoDiGioco campo) {

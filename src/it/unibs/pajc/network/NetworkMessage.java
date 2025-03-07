@@ -10,7 +10,7 @@ public class NetworkMessage implements Serializable {
         ERROR,
         GAME_START,
         COUNTDOWN_UPDATE,
-        POINTS_UPDATE
+        GAME_OVER
     }
 
     private final MessageType type;

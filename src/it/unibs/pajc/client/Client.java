@@ -96,6 +96,10 @@ public class Client {
                             SwingUtilities.invokeLater(this::hideWaitingDialog);
                         System.out.println("Il gioco è iniziato!");
                     }
+                    case GAME_OVER -> {
+                        String result = (String) message.getPayload();
+                        SwingUtilities.invokeLater(() -> showEndMessage(result));
+                    }
                 }
             }
         });
@@ -139,5 +143,8 @@ public class Client {
         if (waitingDialog != null && waitingDialog.isVisible()) {
             waitingDialog.setVisible(false);
         }
+    }
+    private void showEndMessage(String result) {
+        JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: " + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 }

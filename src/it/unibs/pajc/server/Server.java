@@ -153,7 +153,6 @@ public class Server {
         state.setPlayer1Score(campoDiGioco.getPlayer1Score());
         state.setPlayer2Score(campoDiGioco.getPlayer2Score());
 
-        System.out.println(campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score());
         for (ClientHandler handler : clients) {
             handler.sendGameState(state);
         }
@@ -199,18 +198,23 @@ public class Server {
                     seconds--;
                     broadcastGameState();
                 } else {
-                    endGame();
                     gameTimer.cancel();
                     loopTimer.cancel();
                     System.out.println("Tempo scaduto!");
+                    endGame();
                 }
             }
         }, 0, 1000);
     }
 
     public void endGame() {
-        String message = "Partita terminata!!!\n "
-                + campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score();
+        String message = campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score();
+        NetworkMessage gameOverMessage = new NetworkMessage(NetworkMessage.MessageType.GAME_OVER, message);
+
+        for (ClientHandler handler : clients) {
+            handler.sendMessage(gameOverMessage);
+        }
+
         JOptionPane.showMessageDialog(null, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 

@@ -146,5 +146,6 @@ public class Client {
     }
     private void showEndMessage(String result) {
         JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: " + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        frame.dispose();
     }
 }

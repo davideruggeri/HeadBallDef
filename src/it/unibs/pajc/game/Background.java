@@ -67,6 +67,8 @@ public class Background extends JPanel implements KeyListener {
         String message = "Partita terminata!!!\n "
                 + campo.getPlayer1Score() + " - " + campo.getPlayer2Score();
         JOptionPane.showMessageDialog(this, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+
+
     }
 
     private void loadImages() {

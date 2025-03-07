@@ -45,7 +45,7 @@ public class CampoDiGioco extends BaseModel {
             addOggetto(localPlayer);
             System.out.println("Assegnato Player " + playerId + " come localPlayer.");
         } else if (playerId == 2 && remotePlayer == null) {
-            remotePlayer = new Giocatore(this, 850, groundY, playerId, false);
+            remotePlayer = new Giocatore(this, 750, groundY, playerId, false);
             addOggetto(remotePlayer);
             System.out.println("Assegnato Player " + playerId + " come remotePlayer.");
         }
@@ -161,6 +161,7 @@ public class CampoDiGioco extends BaseModel {
                 o.setPosizione(o.getX(), o.getY() + o.getVelocitaY());
             }
             applyLimit(o);
+            goal();
         }
         checkCollisions();
     }

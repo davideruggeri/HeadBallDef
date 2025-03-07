@@ -212,7 +212,7 @@ public class Server {
         String message = campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score();
         NetworkMessage gameOverMessage = new NetworkMessage(NetworkMessage.MessageType.GAME_OVER, message);
 
-        for (ClientHandler handler : clients) {
+        for (ClientHandler handler : new ArrayList<>(clients)) {
             handler.sendMessage(gameOverMessage);
             handler.disconnect();
         }

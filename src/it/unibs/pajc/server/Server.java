@@ -5,9 +5,11 @@ import it.unibs.pajc.game.CampoDiGioco;
 import it.unibs.pajc.game.GameState;
 import it.unibs.pajc.network.NetworkMessage;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Timer;
 
 public class Server {
 
@@ -21,6 +23,7 @@ public class Server {
     private Timer gameLoopTimer;
     private int seconds = 90;
     private Timer gameTimer;
+    private Timer loopTimer;
     private int scorePlayer1 = 0, scorePlayer2 = 0;
 
 
@@ -90,8 +93,8 @@ public class Server {
     }
 
     private void startGameLoop() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        loopTimer = new Timer();
+        loopTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 campoDiGioco.updatePhysics();
@@ -142,17 +145,15 @@ public class Server {
     }
 
     public synchronized void broadcastGameState() {
+        campoDiGioco.goal();
+
         GameState state = new GameState(campoDiGioco);
         state.setTimeRemaining(seconds);
-        state.setPlayer2Score(scorePlayer2);
-        state.setPlayer1Score(scorePlayer1);
-        System.out.println(scorePlayer1 + " - " + scorePlayer2);
 
-        if (campoDiGioco.isGoal1()) {
-            state.setPlayer1Score(++scorePlayer1);
-        } else if (campoDiGioco.isGoal2()) {
-            state.setPlayer2Score(++scorePlayer2);
-        }
+        state.setPlayer1Score(campoDiGioco.getPlayer1Score());
+        state.setPlayer2Score(campoDiGioco.getPlayer2Score());
+
+        System.out.println(campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score());
         for (ClientHandler handler : clients) {
             handler.sendGameState(state);
         }
@@ -199,6 +200,7 @@ public class Server {
                     broadcastGameState();
                 } else {
                     gameTimer.cancel();
+                    loopTimer.cancel();
                     System.out.println("Tempo scaduto!");
                 }
             }

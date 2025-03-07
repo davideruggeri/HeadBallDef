@@ -146,6 +146,7 @@ public class Server {
         state.setTimeRemaining(seconds);
         state.setPlayer2Score(scorePlayer2);
         state.setPlayer1Score(scorePlayer1);
+        System.out.println(scorePlayer1 + " - " + scorePlayer2);
 
         if (campoDiGioco.isGoal1()) {
             state.setPlayer1Score(++scorePlayer1);

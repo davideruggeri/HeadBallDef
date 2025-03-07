@@ -199,12 +199,19 @@ public class Server {
                     seconds--;
                     broadcastGameState();
                 } else {
+                    endGame();
                     gameTimer.cancel();
                     loopTimer.cancel();
                     System.out.println("Tempo scaduto!");
                 }
             }
         }, 0, 1000);
+    }
+
+    public void endGame() {
+        String message = "Partita terminata!!!\n "
+                + campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score();
+        JOptionPane.showMessageDialog(null, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private class ClientHandler implements Runnable {

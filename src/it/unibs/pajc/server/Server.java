@@ -214,8 +214,6 @@ public class Server {
         for (ClientHandler handler : clients) {
             handler.sendMessage(gameOverMessage);
         }
-
-        JOptionPane.showMessageDialog(null, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private class ClientHandler implements Runnable {

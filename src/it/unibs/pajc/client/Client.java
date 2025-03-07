@@ -171,17 +171,21 @@ public class Client {
     private void showEndMessage(String result) {
         JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: " + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
-        sendCommand(new ClientCommand(ClientCommand.CommandType.DISCONNECT, 0));
-        closeConnection();
+        Timer timer = new Timer(5000, e -> {
+            sendCommand(new ClientCommand(ClientCommand.CommandType.DISCONNECT, 0));
+            closeConnection();
 
-        SwingUtilities.invokeLater(() -> {
-            frame.getContentPane().removeAll();
-            HeadBallApp menu = new HeadBallApp();
-            menu.setExistingFrame(frame);
-            menu.showMenu();
+            SwingUtilities.invokeLater(() -> {
+                frame.getContentPane().removeAll();
+                HeadBallApp menu = new HeadBallApp();
+                menu.setExistingFrame(frame);
+                menu.showMenu();
+            });
         });
-
+        timer.setRepeats(false);
+        timer.start();
     }
+
 
     public void closeConnection() {
         try {

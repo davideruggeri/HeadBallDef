@@ -214,10 +214,18 @@ public class Server {
 
         for (ClientHandler handler : new ArrayList<>(clients)) {
             handler.sendMessage(gameOverMessage);
-            handler.disconnect();
+
         }
-        clients.clear();
-        readyPlayers = 0;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (ClientHandler handler : new ArrayList<>(clients)) {
+                    handler.disconnect();
+                }
+                clients.clear();
+                readyPlayers = 0;
+            }
+        }, 5000);
     }
 
     private class ClientHandler implements Runnable {

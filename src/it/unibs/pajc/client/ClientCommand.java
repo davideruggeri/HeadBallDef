@@ -3,7 +3,7 @@ package it.unibs.pajc.client;
 import java.io.Serializable;
 
 public class ClientCommand implements Serializable {
-    public enum CommandType { MOVE_LEFT, MOVE_RIGHT, JUMP, SHOOT, REQUEST_INITIAL_STATE, JOIN_GAME, DISCONNECT, PLAYER_READY};
+    public enum CommandType { MOVE_LEFT, MOVE_RIGHT, JUMP, SHOOT, REQUEST_INITIAL_STATE, JOIN_GAME, PLAYER_READY, DISCONNECT};
 
     private CommandType command;
     private int playerId;

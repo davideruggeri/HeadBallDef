@@ -6,6 +6,7 @@ import it.unibs.pajc.game.HeadBallApp;
 import it.unibs.pajc.network.NetworkMessage;
 
 import javax.swing.*;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -115,6 +116,11 @@ public class Client {
                         System.out.println("PlayerID ricevuto: " + playerId);
                         requestInitialState();
                     }
+                    case DISCONNECT -> {
+                        System.out.println("Il server ha chiuso la connessione.");
+                        closeConnection();
+                        return;
+                    }
                 }
             }
         });
@@ -126,7 +132,10 @@ public class Client {
     public NetworkMessage readMessage() {
         try {
             return (NetworkMessage) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (EOFException e) {
+            System.out.println("Connessione chiusa dal server");
+            return null;
+        }catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(frame, "Errore nella lettura del messaggio dal server:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
             return null;

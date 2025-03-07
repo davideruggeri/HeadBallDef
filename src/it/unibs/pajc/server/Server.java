@@ -50,20 +50,24 @@ public class Server {
     private void acceptClients() {
         int playerId = 1;
 
-        while (running) {
+        while (running && clients.size() < 2) {
             try {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Nuovo client connesso: " + clientSocket.getInetAddress());
 
-                if (playerId == 1) {
-                    campoDiGioco.addPlayer(playerId);
-                }else if (playerId == 2) {
-                    campoDiGioco.addPlayer(playerId);
-                }
+                campoDiGioco.addPlayer(playerId);
+
                 synchronized (this) {
-                    ClientHandler handler = new ClientHandler(clientSocket, playerId++);
+                    ClientHandler handler = new ClientHandler(clientSocket, playerId);
                     clients.add(handler);
                     new Thread(handler).start();
+                    playerId++;
+
+                    if (clients.size() == 2) {
+                        System.out.println("Entrambi i giocatori connessi!");
+                    } else {
+                        System.out.println("In attesa del secondo giocatore...");
+                    }
                 }
 
             } catch (IOException e) {
@@ -248,7 +252,7 @@ public class Server {
                         ClientCommand command = (ClientCommand) message.getPayload();
                         if (command.getCommand() == ClientCommand.CommandType.REQUEST_INITIAL_STATE) {
                             sendGameState(new GameState(campoDiGioco));
-                            return;
+                            continue;
                         }
                     }
 
@@ -306,7 +310,10 @@ public class Server {
 
         private void disconnect() {
             try {
-                clientSocket.close();
+                if (!clientSocket.isClosed()) {
+                    sendMessage(new NetworkMessage(NetworkMessage.MessageType.DISCONNECT, null));
+                    clientSocket.close();
+                }
                 synchronized (Server.this) {
                     clients.remove(this);
                     if (clients.size() < 2) {

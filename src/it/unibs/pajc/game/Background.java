@@ -20,9 +20,12 @@ public class Background extends JPanel implements KeyListener {
     private Timer t;
     private Timer animator;
 
+    private JFrame frame;
+
     private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
-    public Background(Client client, boolean singlePlayer) {
+    public Background(JFrame frame, Client client, boolean singlePlayer) {
+        this.frame = frame;
         setLayout(null);
         campo = new CampoDiGioco(singlePlayer);
         this.client = client;
@@ -68,7 +71,12 @@ public class Background extends JPanel implements KeyListener {
                 + campo.getPlayer1Score() + " - " + campo.getPlayer2Score();
         JOptionPane.showMessageDialog(this, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
-
+        SwingUtilities.invokeLater(() -> {
+            frame.getContentPane().removeAll();
+            HeadBallApp menu = new HeadBallApp();
+            menu.setExistingFrame(frame);
+            menu.showMenu();
+        });
     }
 
     private void loadImages() {

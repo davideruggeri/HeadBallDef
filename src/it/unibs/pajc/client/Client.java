@@ -2,6 +2,7 @@ package it.unibs.pajc.client;
 
 import it.unibs.pajc.game.Background;
 import it.unibs.pajc.game.GameState;
+import it.unibs.pajc.game.HeadBallApp;
 import it.unibs.pajc.network.NetworkMessage;
 
 import javax.swing.*;
@@ -146,6 +147,26 @@ public class Client {
     }
     private void showEndMessage(String result) {
         JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: " + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        frame.dispose();
+
+        sendCommand(new ClientCommand(ClientCommand.CommandType.DISCONNECT, 0));
+        closeConnection();
+
+        SwingUtilities.invokeLater(() -> {
+            frame.getContentPane().removeAll();
+            HeadBallApp menu = new HeadBallApp();
+            menu.setExistingFrame(frame);
+            menu.showMenu();
+        });
+
+    }
+
+    public void closeConnection() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

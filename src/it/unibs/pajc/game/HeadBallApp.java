@@ -58,6 +58,10 @@ public class HeadBallApp {
         frame.setVisible(true);
     }
 
+    public void setExistingFrame(JFrame frame) {
+        this.frame = frame;
+    }
+
     private void startLocalGame() {
         showControls();
         loadGamePanel(null, true);  // Single player, nessun client
@@ -106,7 +110,7 @@ public class HeadBallApp {
 
     private void loadGamePanel(Client client, boolean singlePlayer) {
         frame.getContentPane().removeAll();
-        Background gamePanel = new Background(client, singlePlayer);
+        Background gamePanel = new Background(frame, client, singlePlayer);
         frame.getContentPane().add(gamePanel, BorderLayout.CENTER);
         frame.revalidate();
         frame.repaint();

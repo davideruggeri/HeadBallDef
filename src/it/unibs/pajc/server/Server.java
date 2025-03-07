@@ -213,7 +213,9 @@ public class Server {
 
         for (ClientHandler handler : clients) {
             handler.sendMessage(gameOverMessage);
+            handler.disconnect();
         }
+        clients.clear();
     }
 
     private class ClientHandler implements Runnable {
@@ -273,8 +275,13 @@ public class Server {
         private void handleMessage(NetworkMessage message) {
             if (message.getType() == NetworkMessage.MessageType.PLAYER_COMMAND) {
                 ClientCommand command = (ClientCommand) message.getPayload();
-                synchronized (Server.this) {
-                    processCommand(playerId, command);
+                if (command.getCommand() == ClientCommand.CommandType.DISCONNECT) {
+                    System.out.println("Il player " + playerId + " si è disconnesso!");
+                    disconnect();
+                } else {
+                    synchronized (Server.this) {
+                        processCommand(playerId, command);
+                    }
                 }
             } else {
                 System.err.println("Messaggio sconosciuto: " + message.getType());

@@ -17,6 +17,7 @@ public class CampoDiGioco extends BaseModel {
     private int player1Score = 0, player2Score = 0;
     private long lastCollisionTime = 0;
     private static final long COLLISION_COOLDOWN = 50; // ms
+    private boolean isGoal1, isGoal2;
 
     public CampoDiGioco(boolean singlePlayer) {
         this.singlePlayer = singlePlayer;
@@ -64,6 +65,8 @@ public class CampoDiGioco extends BaseModel {
     public void setPlayer1Score(int player1Score) {this.player1Score = player1Score;}
     public int getPlayer2Score() {return player2Score;}
     public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
+    public boolean isGoal1() {return isGoal1;}
+    public boolean isGoal2() {return isGoal2;}
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
@@ -113,9 +116,14 @@ public class CampoDiGioco extends BaseModel {
         if (ball.getY() < 235 && ball.getX() < 75) {
             ball.reset(remotePlayer.getId());
             setPlayer2Score(++player2Score);
+            isGoal2 = true;
         } else if (ball.getY() < 237 && ball.getX() > 925) {
             ball.reset(localPlayer.getId());
             setPlayer1Score(++player1Score);
+            isGoal1 = true;
+        } else {
+            isGoal2 = false;
+            isGoal1 = false;
         }
     }
 

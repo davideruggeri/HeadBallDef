@@ -21,6 +21,7 @@ public class Server {
     private Timer gameLoopTimer;
     private int seconds = 90;
     private Timer gameTimer;
+    private int scorePlayer1 = 0, scorePlayer2 = 0;
 
 
     public Server() {
@@ -143,6 +144,11 @@ public class Server {
     public synchronized void broadcastGameState() {
         GameState state = new GameState(campoDiGioco);
         state.setTimeRemaining(seconds);
+        if (campoDiGioco.isGoal1()) {
+            state.setPlayer1Score(++scorePlayer1);
+        } else if (campoDiGioco.isGoal2()) {
+            state.setPlayer2Score(++scorePlayer2);
+        }
         for (ClientHandler handler : clients) {
             handler.sendGameState(state);
         }

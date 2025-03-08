@@ -145,7 +145,7 @@ public class Background extends JPanel implements KeyListener {
                 }
 
                 g2d.setColor(Color.BLACK);
-                g2d.draw(giocatore.getShape());
+                //g2d.draw(giocatore.getShape());
 
             } else if (o instanceof Ball) {
                 g2d.setColor(Color.YELLOW);

@@ -100,13 +100,13 @@ public class CampoDiGioco extends BaseModel {
                 o.setPosizione(o.getX(), CAMPO_HEIGHT);
                 o.setVelocita(o.getVelocitaX() * 0.7f, -o.getVelocitaY() * 0.9f);
             }
-            if (o.getY() > 235 && o.getY() < 238 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
-                o.setPosizione(o.getX(), 238);
+            if (o.getY() > 233 && o.getY() < 243 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
+                o.setPosizione(o.getX(), 243);
                 o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.7f);
             }
 
-            if (o.getY() > 237 && o.getY() < 240 && o.getX() > 925) { // Rimbalzo sulla traversa destra
-                o.setPosizione(o.getX(), 240);
+            if (o.getY() > 235 && o.getY() < 245 && o.getX() > 925) { // Rimbalzo sulla traversa destra
+                o.setPosizione(o.getX(), 245);
                 o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.7f);
             }
         }

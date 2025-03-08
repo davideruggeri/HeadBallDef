@@ -83,8 +83,8 @@ public class CampoDiGioco extends BaseModel {
                     o.setPosizione(30, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
-                if (o.getX() > CAMPO_WIDTH - 35) {
-                    o.setPosizione(CAMPO_WIDTH - 35, o.getY());
+                if (o.getX() > CAMPO_WIDTH - 45) {
+                    o.setPosizione(CAMPO_WIDTH - 45, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
             } else if (giocatore.getId() == 2) {
@@ -92,8 +92,8 @@ public class CampoDiGioco extends BaseModel {
                     o.setPosizione(0, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
-                if (o.getX() > CAMPO_WIDTH - 55) {
-                    o.setPosizione(CAMPO_WIDTH - 55, o.getY());
+                if (o.getX() > CAMPO_WIDTH - 65) {
+                    o.setPosizione(CAMPO_WIDTH - 65, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
             }

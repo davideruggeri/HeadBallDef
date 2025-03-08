@@ -92,8 +92,8 @@ public class CampoDiGioco extends BaseModel {
                     o.setPosizione(0, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
-                if (o.getX() > CAMPO_WIDTH - 65) {
-                    o.setPosizione(CAMPO_WIDTH - 65, o.getY());
+                if (o.getX() > CAMPO_WIDTH - 70) {
+                    o.setPosizione(CAMPO_WIDTH - 70, o.getY());
                     o.setVelocita(0, o.getVelocitaY());
                 }
             }

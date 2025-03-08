@@ -78,12 +78,12 @@ public class CampoDiGioco extends BaseModel {
 
     private void applyLimit(Oggetto o) {
         if (o instanceof Giocatore) {
-            if (o.getX() < 0) {
-                o.setPosizione(0, o.getY());
+            if (o.getX() < 30) {
+                o.setPosizione(30, o.getY());
                 o.setVelocita(0, o.getVelocitaY());
             }
-            if (o.getX() > CAMPO_WIDTH) {
-                o.setPosizione(CAMPO_WIDTH, o.getY());
+            if (o.getX() > CAMPO_WIDTH -35) {
+                o.setPosizione(CAMPO_WIDTH -35, o.getY());
                 o.setVelocita(0, o.getVelocitaY());
             }
         }

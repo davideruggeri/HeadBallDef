@@ -155,7 +155,7 @@ public class CampoDiGioco extends BaseModel {
     }
 
     public void kickBall(int playerId) {
-        // Qui puoi implementare la logica per "calciare" la palla se necessario
+        // implementare la logica per "calciare" la palla
     }
 
     public void updatePhysics() {

@@ -180,6 +180,5 @@ public class CampoDiGioco {
             ball.bounceOffPlayer(remotePlayer);
             lastCollisionTime = now;
         }
-        // Qui puoi aggiungere altre logiche di collisione (ad esempio, contro ostacoli o pareti)
     }
 }

@@ -1,26 +1,21 @@
 package it.unibs.pajc.game;
 
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-public class CampoDiGioco extends BaseModel {
+public class CampoDiGioco {
     public static final int CAMPO_WIDTH = 1000;
     public static final int CAMPO_HEIGHT = 600;
-    protected Rectangle2D.Float bounds = new Rectangle2D.Float(0, 0, CAMPO_WIDTH, CAMPO_HEIGHT);
 
     protected ArrayList<Oggetto> listaOggetti = new ArrayList<>();
     protected Ball ball;
     protected Giocatore localPlayer, remotePlayer;
-    private boolean singlePlayer;
     private int groundY = 80;
     private int gameTime;
     private int player1Score = 0, player2Score = 0;
     private long lastCollisionTime = 0;
     private static final long COLLISION_COOLDOWN = 50; // ms
-    private boolean isGoal1, isGoal2;
 
     public CampoDiGioco(boolean singlePlayer) {
-        this.singlePlayer = singlePlayer;
         this.gameTime = 90;
 
         ball = new Ball(this, 500, 300);
@@ -65,8 +60,6 @@ public class CampoDiGioco extends BaseModel {
     public void setPlayer1Score(int player1Score) {this.player1Score = player1Score;}
     public int getPlayer2Score() {return player2Score;}
     public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
-    public boolean isGoal1() {return isGoal1;}
-    public boolean isGoal2() {return isGoal2;}
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
@@ -124,17 +117,12 @@ public class CampoDiGioco extends BaseModel {
     }
 
     public void goal() {
-        if (ball.getY() < 235 && ball.getX() < 75) {
+        if (ball.getY() < 232 && ball.getX() < 75) {
             ball.reset(remotePlayer.getId());
             setPlayer2Score(++player2Score);
-            isGoal2 = true;
-        } else if (ball.getY() < 237 && ball.getX() > 925) {
+        } else if (ball.getY() < 234 && ball.getX() > 925) {
             ball.reset(localPlayer.getId());
             setPlayer1Score(++player1Score);
-            isGoal1 = true;
-        } else {
-            isGoal2 = false;
-            isGoal1 = false;
         }
     }
 
@@ -154,22 +142,16 @@ public class CampoDiGioco extends BaseModel {
         }
     }
 
-    public void kickBall(int playerId) {
-        // implementare la logica per "calciare" la palla
-    }
-
     public void updatePhysics() {
         for (Oggetto o : listaOggetti) {
-            if (o instanceof Ball) {
-                Ball palla = (Ball) o;
-                palla.applyGravity();  // Applica la gravità
+            if (o instanceof Ball palla) {
+                palla.applyGravity();
                 if (palla.getY() <= 0) {
                     palla.applyFriction();
                 }
                 palla.stepNext();
             }
-            if (o instanceof Giocatore) {
-                Giocatore giocatore = (Giocatore) o;
+            if (o instanceof Giocatore giocatore) {
                 giocatore.stepNext();
                 giocatore.applyFriction();
                 if (giocatore.getY() < groundY) {

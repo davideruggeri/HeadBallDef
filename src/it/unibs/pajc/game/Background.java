@@ -9,18 +9,19 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Background extends JPanel implements KeyListener {
-
     private final CampoDiGioco campo;
+
     private Image backgroundImage;
     private Image giocatore1;
     private Image giocatore2;
     private Client client;
     private Timer t;
-    private Timer animator;
+    private final Timer animator;
 
-    private JFrame frame;
+    private final JFrame frame;
 
     private final ArrayList<Integer> currentActiveKeys = new ArrayList<>();
 
@@ -36,7 +37,7 @@ public class Background extends JPanel implements KeyListener {
 
         loadImages();
 
-        animator = new Timer(16, e -> {
+        animator = new Timer(16, _ -> {
             applyControls();
             if (client == null) {
                 campo.stepNext();
@@ -50,8 +51,12 @@ public class Background extends JPanel implements KeyListener {
         }
     }
 
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
     private void aggiornaTimer() {
-        t = new Timer(1000, e -> {
+        t = new Timer(1000, _ -> {
             if (campo.getGameTime() > 0) {
                 campo.setGameTime(campo.getGameTime() - 1);
                 repaint();
@@ -80,13 +85,17 @@ public class Background extends JPanel implements KeyListener {
     }
 
     private void loadImages() {
-        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/sfondo1.png"));
+        ImageIcon bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/sfondo1.png")));
         backgroundImage = bgIcon.getImage();
-        ImageIcon icon1 = new ImageIcon(getClass().getResource("/images/testa1.png"));
+        ImageIcon icon1 = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/testa1.png")));
         giocatore1 = icon1.getImage();
-        ImageIcon icon2 = new ImageIcon(getClass().getResource("/images/testa2.png"));
+        ImageIcon icon2 = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/testa2.png")));
         giocatore2 = icon2.getImage();
     }
+
+    /* *************************
+    * Creazione campo di gioco *
+    ****************************/
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -154,7 +163,6 @@ public class Background extends JPanel implements KeyListener {
         }
 
         g2d.setColor(Color.BLACK);
-        //g2d.drawRect(0, 80, (int) worldWidth, (int) worldHeight);
 
         //porta dx
         g2d.drawRect(925, 240, (int) worldWidth, 0);
@@ -195,6 +203,19 @@ public class Background extends JPanel implements KeyListener {
         g2d.drawString(timerTxt, timerX, timerY);
     }
 
+    public void updateGameState(GameState state) {
+        if (state != null) {
+            state.applyToCampo(campo);
+            repaint();
+        } else {
+            System.err.println("Ricevuto GameState nullo");
+        }
+    }
+
+    /* ********************
+     * Controlli di gioco *
+     **********************/
+
     public void applyControls() {
         Giocatore g1 = campo.getLocalPlayer();
         if (g1 == null) return;
@@ -222,19 +243,6 @@ public class Background extends JPanel implements KeyListener {
         }
     }
 
-    public void updateGameState(GameState state) {
-        if (state != null) {
-            state.applyToCampo(campo);
-            repaint();
-        } else {
-            System.err.println("Ricevuto GameState nullo");
-        }
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
     @Override
     public void keyTyped(KeyEvent e) { }
 
@@ -246,7 +254,5 @@ public class Background extends JPanel implements KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-        currentActiveKeys.remove((Integer) e.getKeyCode());
-    }
+    public void keyReleased(KeyEvent e) {currentActiveKeys.remove((Integer) e.getKeyCode());}
 }

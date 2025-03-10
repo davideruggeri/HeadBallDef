@@ -1,7 +1,6 @@
 package it.unibs.pajc.game;
 
 import it.unibs.pajc.client.Client;
-import it.unibs.pajc.game.Background;
 import it.unibs.pajc.server.Server;
 
 import javax.swing.*;
@@ -11,11 +10,6 @@ public class HeadBallApp {
     private JFrame frame;
     private Server server;
     private Client client;
-    //private String host = "10.243.12.107"; //ip studenti
-    //private String host = "192.168.1.14"; //ip casa Fritz
-    private String host = "192.168.1.101"; //ip casa P
-    //private String host = "localhost";
-
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> new HeadBallApp().showMenu());
@@ -39,43 +33,45 @@ public class HeadBallApp {
         JButton btnSinglePlayer = new JButton("SINGLE PLAYER");
         btnSinglePlayer.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnSinglePlayer.setBounds(150, 244, 728, 96);
-        btnSinglePlayer.addActionListener(e -> startLocalGame());
+        btnSinglePlayer.addActionListener(_ -> startLocalGame());
         menuPanel.add(btnSinglePlayer);
 
         JButton btnHostGame = new JButton("HOST GAME");
         btnHostGame.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnHostGame.setBounds(150, 340, 364, 96);
-        btnHostGame.addActionListener(e -> hostGame());
+        btnHostGame.addActionListener(_ -> hostGame());
         menuPanel.add(btnHostGame);
 
         JButton btnJoinGame = new JButton("JOIN GAME");
         btnJoinGame.setFont(new Font("Arial Black", Font.PLAIN, 40));
         btnJoinGame.setBounds(514, 340, 364, 96);
-        btnJoinGame.addActionListener(e -> joinGame());
+        btnJoinGame.addActionListener(_ -> joinGame());
         menuPanel.add(btnJoinGame);
 
         frame.getContentPane().add(menuPanel, BorderLayout.CENTER);
         frame.setVisible(true);
     }
 
-    public void setExistingFrame(JFrame frame) {
-        this.frame = frame;
-    }
+    public void setExistingFrame(JFrame frame) {this.frame = frame;}
 
     private void startLocalGame() {
         showControls();
-        loadGamePanel(null, true);  // Single player, nessun client
+        loadGamePanel(null, true);
     }
 
     private void hostGame() {
         if (server == null) {
             server = new Server();
             if (!server.startServer()) {
-                JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.", "Errore", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Errore nell'avvio del server.",
+                        "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
+        String host = "10.243.12.107"; //ip studenti
+        // String host = "192.168.1.14"; //ip casa Fritz
+        //String host = "192.168.1.101"; //ip casa P
         if (connectClient(host, Server.PORT)) {
             showControls();
             loadGamePanel(client, false);
@@ -102,7 +98,8 @@ public class HeadBallApp {
     private boolean connectClient(String address, int port) {
         client = new Client(frame);
         if (!client.connectToServer(address, port)) {
-            JOptionPane.showMessageDialog(frame, "Connessione fallita.", "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Connessione fallita.",
+                    "Errore", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -137,6 +134,7 @@ public class HeadBallApp {
     }
 
     private void showControls() {
-        JOptionPane.showMessageDialog(frame, "Comandi:\n- Frecce: Muovi\n- SPACE: Salta\n- Z: Calcia");
+        JOptionPane.showMessageDialog(frame,
+                "Comandi:\n- Frecce: Muovi\n- SPACE: Salta\n");
     }
 }

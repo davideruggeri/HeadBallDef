@@ -4,7 +4,6 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
 public class Ball extends Oggetto {
-    private final float gravita = 0.5f;
     public final float FATTORE_RIMBALZO = 0.8f;
     public final double GROUNDLEVEL = 80;
 
@@ -20,6 +19,7 @@ public class Ball extends Oggetto {
     @Override
     public void stepNext() {
         super.stepNext();
+        float gravita = 0.5f;
         vy -= gravita;
 
         if (y < GROUNDLEVEL + 20) {
@@ -39,19 +39,11 @@ public class Ball extends Oggetto {
         }
     }
 
-    /**
-     * Calcola il rimbalzo della palla rispetto al giocatore.
-     * La palla viene spinta lontano e verso l'alto.
-     */
-
     public void bounceOffPlayer(Giocatore player) {
         float bounceDirection = (this.getX() < player.getX()) ? 1 : -1;
         setVelocita(bounceDirection * 5, -5);
     }
 
-    /**
-     * Imposta un nuovo angolo per la velocità mantenendo invariato lo speed.
-     */
     public void setAngle(float angle, int x, int y) {
         setPosizione(x, y);
         float speed = (float) Math.hypot(vx, vy);

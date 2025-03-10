@@ -5,7 +5,6 @@ import it.unibs.pajc.game.CampoDiGioco;
 import it.unibs.pajc.game.GameState;
 import it.unibs.pajc.network.NetworkMessage;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -114,7 +113,7 @@ public class Server {
             countdownTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    broadcastCountdownUpdate(secondsLeft[0]);  // manda il countdown ai client
+                    broadcastCountdownUpdate(secondsLeft[0]);
 
                     if (secondsLeft[0] == 0) {
                         countdownTimer.cancel();
@@ -130,7 +129,7 @@ public class Server {
                         secondsLeft[0]--;
                     }
                 }
-            }, 1000, 1000); // ogni secondo
+            }, 1000, 1000);
 
     }
 
@@ -165,9 +164,6 @@ public class Server {
                 break;
             case JUMP:
                 campoDiGioco.jump(playerId);
-                break;
-            case SHOOT:
-                campoDiGioco.kickBall(playerId);
                 break;
             case REQUEST_INITIAL_STATE:
                 sendStateToClient(playerId);
@@ -266,7 +262,6 @@ public class Server {
                             continue;
                         }
                     }
-
                     handleMessage(message);
                 }
 

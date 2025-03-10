@@ -5,8 +5,8 @@ import java.awt.geom.Area;
 import java.awt.geom.AffineTransform;
 
 public abstract class Oggetto {
-    protected float x, y;   // Posizione nel mondo
-    protected float vx, vy; // Velocità
+    protected float x, y;
+    protected float vx, vy;
     protected CampoDiGioco campo;
 
     public Oggetto(CampoDiGioco campo, float x, float y) {
@@ -35,22 +35,15 @@ public abstract class Oggetto {
     }
 
     public void applyGravity() {
-        vy -= 0.5f; // La gravità va applicata secondo le unità del tuo mondo
-    }
-
-    public void applyBounce() {
-        vy -= vy * 0.8f;
+        vy -= 0.5f;
     }
 
     public void applyFriction() {
         vx *= 0.9f;
     }
 
-    // Ogni sottoclasse deve definire la propria forma di base,
-    // già impostata in coordinate locali
     public abstract Shape getFormaBase();
 
-    // Restituisce la shape traslata in base alla posizione corrente
     public Shape getShape() {
         AffineTransform at = new AffineTransform();
         at.translate(x, y);

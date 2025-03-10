@@ -20,15 +20,12 @@ public class Client {
     private Background background;
 
     private final JFrame frame;
-
     private JDialog waitingDialog;
 
     private int playerId;
     private boolean playerReadySent = false;
 
-    public Client(JFrame frame) {
-        this.frame = frame;
-    }
+    public Client(JFrame frame) {this.frame = frame;}
 
     public boolean connectToServer(String serverAddress, int port) {
         try {
@@ -61,17 +58,8 @@ public class Client {
         }
     }
 
-
     public void requestInitialState() {
         sendCommand(new ClientCommand(ClientCommand.CommandType.REQUEST_INITIAL_STATE, playerId));
-    }
-
-    public void disconnect() {
-        try {
-            if (socket != null) socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void setBackground(Background background) {
@@ -128,7 +116,6 @@ public class Client {
         stateReceiver.start();
     }
 
-
     public NetworkMessage readMessage() {
         try {
             return (NetworkMessage) in.readObject();
@@ -141,6 +128,7 @@ public class Client {
             return null;
         }
     }
+
     private void showCountdown(int secondsLeft) {
         if (waitingDialog == null) {
             waitingDialog = new JDialog(frame, "Attesa inizio partita", true);
@@ -163,16 +151,17 @@ public class Client {
             hideWaitingDialog();
         }
     }
+
     private void hideWaitingDialog() {
         if (waitingDialog != null && waitingDialog.isVisible()) {
             waitingDialog.setVisible(false);
         }
     }
+
     private void showEndMessage(String result) {
         JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: " + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
         Timer timer = new Timer(5000, e -> {
-            // Se il socket è aperto, invia il comando di disconnessione
             if (socket != null && !socket.isClosed()) {
                 try {
                     sendCommand(new ClientCommand(ClientCommand.CommandType.DISCONNECT, 0));
@@ -192,8 +181,6 @@ public class Client {
         timer.setRepeats(false);
         timer.start();
     }
-
-
 
     public void closeConnection() {
         try {

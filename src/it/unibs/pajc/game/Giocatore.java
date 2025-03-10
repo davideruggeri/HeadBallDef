@@ -62,16 +62,22 @@ public class Giocatore extends Oggetto {
             float deltaX = ball.getX() - getX();
             float deltaY = ball.getY() - getY();
             float distanza = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
             if (distanza == 0) return;
+            if(Math.abs(deltaY) < 0.1f) {
+                deltaY = 0.1f * Math.signum(deltaY);
+            }
+
             float normaleX = deltaX / distanza;
             float normaleY = deltaY / distanza;
 
             float velRelX = ball.getVelocitaX() - getVelocitaX();
             float velRelY = ball.getVelocitaY() - getVelocitaY();
             float velLungoNormale = velRelX * normaleX + velRelY * normaleY;
-            if (velLungoNormale > 0) return;
 
-            float e = 0.8f;
+            if (velLungoNormale > -0.1f) return;
+
+            float e = 1.2f;
             float impulso = -(1 + e) * velLungoNormale;
 
             ball.setVelocita(
@@ -79,10 +85,10 @@ public class Giocatore extends Oggetto {
                     ball.getVelocitaY() + impulso * normaleY
             );
 
-            float spin = getVelocitaX() * 0.5f;
+            float spin = this.getVelocitaX() * 0.5f;
             ball.setVelocita(ball.getVelocitaX() + spin, ball.getVelocitaY());
 
-            float overlap = 20 - distanza;
+            float overlap = Math.max(0 , 20 - distanza) * 0.6f;
             if (overlap > 0) {
                 ball.setPosizione(
                         ball.getX() + normaleX * overlap,

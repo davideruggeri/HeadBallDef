@@ -42,7 +42,8 @@ public class Client {
 
             return true;
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(frame, "Errore nella connessione al server:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Errore nella connessione al server:\n" +
+                    e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -54,7 +55,8 @@ public class Client {
             out.reset();
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(frame, "Errore nell'invio del comando:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Errore nell'invio del comando:\n" +
+                    e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -83,7 +85,7 @@ public class Client {
                             if (!playerReadySent) {
                                 sendCommand(new ClientCommand(ClientCommand.CommandType.PLAYER_READY, playerId));
                                 playerReadySent = true;
-                                System.out.println("Inviato PLAYER_READY per player " + playerId);
+                                System.out.println("Inviato PLAYER_READY ");
                             }
                         });
                     }

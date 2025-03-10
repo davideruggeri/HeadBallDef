@@ -126,7 +126,8 @@ public class Client {
             return null;
         }catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(frame, "Errore nella lettura del messaggio dal server:\n" + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Errore nella lettura del messaggio dal server:\n"
+                    + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
@@ -140,7 +141,8 @@ public class Client {
         }
 
         waitingDialog.getContentPane().removeAll();
-        JLabel countdownLabel = new JLabel("Partita inizia in: " + secondsLeft + " secondi", JLabel.CENTER);
+        JLabel countdownLabel = new JLabel("Partita inizia in: "
+                + secondsLeft + " secondi", JLabel.CENTER);
         waitingDialog.getContentPane().add(countdownLabel);
         waitingDialog.revalidate();
         waitingDialog.repaint();
@@ -161,7 +163,8 @@ public class Client {
     }
 
     private void showEndMessage(String result) {
-        JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: " + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: "
+                + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
         Timer timer = new Timer(5000, e -> {
             if (socket != null && !socket.isClosed()) {

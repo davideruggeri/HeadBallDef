@@ -1,5 +1,6 @@
 package it.unibs.pajc.game;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class CampoDiGioco {
@@ -118,11 +119,11 @@ public class CampoDiGioco {
 
     public void goal() {
         if (ball.getY() < 232 && ball.getX() < 75) {
-            ball.reset(remotePlayer.getId());
             setPlayer2Score(++player2Score);
+            ball.reset(remotePlayer.getId());
         } else if (ball.getY() < 234 && ball.getX() > 925) {
-            ball.reset(localPlayer.getId());
             setPlayer1Score(++player1Score);
+            ball.reset(localPlayer.getId());
         }
     }
 

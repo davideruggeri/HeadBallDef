@@ -135,6 +135,7 @@
                 if (frame != null) {
                     frame.dispose();
                 }
+                gameOver = true;
             });
         }
 
@@ -198,10 +199,21 @@
                 }
 
                 SwingUtilities.invokeLater(() -> {
-                    frame.getContentPane().removeAll();
+                    closeGameWindow();
+
+                    JFrame newFrame = new JFrame("Head Ball");
+                    newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    newFrame.setSize(800, 600);
+                    newFrame.setLocationRelativeTo(null);
+
                     HeadBallApp menu = new HeadBallApp();
+
                     menu.setExistingFrame(frame);
                     menu.showMenu();
+
+                    newFrame.setVisible(true);
+                    newFrame.requestFocus();
+                    newFrame.toFront();
                 });
             });
             timer.setRepeats(false);

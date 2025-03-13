@@ -103,7 +103,7 @@ public class Server {
                 campoDiGioco.updatePhysics();
                 broadcastGameState();
             }
-        }, 0, 8); // circa 120 FPS
+        }, 0, 16); // circa 60 FPS
     }
 
     private synchronized void checkAndStartGame() {
@@ -221,12 +221,11 @@ public class Server {
         String message = campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score();
         NetworkMessage gameOverMessage = new NetworkMessage(NetworkMessage.MessageType.GAME_OVER, message);
 
-        gameOver = true;
-
         for (ClientHandler handler : new ArrayList<>(clients)) {
             handler.sendMessage(gameOverMessage);
 
         }
+        gameOver = true;
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

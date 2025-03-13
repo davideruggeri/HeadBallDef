@@ -19,6 +19,12 @@ public class Ball extends Oggetto {
     @Override
     public void stepNext() {
         super.stepNext();
+
+        System.out.println(vx  + ": " +  vy);
+        if (Math.abs(vx) > 7) {
+            vx = 7;
+        }
+
         float gravita = 0.5f;
         vy -= gravita;
 

@@ -47,7 +47,7 @@ public class Giocatore extends Oggetto {
             isJumping = false;
         }
     }
-
+    public boolean isJumping() {return isJumping;}
     @Override
     public Shape getFormaBase() {return formaBase;}
     public int getId() {return id;}

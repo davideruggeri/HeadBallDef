@@ -148,6 +148,8 @@ public class Server {
     }
 
     public synchronized void broadcastGameState() {
+        if (gameOver) return;
+
         campoDiGioco.goal();
 
         GameState state = new GameState(campoDiGioco);
@@ -218,6 +220,8 @@ public class Server {
     }
 
     public void endGame() {
+        gameOver = true;
+
         String message = campoDiGioco.getPlayer1Score() + " - " + campoDiGioco.getPlayer2Score();
         NetworkMessage gameOverMessage = new NetworkMessage(NetworkMessage.MessageType.GAME_OVER, message);
 
@@ -225,7 +229,6 @@ public class Server {
             handler.sendMessage(gameOverMessage);
 
         }
-        gameOver = true;
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

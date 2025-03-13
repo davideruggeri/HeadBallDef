@@ -24,6 +24,7 @@
 
         private int playerId;
         private boolean playerReadySent = false;
+        private boolean gameOver = false;
 
         public Client(JFrame frame) {this.frame = frame;}
 
@@ -49,6 +50,7 @@
         }
 
         public void sendCommand(ClientCommand command) {
+            if (gameOver) return;
             try {
                 NetworkMessage message = new NetworkMessage(NetworkMessage.MessageType.PLAYER_COMMAND, command);
                 out.writeObject(message);
@@ -70,41 +72,48 @@
 
         public void startStateReceiver() {
             Thread stateReceiver = new Thread(() -> {
-                while (true) {
+                while (!gameOver) {
                     NetworkMessage message = readMessage();
                     if (message == null) break;
 
                     switch (message.getType()) {
                         case GAME_STATE -> {
-                            GameState state = (GameState) message.getPayload();
-                            SwingUtilities.invokeLater(() -> {
-                                if (background != null) {
-                                    background.updateGameState(state);
-                                }
+                            if (!gameOver) {
+                                GameState state = (GameState) message.getPayload();
+                                SwingUtilities.invokeLater(() -> {
+                                    if (background != null) {
+                                        background.updateGameState(state);
+                                    }
 
-                                if (!playerReadySent) {
-                                    sendCommand(new ClientCommand(ClientCommand.CommandType.PLAYER_READY, playerId));
-                                    playerReadySent = true;
-                                    System.out.println("Inviato PLAYER_READY ");
-                                }
-                            });
+                                    if (!playerReadySent) {
+                                        sendCommand(new ClientCommand(ClientCommand.CommandType.PLAYER_READY, playerId));
+                                        playerReadySent = true;
+                                        System.out.println("Inviato PLAYER_READY ");
+                                    }
+                                });
+                            }
                         }
                         case COUNTDOWN_UPDATE -> {
-                            int secondsLeft = (Integer) message.getPayload();
-                            SwingUtilities.invokeLater(() -> showCountdown(secondsLeft));
+                            if (!gameOver) {
+                                int secondsLeft = (Integer) message.getPayload();
+                                SwingUtilities.invokeLater(() -> showCountdown(secondsLeft));
+                            }
                         }
                         case GAME_START -> {
                                 SwingUtilities.invokeLater(this::hideWaitingDialog);
                             System.out.println("Il gioco è iniziato!");
                         }
                         case GAME_OVER -> {
+                            gameOver = true;
                             String result = (String) message.getPayload();
                             SwingUtilities.invokeLater(() -> showEndMessage(result));
                         }
                         case PLAYER_ID_ASSIGNED -> {
-                            playerId = (Integer) message.getPayload();
-                            System.out.println("PlayerID ricevuto: " + playerId);
-                            requestInitialState();
+                            if (!gameOver) {
+                                playerId = (Integer) message.getPayload();
+                                System.out.println("PlayerID ricevuto: " + playerId);
+                                requestInitialState();
+                            }
                         }
                         case DISCONNECT -> {
                             System.out.println("Il server ha chiuso la connessione.");
@@ -163,6 +172,7 @@
         }
 
         private void showEndMessage(String result) {
+            gameOver = true;
             JOptionPane.showMessageDialog(null, "Partita terminata!\n Risultato: "
                     + result, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 

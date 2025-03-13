@@ -35,7 +35,7 @@ public abstract class Oggetto {
     }
 
     public void applyGravity() {
-        vy -= 0.5f;
+        vy -= 0.89f;
     }
 
     public void applyFriction() {

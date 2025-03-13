@@ -16,7 +16,7 @@ public class Giocatore extends Oggetto {
 
     private final Area formaBase;
 
-    public Giocatore(CampoDiGioco campo, int cx, int cy, int id, boolean isBot) {
+    public Giocatore(CampoDiGioco campo, int cx, int cy, int id) {
         super(campo, cx, cy);
         this.id = id;
         this.formaBase = creaArea(id);

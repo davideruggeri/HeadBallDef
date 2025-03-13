@@ -22,15 +22,15 @@ public class CampoDiGioco {
         ball = new Ball(this, 500, 300);
         addOggetto(ball);
 
-        localPlayer = new Giocatore(this, 0, 0, 1, false);
+        localPlayer = new Giocatore(this, 0, 0, 1);
         localPlayer.setPosizione(250, groundY);
         addOggetto(localPlayer);
 
         if (!singlePlayer) {
-            remotePlayer = new Giocatore(this, 0, 0, 2, false);
+            remotePlayer = new Giocatore(this, 0, 0, 2);
             remotePlayer.setPosizione(750, groundY);
         } else {
-            remotePlayer = new Bot(this, 0, 0, 2, true);
+            remotePlayer = new Bot(this, 0, 0, 2);
             remotePlayer.setPosizione(750, groundY);
         }
         addOggetto(remotePlayer);
@@ -38,11 +38,11 @@ public class CampoDiGioco {
 
     public void addPlayer(int playerId) {
         if (playerId == 1 && localPlayer == null) {
-            localPlayer = new Giocatore(this, 150, groundY, playerId, false);
+            localPlayer = new Giocatore(this, 150, groundY, playerId);
             addOggetto(localPlayer);
             System.out.println("Assegnato Player " + playerId + " come localPlayer.");
         } else if (playerId == 2 && remotePlayer == null) {
-            remotePlayer = new Giocatore(this, 750, groundY, playerId, false);
+            remotePlayer = new Giocatore(this, 750, groundY, playerId);
             addOggetto(remotePlayer);
             System.out.println("Assegnato Player " + playerId + " come remotePlayer.");
         }

@@ -2,26 +2,26 @@ package it.unibs.pajc.game;
 
 public class Bot extends Giocatore {
 
-    public Bot(CampoDiGioco campo, int cx, int cy, int id, boolean isBot) {
-        super(campo, cx, cy, id, isBot);
+    public Bot(CampoDiGioco campo, int cx, int cy, int id) {
+        super(campo, cx, cy, id);
     }
 
     @Override
     public void stepNext() {
-        // Ottieni la palla dal campo di gioco
         Ball ball = campo.getBall();
+        float ballX = ball.getX();
+        float ballY = ball.getY();
+        float botX = getX() +52;
+        float botY = getY() -13;
 
-        // Movimento orizzontale: sposta il bot verso la palla
-        if (ball.getX() < getX()) {
-            setVelocita(-8.0f, getVelocitaY());
-        } else if (ball.getX() > getX()) {
-            setVelocita(8.0f, getVelocitaY());
+        if (Math.abs(ballX - botX) < 15) {
+            setVelocita(-10.0f, getVelocitaY());
+        } else {
+            setVelocita((ballX < botX) ? -8.0f : 8.0f, getVelocitaY());
         }
-
-        if (ball.getY() < getY() && !isJumping()) {
+        if ((ballY < botY || Math.abs(ballX - botX) < 25) && !isJumping()) {
             jump();
         }
-
         super.stepNext();
     }
 }

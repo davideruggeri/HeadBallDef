@@ -95,24 +95,24 @@ public class CampoDiGioco {
         if (o instanceof Ball) {
             if (o.getX() < 20) {
                 o.setPosizione(20, o.getY());
-                o.setVelocita(-o.getVelocitaX() * 0.7f, o.getVelocitaY() * 0.9f);
+                o.setVelocita(-o.getVelocitaX() * 0.7f, o.getVelocitaY() * 0.7f);
             }
             if (o.getX() > CAMPO_WIDTH - 20) {
                 o.setPosizione(CAMPO_WIDTH - 20, o.getY());
-                o.setVelocita(-o.getVelocitaX() * 0.7f, o.getVelocitaY() * 0.9f);
+                o.setVelocita(-o.getVelocitaX() * 0.7f, o.getVelocitaY() * 0.7f);
             }
             if (o.getY() > CAMPO_HEIGHT) {
                 o.setPosizione(o.getX(), CAMPO_HEIGHT);
-                o.setVelocita(o.getVelocitaX() * 0.7f, -o.getVelocitaY() * 0.9f);
+                o.setVelocita(o.getVelocitaX() * 0.7f, -o.getVelocitaY() * 0.5f);
             }
             if (o.getY() > 233 && o.getY() < 243 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
                 o.setPosizione(o.getX(), 243);
-                o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.7f);
+                o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.5f);
             }
 
             if (o.getY() > 235 && o.getY() < 245 && o.getX() > 925) { // Rimbalzo sulla traversa destra
                 o.setPosizione(o.getX(), 245);
-                o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.7f);
+                o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.5f);
             }
         }
     }
@@ -129,9 +129,9 @@ public class CampoDiGioco {
 
     public void movePlayer(int playerId, int direction) {
         if (localPlayer != null && playerId == localPlayer.getId()) {
-            localPlayer.setVelocita(direction == 1 ? 8f : -8f, localPlayer.getVelocitaY());
+            localPlayer.setVelocita(direction == 1 ? 4f : -4f, localPlayer.getVelocitaY());
         } else if (remotePlayer != null && playerId == remotePlayer.getId()) {
-            remotePlayer.setVelocita(direction == 1 ? 8f : -8f, remotePlayer.getVelocitaY());
+            remotePlayer.setVelocita(direction == 1 ? 4f : -4f, remotePlayer.getVelocitaY());
         }
     }
 

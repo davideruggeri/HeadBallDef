@@ -24,6 +24,7 @@ public class Server {
     private Timer gameTimer;
     private Timer loopTimer;
     private int readyPlayers = 0;
+    private boolean countdownActive = false;
 
 
     public Server() {
@@ -107,6 +108,8 @@ public class Server {
     private synchronized void checkAndStartGame() {
             System.out.println("Entrambi i giocatori sono connessi, il gioco inizierà tra 5 secondi...");
 
+            countdownActive = true;
+
             Timer countdownTimer = new Timer();
             int[] secondsLeft = {3};
 
@@ -115,8 +118,11 @@ public class Server {
                 public void run() {
                     broadcastCountdownUpdate(secondsLeft[0]);
 
+
                     if (secondsLeft[0] == 0) {
                         countdownTimer.cancel();
+
+                        countdownActive = false;
 
                         broadcastGameState();
 
@@ -155,6 +161,10 @@ public class Server {
     }
 
     public synchronized void processCommand(int playerId, ClientCommand command) {
+        if (countdownActive) {
+            return;
+        }
+
         switch (command.getCommand()) {
             case MOVE_LEFT:
                 campoDiGioco.movePlayer(playerId, -1);

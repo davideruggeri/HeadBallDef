@@ -10,6 +10,9 @@ public class HeadBallApp {
     private JFrame frame;
     private Server server;
     private Client client;
+    private String host = "10.243.11.148"; //ip studenti
+    //private String host = "192.168.1.14"; //ip casa Fritz
+    //private String host = "192.168.1.101"; //ip casa P
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> new HeadBallApp().showMenu());
@@ -69,9 +72,7 @@ public class HeadBallApp {
             }
         }
 
-        String host = "10.243.11.148"; //ip studenti
-        // String host = "192.168.1.14"; //ip casa Fritz
-        //String host = "192.168.1.101"; //ip casa P
+
         if (connectClient(host, Server.PORT)) {
             showControls();
             loadGamePanel(client, false);
@@ -81,7 +82,7 @@ public class HeadBallApp {
     }
 
     private void joinGame() {
-        String address = JOptionPane.showInputDialog(frame, "Inserisci IP server:");
+        String address = host; //JOptionPane.showInputDialog(frame, "Inserisci IP server:");
         if (address == null || address.isBlank()) return;
 
         int port = getPortFromUser();

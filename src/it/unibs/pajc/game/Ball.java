@@ -20,7 +20,6 @@ public class Ball extends Oggetto {
     public void stepNext() {
         super.stepNext();
 
-        System.out.println(vx  + ": " +  vy);
         if (Math.abs(vx) > 7) {
             vx = 7;
         }

@@ -69,7 +69,7 @@ public class HeadBallApp {
             }
         }
 
-        String host = "10.243.12.107"; //ip studenti
+        String host = "10.243.11.148"; //ip studenti
         // String host = "192.168.1.14"; //ip casa Fritz
         //String host = "192.168.1.101"; //ip casa P
         if (connectClient(host, Server.PORT)) {

@@ -39,7 +39,7 @@ public abstract class Oggetto {
     }
 
     public void applyFriction() {
-        vx *= 0.9f;
+        vx *= 0.7f;
     }
 
     public abstract Shape getFormaBase();

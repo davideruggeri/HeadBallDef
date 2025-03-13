@@ -108,6 +108,9 @@
                             String result = (String) message.getPayload();
                             SwingUtilities.invokeLater(() -> showEndMessage(result));
                         }
+                        case CLOSE_GAME -> {
+                            closeGameWindow();
+                        }
                         case PLAYER_ID_ASSIGNED -> {
                             if (!gameOver) {
                                 playerId = (Integer) message.getPayload();
@@ -125,6 +128,12 @@
             });
             stateReceiver.setDaemon(true);
             stateReceiver.start();
+        }
+
+        private void closeGameWindow() {
+            if (frame != null) {
+                frame.dispose();
+            }
         }
 
         public NetworkMessage readMessage() {

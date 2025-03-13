@@ -227,6 +227,7 @@ public class Server {
 
         for (ClientHandler handler : new ArrayList<>(clients)) {
             handler.sendMessage(gameOverMessage);
+            handler.sendMessage(new NetworkMessage(NetworkMessage.MessageType.CLOSE_GAME, null));
 
         }
         new Timer().schedule(new TimerTask() {

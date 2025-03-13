@@ -13,6 +13,7 @@ public class NetworkMessage implements Serializable {
         GAME_OVER,
         PLAYER_ID_ASSIGNED,
         DISCONNECT,
+        CLOSE_GAME
     }
 
     private final MessageType type;

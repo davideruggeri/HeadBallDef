@@ -131,9 +131,11 @@
         }
 
         private void closeGameWindow() {
-            if (frame != null) {
-                frame.dispose();
-            }
+            SwingUtilities.invokeLater(() -> {
+                if (frame != null) {
+                    frame.dispose();
+                }
+            });
         }
 
         public NetworkMessage readMessage() {

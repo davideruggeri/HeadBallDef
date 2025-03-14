@@ -100,6 +100,7 @@ public class Background extends JPanel implements KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        campo.setRenderDimension(frame.getWidth(), frame.getHeight());
         Graphics2D g2d = (Graphics2D) g;
 
         if (backgroundImage != null) {

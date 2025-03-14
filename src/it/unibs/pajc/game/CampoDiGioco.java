@@ -15,6 +15,8 @@ public class CampoDiGioco {
     private int player1Score = 0, player2Score = 0;
     private long lastCollisionTime = 0;
     private static final long COLLISION_COOLDOWN = 50; // ms
+    private int renderWidth = CAMPO_WIDTH;
+    private int renderHeight = CAMPO_HEIGHT;
 
     public CampoDiGioco(boolean singlePlayer) {
         this.gameTime = 90;
@@ -26,11 +28,11 @@ public class CampoDiGioco {
         localPlayer.setPosizione(250, groundY);
         addOggetto(localPlayer);
 
-        if (!singlePlayer) {
-            remotePlayer = new Giocatore(this, 0, 0, 2);
+        if (singlePlayer) {
+            remotePlayer = new Bot(this, 0, 0, 2);
             remotePlayer.setPosizione(750, groundY);
         } else {
-            remotePlayer = new Bot(this, 0, 0, 2);
+            remotePlayer = new Giocatore(this, 0, 0, 2);
             remotePlayer.setPosizione(750, groundY);
         }
         addOggetto(remotePlayer);
@@ -61,12 +63,19 @@ public class CampoDiGioco {
     public void setPlayer1Score(int player1Score) {this.player1Score = player1Score;}
     public int getPlayer2Score() {return player2Score;}
     public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
+    public void setRenderDimension(int w, int h) {this.renderWidth = w;this.renderHeight = h;}
+    public int getRenderWidth() {return renderWidth;}
+    public int getRenderHeight() {return renderHeight;}
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
             o.stepNext();
             applyLimit(o);
             goal();
+        }
+        if (localPlayer != null && remotePlayer != null && localPlayer.checkCollision(remotePlayer)) {
+            localPlayer.resolveCollision(remotePlayer);
+            remotePlayer.resolveCollision(localPlayer);
         }
     }
 
@@ -105,23 +114,23 @@ public class CampoDiGioco {
                 o.setPosizione(o.getX(), CAMPO_HEIGHT);
                 o.setVelocita(o.getVelocitaX() * 0.7f, -o.getVelocitaY() * 0.5f);
             }
-            if (o.getY() > 233 && o.getY() < 243 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
-                o.setPosizione(o.getX(), 243);
+            if (o.getY() > 233 && o.getY() < 246 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
+                o.setPosizione(o.getX(), 246);
                 o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.5f);
             }
 
-            if (o.getY() > 235 && o.getY() < 245 && o.getX() > 925) { // Rimbalzo sulla traversa destra
-                o.setPosizione(o.getX(), 245);
+            if (o.getY() > 235 && o.getY() < 248 && o.getX() > 925) { // Rimbalzo sulla traversa destra
+                o.setPosizione(o.getX(), 248);
                 o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.5f);
             }
         }
     }
 
     public void goal() {
-        if (ball.getY() < 232 && ball.getX() < 75) {
+        if (ball.getY() < 232 && ball.getX() < 70) {
             setPlayer2Score(++player2Score);
             ball.reset(remotePlayer.getId());
-        } else if (ball.getY() < 234 && ball.getX() > 925) {
+        } else if (ball.getY() < 234 && ball.getX() > 930) {
             setPlayer1Score(++player1Score);
             ball.reset(localPlayer.getId());
         }
@@ -164,6 +173,13 @@ public class CampoDiGioco {
             }
             applyLimit(o);
             goal();
+        }
+
+        // Evitare la collisione tra i due giocatori
+        if (localPlayer != null && remotePlayer != null) {
+            if (localPlayer.getId() < remotePlayer.getId() && localPlayer.checkCollision(remotePlayer)) {
+                localPlayer.resolveCollision(remotePlayer);
+            }
         }
         checkCollisions();
     }

@@ -2,10 +2,7 @@ package it.unibs.pajc.game;
 
 import javax.imageio.ImageIO;
 import java.awt.Shape;
-import java.awt.geom.Area;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.AffineTransform;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
@@ -58,9 +55,13 @@ public class Giocatore extends Oggetto {
 
     public void handleCollision(Ball ball) {
         if (checkCollision(ball)) {
-
-            float deltaX = ball.getX() - getX();
-            float deltaY = ball.getY() - getY();
+            float deltaX = 0;
+            float deltaY = ball.getY() - (getY() - 13);
+            if (this.id == 1) {
+                deltaX = (ball.getX() - getX() - 7);
+            } else if (this.id == 2) {
+                deltaX = (ball.getX() - getX() - 108);
+            }
             float distanza = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
             if (distanza == 0) return;
@@ -104,6 +105,37 @@ public class Giocatore extends Oggetto {
                         ball.getX() + normaleX * overlap,
                         ball.getY() + normaleY * overlap
                 );
+            }
+        }
+    }
+
+    /* *******************************************
+    * Gestione della collisione tra i due player *
+    **********************************************/
+
+    public void resolveCollision(Giocatore other) {
+        if (this.checkCollision(other)) {
+            Rectangle2D bounds1 = this.getShape().getBounds2D();
+            Rectangle2D bounds2 = other.getShape().getBounds2D();
+
+            Rectangle2D intersezione = bounds1.createIntersection(bounds2);
+
+            if (intersezione.getWidth() < intersezione.getHeight()) {
+                if (this.x < other.x) {
+                    this.setPosizione(this.x - (float)intersezione.getWidth()/2, this.y);
+                    other.setPosizione(other.x + (float)intersezione.getWidth()/2, other.y);
+                } else {
+                    this.setPosizione(this.x + (float)intersezione.getWidth()/2, this.y);
+                    other.setPosizione(other.x - (float)intersezione.getWidth()/2, other.y);
+                }
+            } else {
+                if (this.y < other.y) {
+                    this.setPosizione(this.x, this.y - (float)intersezione.getHeight()/2);
+                    other.setPosizione(other.x, other.y + (float)intersezione.getHeight()/2);
+                } else {
+                    this.setPosizione(this.x, this.y + (float)intersezione.getHeight()/2);
+                    other.setPosizione(other.x, other.y - (float)intersezione.getHeight()/2);
+                }
             }
         }
     }

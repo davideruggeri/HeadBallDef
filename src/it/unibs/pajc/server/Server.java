@@ -240,7 +240,7 @@ public class Server {
                 readyPlayers = 0;
                 stopServer();
             }
-        }, 5000);
+        }, 3000);
     }
 
     private class ClientHandler implements Runnable {

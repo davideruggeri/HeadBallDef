@@ -154,9 +154,9 @@ public class CampoDiGioco {
 
     public void movePlayer(int playerId, int direction) {
         if (localPlayer != null && playerId == localPlayer.getId()) {
-            localPlayer.setVelocita(direction == 1 ? 8f : -8f, localPlayer.getVelocitaY());
+            localPlayer.setVelocita(direction == 1 ? 4f : -4f, localPlayer.getVelocitaY());
         } else if (remotePlayer != null && playerId == remotePlayer.getId()) {
-            remotePlayer.setVelocita(direction == 1 ? 8f : -8f, remotePlayer.getVelocitaY());
+            remotePlayer.setVelocita(direction == 1 ? 4f : -4f, remotePlayer.getVelocitaY());
         }
     }
 

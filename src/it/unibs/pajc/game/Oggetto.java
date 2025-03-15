@@ -35,11 +35,11 @@ public abstract class Oggetto {
     }
 
     public void applyGravity() {
-        vy -= 0.89f;
+        vy -= 0.5f;
     }
 
     public void applyFriction() {
-        vx *= 0.7f;
+        vx *= 0.9f;
     }
 
     public abstract Shape getFormaBase();

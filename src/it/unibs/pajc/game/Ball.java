@@ -35,13 +35,14 @@ public class Ball extends Oggetto {
     }
 
     public void reset(int id) {
-        if (id == 1) {
+        /*if (id == 1) {
             setVelocita(4,-4);
             setAngle(0, 500, 300);
         } else if (id == 2) {
             setVelocita(-4,-4);
             setAngle(180, 500, 300);
-        }
+        }*/
+        setPosizione(510, 300);
     }
 
     public void bounceOffPlayer(Giocatore player) {

@@ -14,8 +14,6 @@ public class CampoDiGioco {
     private int player1Score = 0, player2Score = 0;
     private long lastCollisionTime = 0;
     private static final long COLLISION_COOLDOWN = 50; // ms
-    private long lastGoalTime = 0;
-    private static final long GOAL_COOLDOWN = 700;
 
 
     public CampoDiGioco(boolean singlePlayer) {
@@ -124,33 +122,15 @@ public class CampoDiGioco {
     }
 
     public void goal() {
-        long now = System.currentTimeMillis();
-
-        if (now - lastGoalTime < GOAL_COOLDOWN) {
-            return;
-        }
-
         if (ball.getY() < 232 && ball.getX() < 70) {
             setPlayer2Score(++player2Score);
-            lastGoalTime = now;
-            resetBallWithDelay(remotePlayer.getId());
+            ball.reset(remotePlayer.getId());
         } else if (ball.getY() < 234 && ball.getX() > 930) {
             setPlayer1Score(++player1Score);
-            lastGoalTime = now;
-            resetBallWithDelay(localPlayer.getId());
+            ball.reset(localPlayer.getId());
         }
     }
 
-    private void resetBallWithDelay(int playerID) {
-        new Thread(() -> {
-            try {
-                Thread.sleep(GOAL_COOLDOWN);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            ball.reset(playerID);
-        }).start();
-    }
 
     public void movePlayer(int playerId, int direction) {
         if (localPlayer != null && playerId == localPlayer.getId()) {

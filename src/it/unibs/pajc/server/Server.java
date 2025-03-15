@@ -103,7 +103,7 @@ public class Server {
                 campoDiGioco.updatePhysics();
                 broadcastGameState();
             }
-        }, 0, 16); // circa 60 FPS
+        }, 0, 33); // circa 30 FPS
     }
 
     private synchronized void checkAndStartGame() {

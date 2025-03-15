@@ -14,8 +14,9 @@ public class CampoDiGioco {
     private int player1Score = 0, player2Score = 0;
     private long lastCollisionTime = 0;
     private static final long COLLISION_COOLDOWN = 50; // ms
-    private int renderWidth = CAMPO_WIDTH;
-    private int renderHeight = CAMPO_HEIGHT;
+    private long lastGoalTime = 0;
+    private static final long GOAL_COOLDOWN = 700;
+
 
     public CampoDiGioco(boolean singlePlayer) {
         this.gameTime = 90;
@@ -62,7 +63,6 @@ public class CampoDiGioco {
     public void setPlayer1Score(int player1Score) {this.player1Score = player1Score;}
     public int getPlayer2Score() {return player2Score;}
     public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
-    public void setRenderDimension(int w, int h) {this.renderWidth = w;this.renderHeight = h;}
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
@@ -124,13 +124,32 @@ public class CampoDiGioco {
     }
 
     public void goal() {
+        long now = System.currentTimeMillis();
+
+        if (now - lastGoalTime < GOAL_COOLDOWN) {
+            return;
+        }
+
         if (ball.getY() < 232 && ball.getX() < 70) {
             setPlayer2Score(++player2Score);
-            ball.reset(remotePlayer.getId());
+            lastGoalTime = now;
+            resetBallWithDelay(remotePlayer.getId());
         } else if (ball.getY() < 234 && ball.getX() > 930) {
             setPlayer1Score(++player1Score);
-            ball.reset(localPlayer.getId());
+            lastGoalTime = now;
+            resetBallWithDelay(localPlayer.getId());
         }
+    }
+
+    private void resetBallWithDelay(int playerID) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(GOAL_COOLDOWN);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            ball.reset(playerID);
+        }).start();
     }
 
     public void movePlayer(int playerId, int direction) {

@@ -101,7 +101,6 @@ public class Background extends JPanel implements KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        campo.setRenderDimension(frame.getWidth(), frame.getHeight());
         Graphics2D g2d = (Graphics2D) g;
 
         if (backgroundImage != null) {
@@ -167,12 +166,12 @@ public class Background extends JPanel implements KeyListener {
         g2d.setColor(Color.BLACK);
 
         //porta dx
-        g2d.drawRect(925, 240, (int) worldWidth, 0);
-        g2d.drawRect(925, 60, 0,181);
+        //g2d.drawRect(925, 240, (int) worldWidth, 0);
+        //g2d.drawRect(925, 60, 0,181);
 
         //porta sx
-        g2d.drawRect(0, 238, 75, 0);
-        g2d.drawRect(75, 60,0,179);
+        //g2d.drawRect(0, 238, 75, 0);
+        //g2d.drawRect(75, 60,0,179);
 
         g2d.setTransform(original);
 

@@ -1,6 +1,5 @@
 package it.unibs.pajc.game;
 
-import javax.swing.*;
 import java.util.ArrayList;
 
 public class CampoDiGioco {
@@ -21,7 +20,7 @@ public class CampoDiGioco {
     public CampoDiGioco(boolean singlePlayer) {
         this.gameTime = 90;
 
-        ball = new Ball(this, 500, 300);
+        ball = new Ball(this, 510, 300);
         addOggetto(ball);
 
         localPlayer = new Giocatore(this, 0, 0, 1);

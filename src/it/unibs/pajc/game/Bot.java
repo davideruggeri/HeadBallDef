@@ -1,7 +1,5 @@
 package it.unibs.pajc.game;
 
-import javax.swing.*;
-
 public class Bot extends Giocatore {
 
     private static final float MAX_SPEED = 8.0f;
@@ -27,7 +25,6 @@ public class Bot extends Giocatore {
         if (checkCollision(ball)) {
             handleCollision(ball);
         } else {
-            // Simula un ritardo nella reazione
             if (reactionTimer <= 0) {
                 float targetX = (ballX > botX) ? ballX + 10 : ballX - 10;
                 if (Math.abs(ballX - botX) > 10) {
@@ -35,11 +32,10 @@ public class Bot extends Giocatore {
                 } else {
                     targetVelocityX = 0;
                 }
-                reactionTimer = REACTION_TIME; // Reset del timer di reazione
+                reactionTimer = REACTION_TIME;
             }
         }
 
-        // Simula accelerazione
         float currentVelX = getVelocitaX();
         if (currentVelX < targetVelocityX) {
             setVelocita(Math.min(currentVelX + ACCELERATION, targetVelocityX), getVelocitaY());
@@ -47,11 +43,11 @@ public class Bot extends Giocatore {
             setVelocita(Math.max(currentVelX - ACCELERATION, targetVelocityX), getVelocitaY());
         }
 
-        if ((ballY < botY || Math.abs(ballX - botX) < 40) && !isJumping()) {
+        if ((ballY < botY || Math.abs(ballX - botX) < 20) && !isJumping()) {
             jump();
         }
 
-        reactionTimer -= 0.016; // Supponendo un frame rate di circa 60 FPS
+        reactionTimer -= 0.016f;
 
         super.stepNext();
     }

@@ -63,8 +63,6 @@ public class CampoDiGioco {
     public int getPlayer2Score() {return player2Score;}
     public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
     public void setRenderDimension(int w, int h) {this.renderWidth = w;this.renderHeight = h;}
-    public int getRenderWidth() {return renderWidth;}
-    public int getRenderHeight() {return renderHeight;}
 
     public void stepNext() {
         for (Oggetto o : listaOggetti) {

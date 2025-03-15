@@ -76,6 +76,7 @@ public class Background extends JPanel implements KeyListener {
                 + campo.getPlayer1Score() + " - " + campo.getPlayer2Score();
         JOptionPane.showMessageDialog(this, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
+        frame.dispose();
         SwingUtilities.invokeLater(() -> {
             frame.getContentPane().removeAll();
             HeadBallApp menu = new HeadBallApp();

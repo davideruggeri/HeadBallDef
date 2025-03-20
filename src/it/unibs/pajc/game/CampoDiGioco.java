@@ -152,9 +152,6 @@ public class CampoDiGioco {
         for (Oggetto o : listaOggetti) {
             if (o instanceof Ball palla) {
                 palla.applyGravity();
-                if (palla.getY() <= 0) {
-                    palla.applyFriction();
-                }
                 palla.stepNext();
             }
             if (o instanceof Giocatore giocatore) {

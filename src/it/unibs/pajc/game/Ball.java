@@ -42,6 +42,7 @@ public class Ball extends Oggetto {
             setVelocita(-4,-4);
             setAngle(180, 500, 300);
         }*/
+        setVelocita(0,0);
         setPosizione(510, 300);
     }
 

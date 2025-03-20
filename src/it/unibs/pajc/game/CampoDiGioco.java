@@ -25,7 +25,6 @@ public class CampoDiGioco {
         localPlayer = new Giocatore(this, 0, 0, 1);
         localPlayer.setPosizione(250, groundY);
         addOggetto(localPlayer);
-
         if (singlePlayer) {
             remotePlayer = new Bot(this, 0, 0, 2);
             remotePlayer.setPosizione(750, groundY);

@@ -70,6 +70,7 @@ public class HeadBallApp {
         }
 
         String host = JOptionPane.showInputDialog(frame, "Inserisci IP:");
+        if(host == null || host.isBlank()) return;
         if (connectClient(host, Server.PORT)) {
             showControls();
             loadGamePanel(client, false);

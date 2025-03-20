@@ -56,9 +56,9 @@ public class Giocatore extends Oggetto {
     public void handleCollision(Ball ball) {
         if (checkCollision(ball)) {
             float deltaX = 0;
-            float deltaY = ball.getY() - (getY() - 13);
+            float deltaY = ball.getY() - getY();
             if (this.id == 1) {
-                deltaX = (ball.getX() - getX() - 7);
+                deltaX = (ball.getX() - getX() + 7);
             } else if (this.id == 2) {
                 deltaX = (ball.getX() - getX() - 108);
             }
@@ -72,6 +72,8 @@ public class Giocatore extends Oggetto {
 
             float normaleX = deltaX / distanza;
             float normaleY = deltaY / distanza;
+
+            float minDistanza = 30.0f;
 
             float velRelX = ball.getVelocitaX() - getVelocitaX();
             float velRelY = ball.getVelocitaY() - getVelocitaY();
@@ -98,9 +100,8 @@ public class Giocatore extends Oggetto {
             float spin = (getVelocitaX() - ball.getVelocitaX()) * 0.5f;
             ball.setVelocita(ball.getVelocitaX() + spin, ball.getVelocitaY());
 
-            float minDistanza = 30;
             float overlap = Math.max(0 , minDistanza - distanza) * 1.2f;
-            if (overlap > 0) {
+            if (overlap >= 0) {
                 ball.setPosizione(
                         ball.getX() + normaleX * overlap,
                         ball.getY() + normaleY * overlap

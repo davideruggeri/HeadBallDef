@@ -1,5 +1,9 @@
 package it.unibs.pajc.game;
 
+import it.unibs.pajc.game.physic.MTV;
+import it.unibs.pajc.game.physic.Projection;
+import it.unibs.pajc.game.physic.Vector2D;
+
 import javax.imageio.ImageIO;
 import java.awt.Shape;
 import java.awt.geom.*;

@@ -1,5 +1,8 @@
 package it.unibs.pajc.game;
 
+import it.unibs.pajc.game.physic.Projection;
+import it.unibs.pajc.game.physic.Vector2D;
+
 import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.AffineTransform;

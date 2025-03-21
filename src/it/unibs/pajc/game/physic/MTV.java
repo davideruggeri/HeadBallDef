@@ -1,4 +1,4 @@
-package it.unibs.pajc.game;
+package it.unibs.pajc.game.physic;
 
 public class MTV {
     public Vector2D axis;

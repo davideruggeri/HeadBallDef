@@ -1,7 +1,7 @@
-package it.unibs.pajc.game;
+package it.unibs.pajc.game.physic;
 
 public class Vector2D {
-    float x, y;
+    public float x, y;
 
     public Vector2D(float x, float y) {
         this.x = x;

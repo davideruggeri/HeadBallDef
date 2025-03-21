@@ -5,6 +5,8 @@ import java.awt.Shape;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Giocatore extends Oggetto {
@@ -49,64 +51,83 @@ public class Giocatore extends Oggetto {
     public Shape getFormaBase() {return formaBase;}
     public int getId() {return id;}
 
-    /* **************************************************
-    * Collisione con la palla con calcolo della normale *
-    *****************************************************/
+    /* ************************
+    * Collisione con la palla *
+    **************************/
+
+    private MTV calculateMTV(Shape shapeA, Shape shapeB) {
+        List<Vector2D> verticesA = getVertices(shapeA);
+        List<Vector2D> verticesB = getVertices(shapeB);
+
+        List<Vector2D> axes = new ArrayList<>();
+        axes.addAll(getAxes(verticesA));
+        axes.addAll(getAxes(verticesB));
+
+        float minOverlap = Float.MAX_VALUE;
+        Vector2D mtvAxis = null;
+
+        for (Vector2D axis : axes) {
+            Projection projA = projectVertices(verticesA, axis);
+            Projection projB = projectVertices(verticesB, axis);
+            float overlap = Projection.getOverlap(projA, projB);
+
+            if (overlap <= 0) {
+                return null;
+            } else if (overlap < minOverlap) {
+                minOverlap = overlap;
+                mtvAxis = axis;
+            }
+        }
+        return new MTV(mtvAxis, minOverlap);
+    }
 
     public void handleCollision(Ball ball) {
         if (checkCollision(ball)) {
-            float deltaX = 0;
-            float deltaY = ball.getY() - getY();
-            if (this.id == 1) {
-                deltaX = (ball.getX() - getX() + 7);
-            } else if (this.id == 2) {
-                deltaX = (ball.getX() - getX() - 108);
-            }
-            float distanza = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            MTV mtv = calculateMTV(this.getShape(), ball.getShape());
+            if (mtv != null) {
 
-            if (distanza == 0) return;
+                Rectangle2D boundsPlayer = this.getShape().getBounds2D();
+                Rectangle2D boundsBall = ball.getShape().getBounds2D();
+                float centerPlayerX = (float) boundsPlayer.getCenterX();
+                float centerPlayerY = (float) boundsPlayer.getCenterY();
+                float centerBallX = (float) boundsBall.getCenterX();
+                float centerBallY = (float) boundsBall.getCenterY();
+                Vector2D centerDiff = new Vector2D(centerBallX - centerPlayerX, centerBallY - centerPlayerY);
 
-            if(Math.abs(deltaY) < 0.1f) {
-                deltaY = 0.1f * Math.signum(deltaY);
-            }
+                if (centerDiff.dot(mtv.axis) < 0) {
+                    mtv.axis = mtv.axis.negate();
+                }
 
-            float normaleX = deltaX / distanza;
-            float normaleY = deltaY / distanza;
-
-            float minDistanza = 30.0f;
-
-            float velRelX = ball.getVelocitaX() - getVelocitaX();
-            float velRelY = ball.getVelocitaY() - getVelocitaY();
-            float velLungoNormale = velRelX * normaleX + velRelY * normaleY;
-
-            if (velLungoNormale > -0.1f) return;
-
-            float e = 1.2f;
-            float impulso = -(1 + e) * velLungoNormale;
-
-            ball.setVelocita(
-                    ball.getVelocitaX() + impulso * normaleX,
-                    ball.getVelocitaY() + impulso * normaleY
-            );
-
-            float minVelocita = 2.0f;
-            if (Math.abs(ball.getVelocitaX()) < minVelocita) {
-                ball.setVelocita(Math.signum(ball.getVelocitaX()) * minVelocita, ball.getVelocitaY());
-            }
-            if (Math.abs(ball.getVelocitaY()) < minVelocita) {
-                ball.setVelocita(ball.getVelocitaX(), Math.signum(ball.getVelocitaY()) * minVelocita);
-            }
-
-            float spin = (getVelocitaX() - ball.getVelocitaX()) * 0.5f;
-            ball.setVelocita(ball.getVelocitaX() + spin, ball.getVelocitaY());
-
-            float overlap = Math.max(0 , minDistanza - distanza) * 1.2f;
-            if (overlap >= 0) {
                 ball.setPosizione(
-                        ball.getX() + normaleX * overlap,
-                        ball.getY() + normaleY * overlap
+                        ball.getX() + mtv.axis.x * mtv.overlap,
+                        ball.getY() + mtv.axis.y * mtv.overlap
                 );
+
+                Vector2D ballVelocity = new Vector2D(ball.getVelocitaX(), ball.getVelocitaY());
+                Vector2D playerVelocity = new Vector2D(this.getVelocitaX(), this.getVelocitaY());
+
+                Vector2D relativeVelocity = new Vector2D(
+                        ballVelocity.x - playerVelocity.x,
+                        ballVelocity.y - playerVelocity.y
+                );
+
+                float dot = relativeVelocity.dot(mtv.axis);
+
+                float restitution = 0.8f;
+
+                // Calcola l'impulso
+                float impulse = -(1 + restitution) * dot;
+
+                // Aggiorna la velocità della palla applicando la riflessione e la forza extra
+                Vector2D newVelocity = new Vector2D(
+                        ball.getVelocitaX() + impulse * mtv.axis.x,
+                        ball.getVelocitaY() + impulse * mtv.axis.y
+                );
+
+                // Imposta la nuova velocità della palla
+                ball.setVelocita(newVelocity.x, newVelocity.y);
             }
+
         }
     }
 

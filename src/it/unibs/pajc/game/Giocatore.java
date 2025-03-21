@@ -93,10 +93,9 @@ public class Giocatore extends Oggetto {
                 Rectangle2D boundsPlayer = this.getShape().getBounds2D();
                 Rectangle2D boundsBall = ball.getShape().getBounds2D();
                 float centerPlayerX = (float) boundsPlayer.getCenterX();
-                float centerPlayerY = (float) boundsPlayer.getCenterY();
                 float centerBallX = (float) boundsBall.getCenterX();
-                float centerBallY = (float) boundsBall.getCenterY();
-                Vector2D centerDiff = new Vector2D(centerBallX - centerPlayerX, centerBallY - centerPlayerY);
+
+                Vector2D centerDiff = new Vector2D(centerBallX - centerPlayerX, 0);
 
                 if (centerDiff.dot(mtv.axis) < 0) {
                     mtv.axis = mtv.axis.negate();
@@ -116,23 +115,24 @@ public class Giocatore extends Oggetto {
                 );
 
                 float dot = relativeVelocity.dot(mtv.axis);
-
                 float restitution = 0.8f;
-
-                // Calcola l'impulso
                 float impulse = -(1 + restitution) * dot;
-
-                // Aggiorna la velocità della palla applicando la riflessione e la forza extra
+                float playerDirection = Math.signum(this.getVelocitaX());
+                boolean isFrontHit = (playerDirection > 0 && centerBallX > centerPlayerX) ||
+                        (playerDirection < 0 && centerBallX < centerPlayerX);
+                float speedFactor = isFrontHit ? 1.5f : -1.5f;
+                float trasferimentoVelocita = 0.8f;
                 Vector2D newVelocity = new Vector2D(
-                        ball.getVelocitaX() + impulse * mtv.axis.x,
+                        ball.getVelocitaX() + impulse * mtv.axis.x + speedFactor * trasferimentoVelocita * this.getVelocitaX(),
                         ball.getVelocitaY() + impulse * mtv.axis.y
                 );
 
-                // Imposta la nuova velocità della palla
                 ball.setVelocita(newVelocity.x, newVelocity.y);
             }
         }
     }
+
+
 
     /* *******************************************
     * Gestione della collisione tra i due player *

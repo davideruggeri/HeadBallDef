@@ -127,7 +127,6 @@ public class Giocatore extends Oggetto {
                 // Imposta la nuova velocità della palla
                 ball.setVelocita(newVelocity.x, newVelocity.y);
             }
-
         }
     }
 

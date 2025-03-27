@@ -40,17 +40,38 @@ public class Giocatore extends Oggetto {
             setVelocita(getVelocitaX(), FORZASALTO);
         }
     }
-    public void shot(int id){
-        if (checkCollision(campo.ball)) {
+
+    public void shot(int id) {
+        if (checkCollision(campo.getBall())) {  // Usa sempre getBall()
+            double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
+
+            // Velocità iniziale della palla (prima del tiro)
+            float velX_before = campo.getBall().getVelocitaX();
+            float velY_before = campo.getBall().getVelocitaY();
+            System.out.println("Prima del tiro -> X: " + velX_before + ", Y: " + velY_before);
+
+            float velX, velY;
+
             if (id == 1) {
-            double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
-            campo.ball.setVelocita((float) calcio, (float) calcio);
-        } else if (id == 2) {
-            double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
-            campo.getBall().setVelocita((float) -calcio, (float) calcio);
+                velX = (float) calcio;  // Verso destra
+                velY = (float) calcio;  // Verso l'alto
+                System.out.println("Giocatore 1 calcia -> 45° (X: " + velX + ", Y: " + velY + ")");
+            } else {
+                velX = (float) -calcio; // Verso sinistra
+                velY = (float) calcio;  // Verso l'alto
+                System.out.println("Giocatore 2 calcia -> 135° (X: " + velX + ", Y: " + velY + ")");
             }
+
+            // Impostiamo la nuova velocità
+            campo.getBall().setVelocita(velX, velY);
+
+            // Velocità dopo il tiro
+            float velX_after = campo.getBall().getVelocitaX();
+            float velY_after = campo.getBall().getVelocitaY();
+            System.out.println("Dopo il tiro -> X: " + velX_after + ", Y: " + velY_after);
         }
     }
+
 
     public void updateJump() {
         if (isJumping) {

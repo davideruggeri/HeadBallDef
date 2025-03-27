@@ -134,6 +134,6 @@ public class HeadBallApp {
 
     private void showControls() {
         JOptionPane.showMessageDialog(frame,
-                "Comandi:\n- Frecce: Muovi\n- SPACE: Salta\n");
+                "Comandi:\n- Frecce: Muovi\n- SPACE: Salta\n- Z: Calcio");
     }
 }

@@ -178,6 +178,9 @@ public class Server {
             case JUMP:
                 campoDiGioco.jump(playerId);
                 break;
+            case SHOOT:
+                campoDiGioco.shot(playerId);
+                break;
             case REQUEST_INITIAL_STATE:
                 sendStateToClient(playerId);
                 break;

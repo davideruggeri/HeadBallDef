@@ -229,6 +229,7 @@ public class Background extends JPanel implements KeyListener {
                     case KeyEvent.VK_RIGHT -> new ClientCommand(ClientCommand.CommandType.MOVE_RIGHT, 1);
                     case KeyEvent.VK_LEFT  -> new ClientCommand(ClientCommand.CommandType.MOVE_LEFT, 1);
                     case KeyEvent.VK_SPACE -> new ClientCommand(ClientCommand.CommandType.JUMP, 1);
+                    case KeyEvent.VK_Z -> new ClientCommand(ClientCommand.CommandType.SHOOT, 1);
                     default -> null;
                 };
                 if (command != null) client.sendCommand(command);
@@ -239,6 +240,7 @@ public class Background extends JPanel implements KeyListener {
                     case KeyEvent.VK_RIGHT -> g1.setVelocita(8f, g1.getVelocitaY());
                     case KeyEvent.VK_LEFT  -> g1.setVelocita(-8f, g1.getVelocitaY());
                     case KeyEvent.VK_SPACE -> g1.jump();
+                    case KeyEvent.VK_Z -> g1.shot();
                 }
             }
         }

@@ -16,6 +16,7 @@ import java.util.Objects;
 public class Giocatore extends Oggetto {
     private boolean isJumping = false;
     private final int id;
+    private final float FORZA_CALCIO = 20f;
 
     private final Area formaBase;
 
@@ -37,6 +38,15 @@ public class Giocatore extends Oggetto {
             isJumping = true;
             float FORZASALTO = 10;
             setVelocita(getVelocitaX(), FORZASALTO);
+        }
+    }
+    public void shot(){
+        if (checkCollision(campo.ball)) {
+            System.out.println("Tiro effettuato");
+            double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
+
+            campo.ball.setVelocita((float) calcio, (float) calcio);
+
         }
     }
 

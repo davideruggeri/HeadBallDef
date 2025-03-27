@@ -123,10 +123,10 @@ public class CampoDiGioco {
     public void goal() {
         if (ball.getY() < 232 && ball.getX() < 70) {
             setPlayer2Score(++player2Score);
-            ball.reset(remotePlayer.getId());
+            ball.reset();
         } else if (ball.getY() < 234 && ball.getX() > 930) {
             setPlayer1Score(++player1Score);
-            ball.reset(localPlayer.getId());
+            ball.reset();
         }
     }
 
@@ -150,7 +150,6 @@ public class CampoDiGioco {
     public void updatePhysics() {
         for (Oggetto o : listaOggetti) {
             if (o instanceof Ball palla) {
-                palla.applyGravity();
                 palla.stepNext();
             }
             if (o instanceof Giocatore giocatore) {

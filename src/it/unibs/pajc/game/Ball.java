@@ -5,8 +5,8 @@ import java.awt.geom.Ellipse2D;
 
 public class Ball extends Oggetto {
     public final float FATTORE_RIMBALZO = 0.8f;
+    public final float GRAVITA = 0.5f;
     public final double GROUNDLEVEL = 80;
-
     public Ball(CampoDiGioco campo, int xc, int yc) {
         super(campo, xc, yc);
     }
@@ -24,8 +24,7 @@ public class Ball extends Oggetto {
             vx = 7;
         }
 
-        float gravita = 0.5f;
-        vy -= gravita;
+        vy -= GRAVITA;
 
         if (y < GROUNDLEVEL + 20) {
             setPosizione(x, (float) (GROUNDLEVEL + 20));
@@ -34,14 +33,7 @@ public class Ball extends Oggetto {
         }
     }
 
-    public void reset(int id) {
-        /*if (id == 1) {
-            setVelocita(4,-4);
-            setAngle(0, 500, 300);
-        } else if (id == 2) {
-            setVelocita(-4,-4);
-            setAngle(180, 500, 300);
-        }*/
+    public void reset() {
         setVelocita(0,0);
         setPosizione(510, 300);
     }

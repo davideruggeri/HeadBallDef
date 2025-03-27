@@ -40,10 +40,6 @@ public abstract class Oggetto {
         y += vy;
     }
 
-    public void applyGravity() {
-        vy -= 0.89f;
-    }
-
     public void applyFriction() {
         vx *= 0.7f;
     }

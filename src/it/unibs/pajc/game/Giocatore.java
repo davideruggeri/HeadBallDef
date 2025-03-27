@@ -75,7 +75,7 @@ public class Giocatore extends Oggetto {
             Projection projB = projectVertices(verticesB, axis);
             float overlap = Projection.getOverlap(projA, projB);
 
-            if (overlap <= 0) {
+            if (overlap <=0) {
                 return null;
             } else if (overlap < minOverlap) {
                 minOverlap = overlap;
@@ -131,8 +131,6 @@ public class Giocatore extends Oggetto {
             }
         }
     }
-
-
 
     /* *******************************************
     * Gestione della collisione tra i due player *

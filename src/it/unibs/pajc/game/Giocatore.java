@@ -40,13 +40,15 @@ public class Giocatore extends Oggetto {
             setVelocita(getVelocitaX(), FORZASALTO);
         }
     }
-    public void shot(){
+    public void shot(int id){
         if (checkCollision(campo.ball)) {
-            System.out.println("Tiro effettuato");
+            if (id == 1) {
             double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
-
             campo.ball.setVelocita((float) calcio, (float) calcio);
-
+        } else if (id == 2) {
+            double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
+            campo.getBall().setVelocita(-(float) calcio, (float) calcio);
+            }
         }
     }
 

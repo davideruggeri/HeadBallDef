@@ -240,7 +240,7 @@ public class Background extends JPanel implements KeyListener {
                     case KeyEvent.VK_RIGHT -> g1.setVelocita(8f, g1.getVelocitaY());
                     case KeyEvent.VK_LEFT  -> g1.setVelocita(-8f, g1.getVelocitaY());
                     case KeyEvent.VK_SPACE -> g1.jump();
-                    case KeyEvent.VK_Z -> g1.shot();
+                    case KeyEvent.VK_Z -> g1.shot(1);
                 }
             }
         }

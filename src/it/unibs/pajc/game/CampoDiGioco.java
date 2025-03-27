@@ -61,11 +61,6 @@ public class CampoDiGioco {
     public int getPlayer2Score() {return player2Score;}
     public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
 
-    public void shot(int id) {
-        if (id == 1) localPlayer.shot();
-        else if (id == 2) remotePlayer.shot();
-    }
-
     public void stepNext() {
         for (Oggetto o : listaOggetti) {
             o.stepNext();
@@ -149,6 +144,14 @@ public class CampoDiGioco {
             remotePlayer.jump();
         } else if (localPlayer != null && playerId == localPlayer.getId()) {
             localPlayer.jump();
+        }
+    }
+
+    public void shot(int id) {
+        if (localPlayer != null && id == localPlayer.getId()) {
+            localPlayer.shot(localPlayer.getId());
+        } else if (remotePlayer!= null && id == remotePlayer.getId()) {
+            remotePlayer.shot(remotePlayer.getId());
         }
     }
 

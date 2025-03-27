@@ -47,7 +47,7 @@ public class Giocatore extends Oggetto {
             campo.ball.setVelocita((float) calcio, (float) calcio);
         } else if (id == 2) {
             double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
-            campo.getBall().setVelocita(-(float) calcio, (float) calcio);
+            campo.getBall().setVelocita((float) -calcio, (float) calcio);
             }
         }
     }

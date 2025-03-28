@@ -66,7 +66,6 @@ public abstract class Oggetto {
         while (!iterator.isDone()) {
             int type = iterator.currentSegment(coords);
             if (type != PathIterator.SEG_CLOSE) {
-                // Aggiunge il primo punto di ogni segmento, indipendentemente dal tipo
                 vertices.add(new Vector2D(coords[0], coords[1]));
             }
             iterator.next();
@@ -82,7 +81,6 @@ public abstract class Oggetto {
             Vector2D p1 = vertices.get(i);
             Vector2D p2 = vertices.get((i + 1) % count);
             Vector2D edge = new Vector2D(p2.x - p1.x, p2.y - p1.y);
-            // Calcola la normale (ruotando di 90°)
             Vector2D normal = new Vector2D(-edge.y, edge.x).normalize();
             axes.add(normal);
         }

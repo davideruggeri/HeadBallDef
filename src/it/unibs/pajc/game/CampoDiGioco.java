@@ -62,15 +62,7 @@ public class CampoDiGioco {
     public void setPlayer2Score(int player2Score) {this.player2Score = player2Score;}
 
     public void stepNext() {
-        for (Oggetto o : listaOggetti) {
-            o.stepNext();
-            applyLimit(o);
-            goal();
-        }
-        if (localPlayer != null && remotePlayer != null && localPlayer.checkCollision(remotePlayer)) {
-            localPlayer.resolveCollision(remotePlayer);
-            remotePlayer.resolveCollision(localPlayer);
-        }
+        updatePhysics();
     }
 
     private void applyLimit(Oggetto o) {

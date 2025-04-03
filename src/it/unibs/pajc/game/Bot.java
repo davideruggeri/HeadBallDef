@@ -3,7 +3,7 @@ package it.unibs.pajc.game;
 public class Bot extends Giocatore {
 
     private static final float MAX_SPEED = 8.0f;
-    private static final float ACCELERATION = 0.5f;
+    private static final float ACCELERATION = 3f;
     private static final float REACTION_TIME = 0.4f; // Tempo di reazione (simula ritardo umano)
 
     private float targetVelocityX = 0.0f;

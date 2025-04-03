@@ -20,10 +20,6 @@ public class Ball extends Oggetto {
     public void stepNext() {
         super.stepNext();
 
-        if (Math.abs(vx) > 7) {
-            vx = 7;
-        }
-
         vy -= GRAVITA;
 
         if (y < GROUNDLEVEL + 20) {

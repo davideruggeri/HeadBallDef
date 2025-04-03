@@ -142,7 +142,8 @@ public class CampoDiGioco {
     public void shot(int id) {
         if (localPlayer != null && id == localPlayer.getId()) {
             localPlayer.shot(localPlayer.getId());
-        } else if (remotePlayer!= null && id == remotePlayer.getId()) {
+        }
+        if (remotePlayer!= null && id == remotePlayer.getId()) {
             remotePlayer.shot(remotePlayer.getId());
         }
     }

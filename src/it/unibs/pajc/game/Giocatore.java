@@ -16,7 +16,7 @@ import java.util.Objects;
 public class Giocatore extends Oggetto {
     private boolean isJumping = false;
     private final int id;
-    private final float FORZA_CALCIO = 20f;
+    private final float FORZA_CALCIO = 15f;
 
     private final Area formaBase;
 
@@ -49,7 +49,7 @@ public class Giocatore extends Oggetto {
                 campo.getBall().setVelocita((float) calcio, (float) calcio);
             } else if (id == 2) {
                 System.out.println("Giocatore 2 ha calciato");
-                campo.getBall().setVelocita((float)calcio, -(float)calcio);
+                campo.getBall().setVelocita(-(float)calcio, (float)calcio);
             }
         }
     }

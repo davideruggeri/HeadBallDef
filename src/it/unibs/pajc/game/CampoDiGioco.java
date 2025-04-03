@@ -167,7 +167,6 @@ public class CampoDiGioco {
             goal();
         }
 
-        // Evitare la collisione tra i due giocatori
         if (localPlayer != null && remotePlayer != null) {
             if (localPlayer.getId() < remotePlayer.getId() && localPlayer.checkCollision(remotePlayer)) {
                 localPlayer.resolveCollision(remotePlayer);

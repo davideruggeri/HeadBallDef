@@ -158,8 +158,7 @@ public class Background extends JPanel implements KeyListener {
                 //g2d.draw(giocatore.getShape()); //Disegno della sagoma del giocatore
 
             } else if (o instanceof Ball) {
-                g2d.setColor(Color.YELLOW);
-                g2d.fill(o.getShape());
+                drawBall(g2d, (Ball) o);
             }
         }
 
@@ -193,6 +192,43 @@ public class Background extends JPanel implements KeyListener {
         int player2y = 50;
         g2d.drawString(player1ScoreTxt, player1x, player1y);
         g2d.drawString(player2ScoreTxt, player2x, player2y);
+    }
+
+    private void drawBall(Graphics2D g2d, Ball ball) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        Shape ballShape = ball.getShape();
+
+        g2d.setColor(Color.WHITE);
+        g2d.fill(ballShape);
+
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(2));
+        g2d.draw(ballShape);
+
+        Rectangle bounds = ballShape.getBounds();
+        int diameter = Math.min(bounds.width, bounds.height);
+        int centerX = bounds.x + diameter / 2;
+        int centerY = bounds.y + diameter / 2;
+
+        drawSoccerPattern(g2d, centerX, centerY, diameter);
+    }
+
+    private void drawSoccerPattern(Graphics2D g2d, int centerX, int centerY, int diameter) {
+        int pentagonRadius = diameter / 4;
+        int[] xPoints = new int[5];
+        int[] yPoints = new int[5];
+
+        for (int i = 0; i < 5; i++) {
+            double angle = Math.toRadians(90 + i * 72);
+            xPoints[i] = (int) (centerX + pentagonRadius * Math.cos(angle));
+            yPoints[i] = (int) (centerY - pentagonRadius * Math.sin(angle));
+        }
+        Polygon pentagon = new Polygon(xPoints, yPoints, 5);
+        g2d.setColor(Color.BLACK);
+        g2d.fillPolygon(pentagon);
+        g2d.drawPolygon(pentagon);
+
     }
 
     private void drawTimer(Graphics2D g2d) {

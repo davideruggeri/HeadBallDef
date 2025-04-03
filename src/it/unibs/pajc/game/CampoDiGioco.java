@@ -100,12 +100,12 @@ public class CampoDiGioco {
                 o.setPosizione(o.getX(), CAMPO_HEIGHT);
                 o.setVelocita(o.getVelocitaX() * 0.7f, -o.getVelocitaY() * 0.5f);
             }
-            if (o.getY() > 233 && o.getY() < 246 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
+            if (o.getY() > 226 && o.getY() < 246 && o.getX() < 75) { // Rimbalzo sulla traversa sinistra
                 o.setPosizione(o.getX(), 246);
                 o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.5f);
             }
 
-            if (o.getY() > 235 && o.getY() < 248 && o.getX() > 925) { // Rimbalzo sulla traversa destra
+            if (o.getY() > 228 && o.getY() < 248 && o.getX() > 925) { // Rimbalzo sulla traversa destra
                 o.setPosizione(o.getX(), 248);
                 o.setVelocita(o.getVelocitaX() * 0.9f, -o.getVelocitaY() * 0.5f);
             }

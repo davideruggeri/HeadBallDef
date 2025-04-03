@@ -45,10 +45,8 @@ public class Giocatore extends Oggetto {
         if (checkCollision(campo.getBall())) {
             double calcio = Math.sqrt(2) / 2 * FORZA_CALCIO;
             if (id == 1) {
-                System.out.println("Giocatore 1 ha calciato");
                 campo.getBall().setVelocita((float) calcio, (float) calcio);
             } else if (id == 2) {
-                System.out.println("Giocatore 2 ha calciato");
                 campo.getBall().setVelocita(-(float)calcio, (float)calcio);
             }
         }

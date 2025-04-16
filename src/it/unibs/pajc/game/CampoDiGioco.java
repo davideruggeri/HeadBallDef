@@ -15,7 +15,6 @@ public class CampoDiGioco {
     private long lastCollisionTime = 0;
     private static final long COLLISION_COOLDOWN = 50; // ms
 
-
     public CampoDiGioco(boolean singlePlayer) {
         this.gameTime = 90;
 

@@ -4,9 +4,8 @@ Gioco di calcio 2D "a testoni" in **Java (Swing)**: si gioca da soli contro un b
 
 Progetto universitario (Università degli Studi di Brescia) realizzato da **Davide Ruggeri** e **Simone Musatti**.
 
-<!-- Aggiungi qui uno screenshot o una GIF di una partita:
-<p align="center"><img width="600" alt="Partita" src="..." /></p>
--->
+
+<p align="center"><img width="600" alt="Parita" src="https://github.com/user-attachments/assets/6c26e7a3-1db8-43a9-b9c1-4efa83cd71c7"/></p>
 
 ## Modalità di gioco
 
